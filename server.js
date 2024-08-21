@@ -4,7 +4,7 @@ const path = require('path');
 const http = require('http');
 const { RunwareServer } = require('@runware/sdk-js');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000; // Adjusted for Heroku
 
 app.use(express.json());
 app.use(express.static('public'));
@@ -65,8 +65,9 @@ const server = app.listen(port, () => {
 // Keep-alive pings to maintain server connection
 const keepAliveInterval = 25 * 60 * 1000; // 25 minutes in milliseconds
 setInterval(() => {
+  const pingUrl = `http://localhost:${port}`; // Updated to reflect current port
   console.log('Sending keep-alive ping to server...');
-  http.get(`http://localhost:${port}`, (res) => {
+  http.get(pingUrl, (res) => {
     console.log(`Keep-alive response status: ${res.statusCode}`);
   }).on('error', (err) => {
     console.error('Error with keep-alive ping:', err.message);
