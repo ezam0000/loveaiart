@@ -5,7 +5,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    min-height: 100vh;  /* Use min-height instead of height to allow for content overflow */
     margin: 0;
     padding: 20px;
     overflow-x: hidden;
@@ -27,6 +27,8 @@ body {
     border-radius: 16px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
     padding: 20px;
+    box-sizing: border-box;
+    width: 100%; /* Ensure containers take full width on small screens */
 }
 
 h1 {
@@ -183,4 +185,41 @@ button[data-tooltip]:hover::after {
 button[data-tooltip]:hover::after {
     opacity: 1;
     pointer-events: auto;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .form-container, .output-container {
+        min-width: 100%;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    form {
+        padding: 15px;
+    }
+
+    input, select, button, label {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    h1 {
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
 }
