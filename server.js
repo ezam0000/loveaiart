@@ -45,8 +45,8 @@ app.post('/generate-image', async (req, res) => {
       steps: parseInt(steps),
       CFGScale: parseFloat(CFGScale),
       seed: parseInt(seed),
-      checkNSFW: false,
-      includeCost: true,
+      checkNSFW: true,
+      includeCost: false,
       lora // Pass LoRA as received
     });
 

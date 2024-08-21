@@ -123,7 +123,7 @@ document.getElementById('imageForm').addEventListener('submit', async (e) => {
         });
 
         updateStatus(`Successfully generated ${images.length} image(s)!`);
-        costElement.textContent = `Total cost: ${totalCost.toFixed(4)}`;
+        // costElement.textContent = `Total cost: ${totalCost.toFixed(4)}`;
     } catch (error) {
         console.error('Error:', error);
         updateStatus(`An error occurred: ${error.message}`);

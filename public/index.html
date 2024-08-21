@@ -12,7 +12,7 @@
             <h1>LoveAi Art</h1>
             <form id="imageForm">
                 <div class="input-group">
-                    <input type="text" id="positivePrompt" placeholder="Positive Prompt" value="cat" required>
+                    <input type="text" id="positivePrompt" placeholder="Positive Prompt" value=" Prompt : cat wearing a top hat, text on the hat saying 'flux'" required>
                 </div>
                 
                 <div class="input-group">
@@ -78,17 +78,14 @@
 
                 <div class="input-group">
                     <select id="numberResults">
-                        <option value="" disabled>Number of Results (1-5)</option>
+                        <option value="" disabled>Number of Results</option>
                         <option value="1" selected>1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
                     </select>
                 </div>
 
                 <div class="input-group">
                     <select id="outputFormat">
+                        <option value="" disabled>Format</option>
                         <option value="WEBP" selected>WEBP Output</option>
                         <option value="JPG">JPG Output</option>
                         <option value="PNG">PNG Output</option>
@@ -104,9 +101,7 @@
 
                 <div class="input-group">
                     <select id="steps">
-                        <option value="" disabled>Steps</option>
-                        <option value="2">2</option>
-                        <option value="4" selected>4 Steps, ideal for Flux</option>
+                        <option value="" disabled>Steps: Number of iterations (performance level)</option>                        <option value="4" selected>4 Steps, ideal for Flux</option>
                         <option value="20">20</option>
                         <option value="28">28 Steps, ideal for SDXL</option>
                         <option value="40">40</option>
