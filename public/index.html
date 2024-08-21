@@ -3,8 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text to Image</title>
+    <title>Text to Image | LoveAi Art</title>
     <link rel="stylesheet" href="styles.css">
+    <meta name="description" content="LoveAi Art - Generate stunning AI-generated images from text prompts with customizable options.">
+    <meta name="keywords" content="AI, image generation, text to image, AI art, LoveAi Art, AI tools">
+    <meta name="author" content="LoveAi Art Team">
+    <link rel="canonical" href="https://www.loveaiart.com/">
+    <meta property="og:title" content="LoveAi Art - AI-Powered Image Generation">
+    <meta property="og:description" content="Generate stunning AI-generated images from text prompts with LoveAi Art.">
+    <meta property="og:url" content="https://www.loveaiart.com/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://www.loveaiart.com/images/og-image.jpg">
 </head>
 <body>
     <div class="container">
@@ -101,7 +110,8 @@
 
                 <div class="input-group">
                     <select id="steps">
-                        <option value="" disabled>Steps: Number of iterations (performance level)</option>                        <option value="4" selected>4 Steps, ideal for Flux</option>
+                        <option value="" disabled>Steps: Number of iterations (performance level)</option>
+                        <option value="4" selected>4 Steps, ideal for Flux</option>
                         <option value="20">20</option>
                         <option value="28">28 Steps, ideal for SDXL</option>
                         <option value="40">40</option>
@@ -132,7 +142,12 @@
                     </label>
                 </div>
 
-                <button type="submit">Generate Image</button>
+                <button type="submit">Generate</button>
+                
+                <!-- Terms of Service link below the button -->
+                <p><a href="tos.html">By Clicking "Generate" you are accepting our Terms of Service</a></p>
+                <p><a href="pp.html">By Clicking "Generate" you are accepting our Privacy Policy</a></p>
+
             </form>
         </div>
         <div class="output-container">
@@ -141,6 +156,7 @@
             <div id="result"></div>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>

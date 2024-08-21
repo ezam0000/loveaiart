@@ -224,3 +224,19 @@ button[data-tooltip]:hover::after {
         margin-bottom: 15px;
     }
 }
+
+/* Styling for the Terms of Service link */
+form p a {
+    color: #ff6f00;  /* Match the color with your theme */
+    text-decoration: none;
+    font-size: 14px;
+    display: inline-block;
+    margin-top: -10px;  /* Slight adjustment to bring it closer to the button */
+    transition: color 0.3s ease;
+    text-align: center;
+}
+
+form p a:hover {
+    color: #e65100;  /* Darker color on hover */
+    text-decoration: underline;
+}
