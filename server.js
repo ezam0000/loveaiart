@@ -60,12 +60,12 @@ passport.use(new GoogleStrategy({
 
 passport.serializeUser((user, done) => {
   console.log('Serializing user:', user);
-  done(null, user);
+  done(null, user);  // You might want to serialize just the user ID or email
 });
 
 passport.deserializeUser((user, done) => {
   console.log('Deserializing user:', user);
-  done(null, user);
+  done(null, user);  // You might want to deserialize based on user ID or email
 });
 
 // Middleware to redirect www.loveaiart.com to loveaiart.com
@@ -94,6 +94,7 @@ app.get('/logout', (req, res) => {
     if (err) { return next(err); }
     req.session.destroy(() => {
       console.log('User logged out, session destroyed');
+      res.clearCookie('connect.sid', { path: '/' });  // Clear the session cookie
       res.redirect('/');
     });
   });
@@ -101,11 +102,14 @@ app.get('/logout', (req, res) => {
 
 // Home route, displays different content based on authentication status
 app.get('/', (req, res) => {
+  console.log('Checking if user is authenticated...');
   console.log('User authenticated:', req.isAuthenticated());
-  console.log('Session:', req.session);  // Log the session object for debugging
+  console.log('User session:', req.session);  // Log the session object for debugging
   if (req.isAuthenticated()) {
+    console.log('User is authenticated. Serving index.html');
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
   } else {
+    console.log('User is not authenticated. Redirecting to login.');
     res.redirect('/login');  // Redirect to login page if not authenticated
   }
 });
