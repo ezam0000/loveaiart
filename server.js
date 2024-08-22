@@ -5,6 +5,8 @@ const http = require('http');
 const { RunwareServer } = require('@runware/sdk-js');
 const passport = require('passport');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
+const mongoose = require('mongoose');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const app = express();
@@ -17,11 +19,25 @@ const runware = new RunwareServer({ apiKey: process.env.RUNWARE_API_KEY });
 app.use(express.json());
 app.use(express.static('public'));
 
-// Session middleware
+// MongoDB connection with error handling
+mongoose.connect(process.env.MONGO_URL).then(() => {
+  console.log('Connected to MongoDB');
+}).catch((err) => {
+  console.error('Failed to connect to MongoDB', err);
+});
+
+// Session middleware with MongoDB session store and domain configuration
 app.use(session({
   secret: 'your_secret_key', // Replace with a secure key in production
   resave: false,
-  saveUninitialized: false, // Should be false to avoid creating sessions for unauthenticated users
+  saveUninitialized: false,
+  store: MongoStore.create({ 
+    mongoUrl: process.env.MONGO_URL
+  }),
+  cookie: {
+    domain: '.loveaiart.com', // Applies to all subdomains of loveaiart.com
+    secure: true, // Ensures cookies are only sent over HTTPS
+  }
 }));
 
 app.use(passport.initialize());
@@ -47,6 +63,14 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((user, done) => {
   console.log('Deserializing user:', user);
   done(null, user);
+});
+
+// Middleware to redirect www.loveaiart.com to loveaiart.com
+app.use((req, res, next) => {
+  if (req.headers.host === 'www.loveaiart.com') {
+    return res.redirect(301, `https://loveaiart.com${req.url}`);
+  }
+  next();
 });
 
 // Route to initiate Google OAuth
@@ -150,7 +174,7 @@ const server = app.listen(port, () => {
 // Keep-alive pings to maintain server connection
 const keepAliveInterval = 25 * 60 * 1000; // 25 minutes in milliseconds
 setInterval(() => {
-  const pingUrl = `http://localhost:${port}`; // Updated to reflect current port
+  const pingUrl = `http://localhost:${port}`;
   console.log('Sending keep-alive ping to server...');
   http.get(pingUrl, (res) => {
     console.log(`Keep-alive response status: ${res.statusCode}`);
