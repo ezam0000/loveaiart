@@ -1,26 +1,26 @@
+/* General Body Styling */
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background: linear-gradient(135deg, #1a1a1a, #2b2b2b);
     color: #f0f0f0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;  /* Use min-height instead of height to allow for content overflow */
     margin: 0;
     padding: 20px;
-    scroll-behavior: smooth; /* Enable smooth scrolling */
+    scroll-behavior: smooth;
 }
 
+/* Main Container Styling */
 .container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    max-width: 1200px;
+    background: #222;
+    border-radius: 16px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    padding: 30px;
+    max-width: 800px;
     width: 100%;
     box-sizing: border-box;
-    overflow-y: auto; /* Ensure container can scroll if content overflows */
+    overflow-y: auto; /* Allow scrolling for overflow content */
 }
 
+/* Form and Output Container Styling */
 .form-container, .output-container {
     flex: 1;
     min-width: 300px;
@@ -29,15 +29,17 @@ body {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
     padding: 20px;
     box-sizing: border-box;
-    width: 100%; /* Ensure containers take full width on small screens */
+    width: 100%;
 }
 
+/* Heading (H1) Styling */
 h1 {
     margin-bottom: 20px;
     color: #ff6f00;
     text-align: center;
 }
 
+/* Form Styling */
 form {
     background: linear-gradient(135deg, #333, #444);
     padding: 20px;
@@ -47,6 +49,7 @@ form {
     box-sizing: border-box;
 }
 
+/* Inputs, Selects, Buttons, and Labels Styling */
 input, select, button, label {
     width: 100%;
     display: block;
@@ -66,11 +69,13 @@ select {
     cursor: pointer;
 }
 
+/* Hover Effects for Inputs, Selects, and Buttons */
 input:hover, select:hover, button:hover {
     background: #555;
     color: #fff;
 }
 
+/* Button Specific Styling */
 button {
     background: linear-gradient(to right, #ff6f00, #9c27b0);
     color: white;
@@ -84,6 +89,7 @@ button:hover {
     transform: scale(1.03);
 }
 
+/* Toggle Switch Container Styling */
 #toggleEnhance {
     display: flex;
     align-items: center;
@@ -91,6 +97,7 @@ button:hover {
     margin-bottom: 15px;
 }
 
+/* Toggle Switch Styling */
 .toggle-switch {
     position: relative;
     display: inline-block;
@@ -137,12 +144,14 @@ input:checked + .slider:before {
     transform: translateX(26px);
 }
 
+/* Status and Cost Text Styling */
 #status, #cost {
     margin-top: 10px;
     font-weight: bold;
     text-align: center;
 }
 
+/* Image Result Styling */
 #result img {
     max-width: 100%;
     height: auto;
@@ -152,7 +161,7 @@ input:checked + .slider:before {
     margin-right: auto;
 }
 
-/* Additional styles for dropdowns */
+/* Dropdown Additional Styling */
 select {
     padding: 12px;
     font-size: 16px;
@@ -163,7 +172,7 @@ select {
     box-sizing: border-box;
 }
 
-/* Tooltip styles */
+/* Tooltip Styling */
 .input-group[data-tooltip]:hover::after,
 button[data-tooltip]:hover::after {
     content: attr(data-tooltip);
@@ -225,18 +234,25 @@ button[data-tooltip]:hover::after {
     }
 }
 
-/* Styling for the Terms of Service link */
-form p a {
-    color: #ff6f00;  /* Match the color with your theme */
+/* Styling for the Terms of Service and Privacy Policy Links */
+form p a, .container a {
+    color: #ff6f00; /* Match the color with your theme */
     text-decoration: none;
     font-size: 14px;
-    display: inline-block;
-    margin-top: -10px;  /* Slight adjustment to bring it closer to the button */
     transition: color 0.3s ease;
-    text-align: center;
 }
 
-form p a:hover {
-    color: #e65100;  /* Darker color on hover */
+form p a:hover, .container a:hover {
+    color: #e65100; /* Darker color on hover */
     text-decoration: underline;
+}
+
+/* Ensure Scrolling on Pages with Large Content */
+html, body {
+    height: 100%;
+    overflow: auto; /* Enable scrolling for overflowing content */
+}
+
+.container {
+    max-height: none; /* Allow container height to expand as needed */
 }
