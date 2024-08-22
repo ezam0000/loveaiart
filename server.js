@@ -21,7 +21,7 @@ app.use(express.static('public'));
 app.use(session({
   secret: 'your_secret_key', // Replace with a secure key in production
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false, // Should be false to avoid creating sessions for unauthenticated users
 }));
 
 app.use(passport.initialize());
@@ -34,16 +34,18 @@ passport.use(new GoogleStrategy({
     callbackURL: '/auth/google/callback'
   },
   function(accessToken, refreshToken, profile, done) {
-    // Here you can save the user profile to your database if needed
+    console.log('Google authentication successful, user profile:', profile);
     return done(null, profile);
   }
 ));
 
 passport.serializeUser((user, done) => {
+  console.log('Serializing user:', user);
   done(null, user);
 });
 
 passport.deserializeUser((user, done) => {
+  console.log('Deserializing user:', user);
   done(null, user);
 });
 
@@ -55,6 +57,7 @@ app.get('/auth/google',
 app.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
+    console.log('Google OAuth callback successful, redirecting to home');
     res.redirect('/'); // On successful authentication, redirect to home
   });
 
@@ -62,17 +65,27 @@ app.get('/auth/google/callback',
 app.get('/logout', (req, res) => {
   req.logout((err) => {
     if (err) { return next(err); }
-    res.redirect('/');
+    req.session.destroy(() => {
+      console.log('User logged out, session destroyed');
+      res.redirect('/');
+    });
   });
 });
 
 // Home route, displays different content based on authentication status
 app.get('/', (req, res) => {
+  console.log('User authenticated:', req.isAuthenticated());
+  console.log('Session:', req.session);  // Log the session object for debugging
   if (req.isAuthenticated()) {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
   } else {
-    res.sendFile(path.join(__dirname, 'public', 'login.html')); // Serve the login page if not authenticated
+    res.redirect('/login');  // Redirect to login page if not authenticated
   }
+});
+
+// Separate login route
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
 // Route to generate images using Runware API
@@ -113,9 +126,20 @@ app.post('/generate-image', async (req, res) => {
 
     res.json(images);
   } catch (error) {
-    console.error(error);
+    console.error('Error:', error);
     res.status(500).json({ error: 'An error occurred while generating the image' });
   }
+});
+
+// Force logout route for testing
+app.get('/force-logout', (req, res) => {
+  req.logout((err) => {
+    if (err) { return next(err); }
+    req.session.destroy(() => {
+      console.log('Force logout, session destroyed');
+      res.redirect('/');
+    });
+  });
 });
 
 // Start the server
