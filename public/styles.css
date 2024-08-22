@@ -6,6 +6,13 @@ body {
     margin: 0;
     padding: 20px;
     scroll-behavior: smooth;
+    min-height: 100vh;  /* Ensure the body takes at least full height */
+}
+
+/* Ensure the content container can scroll properly */
+html, body {
+    height: 100%;  /* Ensure full height for scrolling */
+    overflow: auto;  /* Allow scrolling if content overflows */
 }
 
 /* Main Container Styling */
@@ -17,7 +24,6 @@ body {
     max-width: 800px;
     width: 100%;
     box-sizing: border-box;
-    overflow-y: auto; /* Allow scrolling for overflow content */
 }
 
 /* Form and Output Container Styling */
@@ -248,11 +254,7 @@ form p a:hover, .container a:hover {
 }
 
 /* Ensure Scrolling on Pages with Large Content */
-html, body {
-    height: 100%;
-    overflow: auto; /* Enable scrolling for overflowing content */
-}
-
 .container {
-    max-height: none; /* Allow container height to expand as needed */
+    overflow-y: auto; /* Allow scrolling for overflowing content */
+    max-height: 100vh; /* Ensure the container does not exceed viewport height */
 }
