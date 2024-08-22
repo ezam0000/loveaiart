@@ -26,6 +26,9 @@ mongoose.connect(process.env.MONGO_URL).then(() => {
   console.error('Failed to connect to MongoDB', err);
 });
 
+// Debugging: Log the MongoDB URL
+console.log('MongoDB URL:', process.env.MONGO_URL);
+
 // Session middleware with MongoDB session store and domain configuration
 app.use(session({
   secret: 'your_secret_key', // Replace with a secure key in production
