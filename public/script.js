@@ -2,11 +2,31 @@ const statusElement = document.getElementById('status');
 const costElement = document.getElementById('cost');
 const resultElement = document.getElementById('result');
 
+// Function to update the status message
 function updateStatus(message) {
+    console.log("Updating status: ", message);  // Log status update
     statusElement.textContent = message;
 }
 
-// Function to update default values based on the selected model
+// Function to update the result with generated images
+function updateResult(images) {
+    console.log("Updating result with images: ", images);  // Log images received
+    resultElement.innerHTML = '';  // Clear previous results
+
+    images.forEach((image) => {
+        const img = new Image();
+        img.onload = () => {
+            console.log("Image loaded successfully: ", image.imageURL);  // Log successful load
+            resultElement.appendChild(img);
+        };
+        img.onerror = () => {
+            console.error('Failed to load image:', image.imageURL);
+        };
+        img.src = image.imageURL;
+    });
+}
+
+// Restore model-specific default settings when a model is selected
 document.getElementById('model').addEventListener('change', function () {
     const selectedModel = this.value;
 
@@ -17,27 +37,40 @@ document.getElementById('model').addEventListener('change', function () {
         document.getElementById('steps').value = '4';
         document.getElementById('CFGScale').value = '30';
         document.getElementById('scheduler').value = 'default';
-    } else if (selectedModel === 'civitai:277058@646523'){
+    } else if (selectedModel === 'civitai:277058@646523') {
         // Defaults for SDXL epiCRealism XL V8-KiSS
         document.getElementById('width').value = '896';
         document.getElementById('height').value = '896';
         document.getElementById('steps').value = '28';
         document.getElementById('CFGScale').value = '5';
         document.getElementById('scheduler').value = 'DPM++ 2M Karras';
-
-        // Defaults for SD Base
     } else if (selectedModel === 'civitai:25694@143906') {
+        // Defaults for SD Base
         document.getElementById('width').value = '512';
         document.getElementById('height').value = '512';
         document.getElementById('steps').value = '28';
         document.getElementById('CFGScale').value = '5';
         document.getElementById('scheduler').value = 'DPM++ 2M Karras';
-
     }
 
     // Add more conditions if more models are added
 });
 
+// Toggle Advanced Settings visibility
+const advancedSettings = document.getElementById('advancedSettings');
+const toggleAdvancedSettings = document.getElementById('toggleAdvancedSettings');
+
+toggleAdvancedSettings.addEventListener('click', function () {
+    if (advancedSettings.classList.contains('hidden')) {
+        advancedSettings.classList.remove('hidden');
+        toggleAdvancedSettings.textContent = 'Hide Advanced Settings';
+    } else {
+        advancedSettings.classList.add('hidden');
+        toggleAdvancedSettings.textContent = 'Show Advanced Settings';
+    }
+});
+
+// Handle form submission
 document.getElementById('imageForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     updateStatus('Processing...');
@@ -107,23 +140,8 @@ document.getElementById('imageForm').addEventListener('submit', async (e) => {
             throw new Error('No images received from the server');
         }
 
-        updateStatus('Loading generated images...');
-        let totalCost = 0;
-        resultElement.innerHTML = ''; // Clear previous results
-        images.forEach((image) => {
-            const img = new Image();
-            img.onload = () => {
-                resultElement.appendChild(img);
-            };
-            img.onerror = () => {
-                console.error('Failed to load image:', image.imageURL);
-            };
-            img.src = image.imageURL;
-            totalCost += image.cost || 0;
-        });
-
         updateStatus(`Successfully generated ${images.length} image(s)!`);
-        // costElement.textContent = `Total cost: ${totalCost.toFixed(4)}`;
+        updateResult(images);  // Call this function to update the images
     } catch (error) {
         console.error('Error:', error);
         updateStatus(`An error occurred: ${error.message}`);

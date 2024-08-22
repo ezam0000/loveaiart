@@ -203,6 +203,28 @@ button[data-tooltip]:hover::after {
     pointer-events: auto;
 }
 
+/* Advanced Settings Visibility */
+.hidden {
+    display: none;
+}
+
+/* Update button styling for the advanced settings toggle */
+#toggleAdvancedSettings {
+    background: #444;
+    color: #f0f0f0;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+#toggleAdvancedSettings:hover {
+    background: #555;
+    color: #fff;
+}
+
 /* Media Queries for Responsiveness */
 @media (max-width: 768px) {
     body {
