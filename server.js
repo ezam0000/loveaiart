@@ -43,6 +43,7 @@ app.use(session({
   }
 }));
 
+// Initialize Passport.js
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -60,12 +61,12 @@ passport.use(new GoogleStrategy({
 
 passport.serializeUser((user, done) => {
   console.log('Serializing user:', user);
-  done(null, user);  // You might want to serialize just the user ID or email
+  done(null, user);  // Serialize entire user object or just user ID
 });
 
 passport.deserializeUser((user, done) => {
   console.log('Deserializing user:', user);
-  done(null, user);  // You might want to deserialize based on user ID or email
+  done(null, user);  // Deserialize to get user object from session
 });
 
 // Middleware to redirect www.loveaiart.com to loveaiart.com
@@ -78,15 +79,17 @@ app.use((req, res, next) => {
 
 // Route to initiate Google OAuth
 app.get('/auth/google', 
-  passport.authenticate('google', { scope: ['profile', 'email'] }));
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
 
 // Route to handle callback from Google
 app.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/' }),
+  passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => {
     console.log('Google OAuth callback successful, redirecting to home');
     res.redirect('/'); // On successful authentication, redirect to home
-  });
+  }
+);
 
 // Route to handle logout
 app.get('/logout', (req, res) => {
@@ -105,6 +108,7 @@ app.get('/', (req, res) => {
   console.log('Checking if user is authenticated...');
   console.log('User authenticated:', req.isAuthenticated());
   console.log('User session:', req.session);  // Log the session object for debugging
+
   if (req.isAuthenticated()) {
     console.log('User is authenticated. Serving index.html');
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
