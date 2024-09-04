@@ -280,3 +280,30 @@ form p a:hover, .container a:hover {
     overflow-y: auto; /* Allow scrolling for overflowing content */
     max-height: 100vh; /* Ensure the container does not exceed viewport height */
 }
+.input-group textarea {
+    width: 100%; /* Full width of the container */
+    height: 120px; /* Height for multi-line input */
+    padding: 15px; /* More padding for better aesthetics */
+    font-size: 18px; /* Slightly larger font for better readability */
+    line-height: 1.6; /* Improved line spacing for clarity */
+    font-family: 'Arial', sans-serif; /* Use a clean, modern font */
+    background-color: #333; /* Dark background to match the design */
+    color: #f1f1f1; /* Light text for readability */
+    border: 1px solid #444; /* Darker border */
+    border-radius: 8px; /* Slightly larger border radius for smoother edges */
+    box-sizing: border-box; /* Include padding in total width */
+    resize: vertical; /* Allow vertical resizing */
+}
+
+/* Optional: Placeholder styling for better contrast */
+textarea::placeholder {
+    color: #888; /* Slightly muted color for placeholder text */
+    font-style: italic; /* Add a subtle italic style for the placeholder */
+}
+
+/* Focus state for textarea */
+.input-group textarea:focus {
+    border-color: #f1f1f1; /* Lighten the border on focus */
+    background-color: #444; /* Lighter background on focus */
+    outline: none; /* Remove default focus outline */
+}
