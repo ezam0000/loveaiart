@@ -26,34 +26,43 @@ function updateResult(images) {
     });
 }
 
+// Prevent form submission when 'Enter' is pressed inside the textareas
+const positivePrompt = document.getElementById('positivePrompt');
+const negativePrompt = document.getElementById('negativePrompt');
+
+function preventSubmitOnEnter(event) {
+    if (event.key === 'Enter') {
+        event.stopPropagation();  // Prevent form submission
+    }
+}
+
+// Attach the event listeners to the textareas
+positivePrompt.addEventListener('keypress', preventSubmitOnEnter);
+negativePrompt.addEventListener('keypress', preventSubmitOnEnter);
+
 // Restore model-specific default settings when a model is selected
 document.getElementById('model').addEventListener('change', function () {
     const selectedModel = this.value;
 
     if (selectedModel === 'runware:100@1') {
-        // Defaults for FLUX Runware v1
         document.getElementById('width').value = '896';
         document.getElementById('height').value = '512';
         document.getElementById('steps').value = '4';
         document.getElementById('CFGScale').value = '30';
         document.getElementById('scheduler').value = 'default';
     } else if (selectedModel === 'civitai:277058@646523') {
-        // Defaults for SDXL epiCRealism XL V8-KiSS
         document.getElementById('width').value = '896';
         document.getElementById('height').value = '896';
         document.getElementById('steps').value = '28';
         document.getElementById('CFGScale').value = '5';
         document.getElementById('scheduler').value = 'DPM++ 2M Karras';
     } else if (selectedModel === 'civitai:25694@143906') {
-        // Defaults for SD Base
         document.getElementById('width').value = '512';
         document.getElementById('height').value = '512';
         document.getElementById('steps').value = '28';
         document.getElementById('CFGScale').value = '5';
         document.getElementById('scheduler').value = 'DPM++ 2M Karras';
     }
-
-    // Add more conditions if more models are added
 });
 
 // Toggle Advanced Settings visibility
@@ -102,7 +111,6 @@ document.getElementById('imageForm').addEventListener('submit', async (e) => {
         }
     }
 
-    // Retrieve and format the LoRA input
     const loraInput = document.getElementById('lora').value.trim();
     const loraArray = loraInput ? [{ model: loraInput, weight: 1.0 }] : [];
 
@@ -141,7 +149,7 @@ document.getElementById('imageForm').addEventListener('submit', async (e) => {
         }
 
         updateStatus(`Successfully generated ${images.length} image(s)!`);
-        updateResult(images);  // Call this function to update the images
+        updateResult(images);
     } catch (error) {
         console.error('Error:', error);
         updateStatus(`An error occurred: ${error.message}`);
