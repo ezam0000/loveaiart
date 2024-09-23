@@ -29,9 +29,7 @@ Create a .env file in the root directory and add the following:
 plaintext
 Copy code
 RUNWARE_API_KEY=your_runware_api_key
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-MONGO_URL=your_mongodb_connection_string
+
 Run the server locally:
 bash
 Copy code

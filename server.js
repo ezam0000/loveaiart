@@ -3,11 +3,7 @@ const express = require('express');
 const path = require('path');
 const http = require('http');
 const { RunwareServer } = require('@runware/sdk-js');
-const passport = require('passport');
-const session = require('express-session');
-const MongoStore = require('connect-mongo');
-const mongoose = require('mongoose');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -19,56 +15,6 @@ const runware = new RunwareServer({ apiKey: process.env.RUNWARE_API_KEY });
 app.use(express.json());
 app.use(express.static('public'));
 
-// MongoDB connection with error handling
-mongoose.connect(process.env.MONGO_URL).then(() => {
-  console.log('Connected to MongoDB');
-}).catch((err) => {
-  console.error('Failed to connect to MongoDB', err);
-});
-
-// Debugging: Log the MongoDB URL
-console.log('MongoDB URL:', process.env.MONGO_URL);
-
-// Session middleware with MongoDB session store and domain configuration
-app.use(session({
-  secret: 'your_secret_key', // Replace with a secure key in production
-  resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({ 
-    mongoUrl: process.env.MONGO_URL
-  }),
-  cookie: {
-    domain: '.loveaiart.com', // Applies to all subdomains of loveaiart.com
-    secure: true, // Ensures cookies are only sent over HTTPS
-  }
-}));
-
-// Initialize Passport.js
-app.use(passport.initialize());
-app.use(passport.session());
-
-// Google OAuth configuration
-passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: '/auth/google/callback'
-  },
-  function(accessToken, refreshToken, profile, done) {
-    console.log('Google authentication successful, user profile:', profile);
-    return done(null, profile);
-  }
-));
-
-passport.serializeUser((user, done) => {
-  console.log('Serializing user:', user);
-  done(null, user);  // Serialize entire user object or just user ID
-});
-
-passport.deserializeUser((user, done) => {
-  console.log('Deserializing user:', user);
-  done(null, user);  // Deserialize to get user object from session
-});
-
 // Middleware to redirect www.loveaiart.com to loveaiart.com
 app.use((req, res, next) => {
   if (req.headers.host === 'www.loveaiart.com') {
@@ -76,20 +22,6 @@ app.use((req, res, next) => {
   }
   next();
 });
-
-// Route to initiate Google OAuth
-app.get('/auth/google', 
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-);
-
-// Route to handle callback from Google
-app.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  (req, res) => {
-    console.log('Google OAuth callback successful, redirecting to home');
-    res.redirect('/'); // On successful authentication, redirect to home
-  }
-);
 
 // Route to handle logout
 app.get('/logout', (req, res) => {

@@ -10,15 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@kinde-oss/kinde-nodejs-sdk": "^1.2.4",
     "@runware/sdk-js": "^1.1.10",
-    "connect-mongo": "^5.1.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
-    "mongodb": "^6.8.0",
-    "mongoose": "^8.5.3",
-    "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0",
     "yarn": "^1.22.22"
   }
 }
