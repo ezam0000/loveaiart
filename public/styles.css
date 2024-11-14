@@ -307,3 +307,32 @@ textarea::placeholder {
     background-color: #444; /* Lighter background on focus */
     outline: none; /* Remove default focus outline */
 }
+
+/* Add this to your styles.css */
+nav {
+    background-color: #333; /* Dark background */
+    padding: 10px; /* Padding around the nav */
+}
+
+nav ul {
+    list-style-type: none; /* Remove bullet points */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    display: flex; /* Use flexbox for horizontal layout */
+}
+
+nav li {
+    margin-right: 20px; /* Space between links */
+}
+
+nav a {
+    color: white; /* White text color */
+    text-decoration: none; /* Remove underline */
+    padding: 8px 16px; /* Padding for clickable area */
+    border-radius: 4px; /* Rounded corners */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+nav a:hover {
+    background-color: #555; /* Darker background on hover */
+}

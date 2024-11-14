@@ -98,6 +98,55 @@ app.post('/generate-image', async (req, res) => {
   }
 });
 
+// Route to generate images using PhotoMaker API
+app.post('/photomaker', async (req, res) => {
+  try {
+    const requestBody = req.body[0]; // Access the first element of the array
+
+    const {
+      positivePrompt,
+      style,
+      strength,
+      width,
+      height,
+      inputImages,
+      scheduler,
+      steps,
+      CFGScale,
+      outputFormat,
+      includeCost,
+      numberResults
+    } = requestBody;
+
+    // Validate input
+    if (!positivePrompt || !inputImages || inputImages.length === 0) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const images = await runware.requestImages({
+      taskType: "photoMaker",
+      taskUUID: generateUUID(), // Generate a new UUID for the task
+      inputImages,
+      style,
+      strength: parseInt(strength),
+      positivePrompt,
+      height: parseInt(height),
+      width: parseInt(width),
+      scheduler,
+      steps: parseInt(steps),
+      CFGScale: parseFloat(CFGScale),
+      outputFormat,
+      includeCost,
+      numberResults: parseInt(numberResults)
+    });
+
+    res.json(images);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'An error occurred while generating the image' });
+  }
+});
+
 // Force logout route for testing
 app.get('/force-logout', (req, res) => {
   req.logout((err) => {
