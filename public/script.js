@@ -52,7 +52,7 @@ document.getElementById('model').addEventListener('change', function () {
         document.getElementById('scheduler').value = 'FlowMatchEulerDiscreteScheduler';
 
         // Set default positive prompt
-        document.getElementById('positivePrompt').value = "Prompt: cat wearing a top hat text on the hat saying 'Love Ai Art'";
+        document.getElementById('positivePrompt').value = "grafitti text in the background saying 'Love Ai Art'";
 
         // Set default LoRA model
         const loraInput = document.getElementById('lora');
