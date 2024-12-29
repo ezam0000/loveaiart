@@ -256,3 +256,16 @@ window.addEventListener('DOMContentLoaded', (event) => {
     const modelSelect = document.getElementById('model');
     modelSelect.dispatchEvent(new Event('change'));
 });
+
+// Add this code to set a random prompt when the DOM content has loaded
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM fully loaded'); // Debugging statement
+    const positivePrompt = document.getElementById('positivePrompt');
+    if (positivePrompt) {
+        const randomPrompt = getRandomPrompt();
+        positivePrompt.value = randomPrompt;
+        console.log('Random prompt set:', randomPrompt); // Debugging statement
+    } else {
+        console.error('Element with id "positivePrompt" not found.');
+    }
+});
