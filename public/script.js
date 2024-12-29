@@ -56,7 +56,13 @@ document.getElementById('model').addEventListener('change', function () {
         document.getElementById('steps').value = '28';
         document.getElementById('CFGScale').value = '5';
         document.getElementById('scheduler').value = 'DPM++ 2M Karras';
-    } else if (selectedModel === 'civitai:25694@143906') {
+    } else if (selectedModel === 'civitai:47274@102222') {
+        document.getElementById('width').value = '512';
+        document.getElementById('height').value = '512';
+        document.getElementById('steps').value = '28';
+        document.getElementById('CFGScale').value = '5';
+        document.getElementById('scheduler').value = 'DPM++ 2M Karras';
+    } else if (selectedModel === 'civitai:257749@290640') {
         document.getElementById('width').value = '512';
         document.getElementById('height').value = '512';
         document.getElementById('steps').value = '28';
