@@ -59,15 +59,15 @@ document.getElementById('model').addEventListener('change', function () {
     } else if (selectedModel === 'civitai:47274@102222') {
         document.getElementById('width').value = '512';
         document.getElementById('height').value = '512';
-        document.getElementById('steps').value = '28';
-        document.getElementById('CFGScale').value = '5';
-        document.getElementById('scheduler').value = 'DPM++ 2M Karras';
+        document.getElementById('steps').value = '20';
+        document.getElementById('CFGScale').value = '7.5';
+        document.getElementById('scheduler').value = 'Default';
     } else if (selectedModel === 'civitai:257749@290640') {
         document.getElementById('width').value = '512';
         document.getElementById('height').value = '512';
-        document.getElementById('steps').value = '28';
-        document.getElementById('CFGScale').value = '5';
-        document.getElementById('scheduler').value = 'DPM++ 2M Karras';
+        document.getElementById('steps').value = '20';
+        document.getElementById('CFGScale').value = '7.5';
+        document.getElementById('scheduler').value = 'Default';
     }
 });
 
