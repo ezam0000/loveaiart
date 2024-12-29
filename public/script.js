@@ -92,6 +92,12 @@ negativePrompt.addEventListener('keypress', preventSubmitOnEnter);
 // Restore model-specific default settings when a model is selected
 document.getElementById('model').addEventListener('change', function () {
     const selectedModel = this.value;
+    const loraInput = document.getElementById('lora');
+
+    // Clear the LoRA input by default
+    if (loraInput) {
+        loraInput.value = ''; // Turn off LoRA for non-compatible models
+    }
 
     if (selectedModel === 'runware:101@1') { // FLUX.1DEV model
         document.getElementById('width').value = '1024';
@@ -101,7 +107,6 @@ document.getElementById('model').addEventListener('change', function () {
         document.getElementById('scheduler').value = 'FlowMatchEulerDiscreteScheduler';
 
         // Set default LoRA model
-        const loraInput = document.getElementById('lora');
         if (loraInput) {
             loraInput.value = 'civitai:631986@706528'; // XLABS FLUX REALISM LORA
         }
@@ -111,30 +116,35 @@ document.getElementById('model').addEventListener('change', function () {
         document.getElementById('steps').value = '4';
         document.getElementById('CFGScale').value = '30';
         document.getElementById('scheduler').value = 'default';
+        // LoRA remains empty for this model
     } else if (selectedModel === 'civitai:277058@646523') {
         document.getElementById('width').value = '896';
         document.getElementById('height').value = '896';
         document.getElementById('steps').value = '28';
         document.getElementById('CFGScale').value = '5';
         document.getElementById('scheduler').value = 'DPM++ 2M Karras';
+        // LoRA remains empty for this model
     } else if (selectedModel === 'civitai:47274@102222') {
         document.getElementById('width').value = '512';
         document.getElementById('height').value = '512';
         document.getElementById('steps').value = '20';
         document.getElementById('CFGScale').value = '7.5';
         document.getElementById('scheduler').value = 'Default';
+        // LoRA remains empty for this model
     } else if (selectedModel === 'civitai:257749@290640') {
         document.getElementById('width').value = '896';
         document.getElementById('height').value = '896';
         document.getElementById('steps').value = '35';
         document.getElementById('CFGScale').value = '8.5';
         document.getElementById('scheduler').value = 'Euler a';
+        // LoRA remains empty for this model
     } else if (selectedModel === 'civitai:25694@143906') { // EpicRealism model
         document.getElementById('width').value = '512';
         document.getElementById('height').value = '512';
         document.getElementById('steps').value = '20';
         document.getElementById('CFGScale').value = '7.5';
         document.getElementById('scheduler').value = 'Default';
+        // LoRA remains empty for this model
     }
 });
 
