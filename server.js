@@ -76,9 +76,6 @@ app.post('/generate-image', async (req, res) => {
       promptWeighting,
     } = req.body;
 
-    // Set clipSkip based on the selected model if needed
-    let clipSkipValue = 2; // Default value
-
     // Proceed with generating images
     const images = await runware.requestImages({
       positivePrompt,
@@ -96,7 +93,6 @@ app.post('/generate-image', async (req, res) => {
       checkNSFW: false,
       includeCost: false,
       lora, // Include LoRA
-      clipSkip: clipSkipValue,
       strength: parseFloat(strength),
       promptWeighting,
     });

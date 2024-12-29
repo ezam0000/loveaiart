@@ -44,7 +44,22 @@ negativePrompt.addEventListener('keypress', preventSubmitOnEnter);
 document.getElementById('model').addEventListener('change', function () {
     const selectedModel = this.value;
 
-    if (selectedModel === 'runware:100@1') {
+    if (selectedModel === 'runware:101@1') { // FLUX.1DEV model
+        document.getElementById('width').value = '1024';
+        document.getElementById('height').value = '1024';
+        document.getElementById('steps').value = '28';
+        document.getElementById('CFGScale').value = '3.5';
+        document.getElementById('scheduler').value = 'FlowMatchEulerDiscreteScheduler';
+
+        // Set default positive prompt
+        document.getElementById('positivePrompt').value = "Prompt: cat wearing a top hat text on the hat saying 'Love Ai Art'";
+
+        // Set default LoRA model
+        const loraInput = document.getElementById('lora');
+        if (loraInput) {
+            loraInput.value = 'civitai:631986@706528'; // XLABS FLUX REALISM LORA
+        }
+    } else if (selectedModel === 'runware:100@1') {
         document.getElementById('width').value = '896';
         document.getElementById('height').value = '512';
         document.getElementById('steps').value = '4';
@@ -74,21 +89,6 @@ document.getElementById('model').addEventListener('change', function () {
         document.getElementById('steps').value = '20';
         document.getElementById('CFGScale').value = '7.5';
         document.getElementById('scheduler').value = 'Default';
-    } else if (selectedModel === 'runware:101@1') { // FLUX.1DEV model
-        document.getElementById('width').value = '1024';
-        document.getElementById('height').value = '1024';
-        document.getElementById('steps').value = '28';
-        document.getElementById('CFGScale').value = '3.5';
-        document.getElementById('scheduler').value = 'FlowMatchEulerDiscreteScheduler';
-
-        // Set default positive prompt
-        document.getElementById('positivePrompt').value = 'BIG DOG';
-
-        // Set default LoRA model
-        const loraInput = document.getElementById('lora');
-        if (loraInput) {
-            loraInput.value = 'civitai:631986@706528'; // XLABS FLUX REALISM LORA
-        }
     }
 });
 
@@ -144,7 +144,7 @@ document.getElementById('imageForm').addEventListener('submit', async (e) => {
     }
 
     const loraInput = document.getElementById('lora').value.trim();
-    const loraArray = loraInput ? [{ model: loraInput, weight: 1.0 }] : [];
+    const loraArray = loraInput ? [{ model: loraInput, weight: 0.8 }] : [];
 
     const formData = {
         positivePrompt,
@@ -188,4 +188,10 @@ document.getElementById('imageForm').addEventListener('submit', async (e) => {
         console.error('Error:', error);
         updateStatus(`An error occurred: ${error.message}`);
     }
+});
+
+// Trigger change event on page load to set defaults
+window.addEventListener('DOMContentLoaded', (event) => {
+    const modelSelect = document.getElementById('model');
+    modelSelect.dispatchEvent(new Event('change'));
 });
