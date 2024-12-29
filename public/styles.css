@@ -336,3 +336,21 @@ nav a {
 nav a:hover {
     background-color: #555; /* Darker background on hover */
 }
+
+@media screen and (max-width: 600px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .form-container, .output-container {
+        width: 100%;
+    }
+
+    nav ul {
+        flex-direction: column;
+    }
+
+    .input-group {
+        width: 100%;
+    }
+}
