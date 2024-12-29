@@ -63,11 +63,32 @@ document.getElementById('model').addEventListener('change', function () {
         document.getElementById('CFGScale').value = '7.5';
         document.getElementById('scheduler').value = 'Default';
     } else if (selectedModel === 'civitai:257749@290640') {
+        document.getElementById('width').value = '896';
+        document.getElementById('height').value = '896';
+        document.getElementById('steps').value = '35';
+        document.getElementById('CFGScale').value = '8.5';
+        document.getElementById('scheduler').value = 'Euler a';
+    } else if (selectedModel === 'civitai:25694@143906') { // EpicRealism model
         document.getElementById('width').value = '512';
         document.getElementById('height').value = '512';
         document.getElementById('steps').value = '20';
         document.getElementById('CFGScale').value = '7.5';
         document.getElementById('scheduler').value = 'Default';
+    } else if (selectedModel === 'runware:101@1') { // FLUX.1DEV model
+        document.getElementById('width').value = '1024';
+        document.getElementById('height').value = '1024';
+        document.getElementById('steps').value = '28';
+        document.getElementById('CFGScale').value = '3.5';
+        document.getElementById('scheduler').value = 'FlowMatchEulerDiscreteScheduler';
+
+        // Set default positive prompt
+        document.getElementById('positivePrompt').value = 'BIG DOG';
+
+        // Set default LoRA model
+        const loraInput = document.getElementById('lora');
+        if (loraInput) {
+            loraInput.value = 'civitai:631986@706528'; // XLABS FLUX REALISM LORA
+        }
     }
 });
 
@@ -109,8 +130,13 @@ document.getElementById('imageForm').addEventListener('submit', async (e) => {
             }
 
             const enhancedData = await enhanceResponse.json();
-            positivePrompt = enhancedData.text || positivePrompt;
-            updateStatus('Prompt enhanced, generating image...');
+
+            if (enhancedData && enhancedData.data && enhancedData.data.length > 0) {
+                positivePrompt = enhancedData.data[0].text || positivePrompt;
+                updateStatus('Prompt enhanced, generating image...');
+            } else {
+                updateStatus('No enhancement received, proceeding with original prompt.');
+            }
         } catch (error) {
             console.error('Error enhancing prompt:', error);
             updateStatus('Error enhancing prompt, proceeding with original prompt.');
@@ -126,13 +152,15 @@ document.getElementById('imageForm').addEventListener('submit', async (e) => {
         width: parseInt(document.getElementById('width').value),
         height: parseInt(document.getElementById('height').value),
         model: document.getElementById('model').value,
-        numberResults: parseInt(document.getElementById('numberResults').value),
+        numberResults: parseInt(document.getElementById('numberResults').value) || 1,
         outputFormat: document.getElementById('outputFormat').value,
         scheduler: document.getElementById('scheduler').value,
         steps: parseInt(document.getElementById('steps').value),
         CFGScale: parseFloat(document.getElementById('CFGScale').value),
-        seed: parseInt(document.getElementById('seed').value),
-        lora: loraArray // Include LoRA as an array of objects
+        seed: document.getElementById('seed').value ? parseInt(document.getElementById('seed').value) : undefined,
+        lora: loraArray, // Include LoRA as an array of objects
+        strength: 0.8, // Set default strength
+        promptWeighting: 'none', // Set default promptWeighting
     };
 
     try {

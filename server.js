@@ -58,6 +58,7 @@ app.get('/login', (req, res) => {
 // Route to generate images using Runware API
 app.post('/generate-image', async (req, res) => {
   try {
+    // Destructure variables from req.body
     const {
       positivePrompt,
       negativePrompt,
@@ -70,9 +71,15 @@ app.post('/generate-image', async (req, res) => {
       steps,
       CFGScale,
       seed,
-      lora // LoRA parameter
+      lora,
+      strength,
+      promptWeighting,
     } = req.body;
 
+    // Set clipSkip based on the selected model if needed
+    let clipSkipValue = 2; // Default value
+
+    // Proceed with generating images
     const images = await runware.requestImages({
       positivePrompt,
       negativePrompt,
@@ -80,15 +87,18 @@ app.post('/generate-image', async (req, res) => {
       height: parseInt(height),
       model,
       numberResults: parseInt(numberResults) || 1,
-      outputType: "URL",
+      outputType: 'URL',
       outputFormat,
       scheduler,
       steps: parseInt(steps),
       CFGScale: parseFloat(CFGScale),
-      seed: parseInt(seed),
+      seed: seed ? parseInt(seed) : undefined,
       checkNSFW: false,
       includeCost: false,
-      lora // Pass LoRA as received
+      lora, // Include LoRA
+      clipSkip: clipSkipValue,
+      strength: parseFloat(strength),
+      promptWeighting,
     });
 
     res.json(images);
@@ -137,7 +147,9 @@ app.post('/photomaker', async (req, res) => {
       CFGScale: parseFloat(CFGScale),
       outputFormat,
       includeCost,
-      numberResults: parseInt(numberResults)
+      numberResults: parseInt(numberResults),
+      checkNSFW: false,
+      clipSkip: 2
     });
 
     res.json(images);
@@ -156,6 +168,26 @@ app.get('/force-logout', (req, res) => {
       res.redirect('/');
     });
   });
+});
+
+// Route to enhance prompts using Runware API
+app.post('/enhance-prompt', async (req, res) => {
+  try {
+    const { prompt } = req.body;
+
+    if (!prompt || prompt.length < 4) {
+      return res.status(400).json({ error: 'Prompt is too short or missing' });
+    }
+
+    const enhancedPromptResponse = await runware.enhancePrompt({
+      prompt
+    });
+
+    res.json(enhancedPromptResponse);
+  } catch (error) {
+    console.error('Error enhancing prompt:', error);
+    res.status(500).json({ error: 'An error occurred while enhancing the prompt' });
+  }
 });
 
 // Start the server

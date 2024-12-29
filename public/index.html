@@ -51,7 +51,11 @@
                             <option value="640">640</option>
                             <option value="768">768</option>
                             <option value="896" selected>896</option>
-                            <option value="1024">1024</option>
+                            <option value="1024">1024</option>  
+                            <option value="1280">1280</option>
+                            <option value="1536">1536</option>
+                            <option value="1792">1792</option>
+                            <option value="2048">2048</option>
                         </select>
                     </div>
 
@@ -63,6 +67,10 @@
                             <option value="768">768</option>
                             <option value="896">896</option>
                             <option value="1024">1024</option>
+                            <option value="1280">1280</option>
+                            <option value="1536">1536</option>
+                            <option value="1792">1792</option>
+                            <option value="2048">2048</option>
                         </select>
                     </div>
 
@@ -72,7 +80,10 @@
                             <option value="runware:100@1" selected>FLUX v1</option>
                             <option value="civitai:277058@646523">SDXL</option>
                             <option value="civitai:47274@102222">MIX9</option>
-                            <option value="civitai:257749@290640">PONY6</option>
+                            <option value="civitai:257749@290640">Pony Diffusion V6</option>
+                            <option value="civitai:25694@143906">SD 1.5</option>
+                            <option value="civitai:25694@143906">EpicRealism</option>
+                            <option value="runware:101@1">FLUX.1DEV</option>
                         </select>
                     </div>
 
@@ -84,6 +95,7 @@
                             <option value="civitai:684810@766464">Flux CCTV</option>
                             <option value="civitai:124347@148870">SDXL Art Enhancer</option>
                             <option value="civitai:121290@131944">SDXL Vintage Illustration</option>
+                            <option value="civitai:631986@706528">XLABS FLUX REALISM LORA</option>
                         </select>
                     </div>
 
@@ -105,8 +117,14 @@
 
                     <div class="input-group">
                         <select id="scheduler">
-                            <option value="default">Default Scheduler</option>
+                            <option value="Default">Default Scheduler</option>
+                            <option value="Euler a">Euler a</option>
+                            <option value="Euler">Euler</option>
                             <option value="DPM++ 2M Karras">DPM++ 2M Karras</option>
+                            <option value="DPM++ SDE Karras">DPM++ SDE Karras</option>
+                            <option value="DPM++ 2M SDE">DPM++ 2M SDE</option>
+                            <option value="DPM++ 2M SDE Karras">DPM++ 2M SDE Karras</option>
+                            <option value="FlowMatchEulerDiscreteScheduler">FlowMatchEulerDiscreteScheduler</option>
                         </select>
                     </div>
 
@@ -116,6 +134,8 @@
                             <option value="4" selected>4 Steps, ideal for Flux</option>
                             <option value="20">20</option>
                             <option value="28">28 Steps, ideal for SDXL</option>
+                            <option value="30">30 Steps, ideal for MIX9</option>
+                            <option value="35">35 Steps, ideal for Pony Diffusion V6</option>
                             <option value="40">40</option>
                         </select>
                     </div>
@@ -123,7 +143,10 @@
                     <div class="input-group">
                         <select id="CFGScale">
                             <option value="" disabled>Guidance Scale (1-30)</option>
+                            <option value="3.5">3.5 Steps, ideal for SDXL</option>
                             <option value="5">5 Steps, ideal for SDXL</option>
+                            <option value="7.5">7.5 Steps</option>
+                            <option value="8.5">8.5 Steps</option>
                             <option value="10">10</option>
                             <option value="15">15</option>
                             <option value="20">20</option>
@@ -142,6 +165,11 @@
                             <input type="checkbox" id="enhanceToggle">
                             <span class="slider"></span>
                         </label>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="lora">LoRA Model:</label>
+                        <input type="text" id="lora" placeholder="Enter LoRA model (optional)">
                     </div>
                 </div>
 
