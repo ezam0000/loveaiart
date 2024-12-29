@@ -2,6 +2,55 @@ const statusElement = document.getElementById('status');
 const costElement = document.getElementById('cost');
 const resultElement = document.getElementById('result');
 
+// Array of random prompts
+const prompts = [
+    "A mysterious woman standing alone in a dimly lit alleyway, shadows enveloping her silhouette",
+    "An enchanting sorceress casting spells under a moonlit sky, surrounded by swirling mist",
+    "A seductive vampire with piercing eyes, draped in an elegant dark gown",
+    "A warrior princess wielding a glowing sword, her armor gleaming amidst a battlefield",
+    "An ethereal goddess emerging from the ocean waves, illuminated by the setting sun",
+    "A hauntingly beautiful ghost wandering through an abandoned mansion",
+    "A fierce female dragon rider soaring above fiery volcanoes",
+    "A cyberpunk femme fatale with neon tattoos, overlooking a futuristic cityscape",
+    "A glamorous diva on a vintage stage, singing under the spotlight",
+    "A mystical forest nymph surrounded by enchanted creatures and glowing flora",
+    "A powerful witch concocting potions in an ancient, cluttered apothecary",
+    "A sensual siren lounging on rocks by the sea, singing to the moon",
+    "A steampunk adventuress in goggles and leather attire, navigating through mechanical gears",
+    "A regal queen seated on a throne adorned with jewels, exuding authority and grace",
+    "A rebellious pirate captain with flowing hair, standing at the helm of her ship amidst a storm",
+    "A ballet dancer poised on a grand stage, illuminated by soft golden light",
+    "A mysterious fortune teller in a dimly lit tent, gazing into a glowing crystal ball",
+    "A superheroine soaring through the skies above a bustling metropolis",
+    "A woman wearing a masquerade mask at an extravagant ball, surrounded by opulence",
+    "A gothic princess in a dark, ornate gown, standing in a misty cemetery",
+    "A fearless explorer charting unknown territories in a dense jungle",
+    "A futuristic android woman with glowing circuitry, gazing into the distance",
+    "A mermaid with shimmering scales swimming gracefully in crystal-clear waters",
+    "A lone figure walking through a haunted forest, shadows taking eerie shapes",
+    "A woman enveloped in flames, representing rebirth and resilience",
+    "A celestial being amidst the stars, surrounded by cosmic phenomena",
+    "An ancient priestess performing rituals in a sacred temple",
+    "A mysterious femme fatale in a trench coat, under the glow of a flickering street lamp",
+    "A roller-skating girl in a vibrant, retro-themed arcade",
+    "A powerful enchantress summoning elemental forces amidst a thunderstorm",
+    "A vintage pin-up model posing with classic cars under bright studio lights",
+    "A seductive dancer performing in an elegant jazz club filled with smoke and dim lights",
+    "A silhouette of a woman standing at the edge of a cliff overlooking a stormy sea",
+    "A glamorous actress walking the red carpet amid flashing cameras",
+    "A mystical oracle surrounded by floating runes and arcane symbols",
+    "A dark fairy with intricate wings, dwelling in an enchanted forest",
+    "A fearless huntress drawing her bow in a moonlit clearing",
+    "A sultry singer leaning on a grand piano in an upscale lounge",
+    "A woman adorned in tribal attire, dancing around a roaring bonfire",
+    // Add more prompts as desired
+];
+
+// Function to select a random prompt from the array
+function getRandomPrompt() {
+    return prompts[Math.floor(Math.random() * prompts.length)];
+}
+
 // Function to update the status message
 function updateStatus(message) {
     console.log("Updating status: ", message);  // Log status update
@@ -50,9 +99,6 @@ document.getElementById('model').addEventListener('change', function () {
         document.getElementById('steps').value = '28';
         document.getElementById('CFGScale').value = '3.5';
         document.getElementById('scheduler').value = 'FlowMatchEulerDiscreteScheduler';
-
-        // Set default positive prompt
-        document.getElementById('positivePrompt').value = "grafitti text in the background saying 'Love Ai Art'";
 
         // Set default LoRA model
         const loraInput = document.getElementById('lora');
@@ -192,6 +238,11 @@ document.getElementById('imageForm').addEventListener('submit', async (e) => {
 
 // Trigger change event on page load to set defaults
 window.addEventListener('DOMContentLoaded', (event) => {
+    // Set a random prompt in the positivePrompt textarea
+    const positivePrompt = document.getElementById('positivePrompt');
+    positivePrompt.value = getRandomPrompt();
+
+    // Existing code to set model defaults
     const modelSelect = document.getElementById('model');
     modelSelect.dispatchEvent(new Event('change'));
 });
