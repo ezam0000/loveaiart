@@ -3,16 +3,25 @@ const express = require('express');
 const path = require('path');
 const http = require('http');
 const { RunwareServer } = require('@runware/sdk-js');
+const { v4: uuidv4 } = require('uuid');
 
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0,
+              v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Initialize RunwareServer with your API key
+// Initialize Runware with your API key
 const runware = new RunwareServer({ apiKey: process.env.RUNWARE_API_KEY });
 
 // Middleware for parsing JSON and serving static files
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static('public'));
 
 // Middleware to redirect www.loveaiart.com to loveaiart.com
@@ -107,11 +116,12 @@ app.post('/generate-image', async (req, res) => {
 // Route to generate images using PhotoMaker API
 app.post('/photomaker', async (req, res) => {
   try {
-    const requestBody = req.body[0]; // Access the first element of the array
+    const requestBody = req.body[0];
 
     const {
       positivePrompt,
       style,
+      model,
       strength,
       width,
       height,
@@ -129,12 +139,15 @@ app.post('/photomaker', async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
+    console.log('Received request:', requestBody);
+
     const images = await runware.requestImages({
       taskType: "photoMaker",
-      taskUUID: generateUUID(), // Generate a new UUID for the task
+      taskUUID: uuidv4(),
       inputImages,
       style,
-      strength: parseInt(strength),
+      model,
+      strength: parseFloat(strength),
       positivePrompt,
       height: parseInt(height),
       width: parseInt(width),
@@ -148,9 +161,16 @@ app.post('/photomaker', async (req, res) => {
       clipSkip: 2
     });
 
+    console.log('Received response from Runware API:', images);
+
     res.json(images);
   } catch (error) {
     console.error('Error:', error);
+
+    if (error.response && error.response.data) {
+      console.error('Runware API Error Response:', error.response.data);
+    }
+
     res.status(500).json({ error: 'An error occurred while generating the image' });
   }
 });
