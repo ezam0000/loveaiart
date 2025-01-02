@@ -81,6 +81,17 @@ const prompts = [
     "A sultry singer leans elegantly on a grand piano in an upscale lounge. She wears a glamorous evening gown and holds a vintage microphone. The lounge features sophisticated decor with plush seating and subtle lighting. Patrons sip cocktails while watching her perform. The pianist plays softly. The atmosphere is smooth and refined, capturing the essence of classic entertainment.",
 
     "A woman clad in traditional tribal attire dances energetically around a roaring bonfire under a starlit sky. Her clothing features vibrant patterns, beads, and feathers. Other members of the tribe play drums and instruments, accompanying her movements. Sparks from the fire rise into the night air. The scene is alive with rhythm and cultural richness, celebrating community and tradition",
+
+    "A hilarious scene of a squirrel wearing a tiny superhero cape, fighting off squirrels stealing his nuts.",
+    "A cute kitten attempting to catch a laser pointer on a spaceship's dashboard, with Earth visible through the window.",
+    "An endearing puppy with oversized ears and paws, trying to climb a stack of books in a cozy library.",
+    "A majestic lion with a playful expression, wearing a crown made of jungle vines and flowers.",
+    "A beautiful woman in a flowing dress made entirely of autumn leaves, dancing in a forest clearing.",
+    "An elegant ballerina performing en pointe atop a giant water lily floating on a serene lake.",
+    "A whimsical illustration of a panda eating bamboo while floating in space among the stars.",
+    "A charming fox wearing glasses and reading a newspaper in a quaint coffee shop.",
+    "A stunning portrait of a warrior princess with intricate armor, standing atop a mountain at sunrise.",
+    "A humorous image of a penguin in a tuxedo, sliding down a snow hill into a fancy gala event."
     // Add more prompts as desired
 ];
 
@@ -306,4 +317,13 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         console.error('Element with id "positivePrompt" not found.');
     }
+});
+
+// Get the new prompt button
+const newPromptButton = document.getElementById('newPromptButton');
+
+// Add click event listener to the button
+newPromptButton.addEventListener('click', () => {
+    const randomPrompt = getRandomPrompt();
+    positivePrompt.value = randomPrompt;
 });

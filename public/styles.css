@@ -351,4 +351,50 @@ nav a:hover {
     .input-group {
         width: 100%;
     }
+
+    /* Display the hamburger menu */
+    .hamburger-menu {
+        display: flex;
+    }
+
+    /* Hide the navigation menu by default */
+    nav ul {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    nav ul li {
+        margin: 0;
+    }
+
+    /* Show the menu when the checkbox is checked */
+    #menu-toggle:checked + .hamburger-menu + ul {
+        display: flex;
+    }
+
+    /* Ensure nav styles are mobile-friendly */
+    nav {
+        position: relative;
+    }
+}
+
+/* Hamburger Menu Styles */
+.hamburger-menu {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.hamburger-menu span {
+    height: 3px;
+    width: 25px;
+    background-color: white;
+    margin: 4px 0;
+    border-radius: 2px;
+}
+
+#menu-toggle {
+    display: none;
 }
