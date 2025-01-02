@@ -11,7 +11,6 @@ body {
 
 /* Ensure the content container can scroll properly */
 html, body {
-    height: 100%;  /* Ensure full height for scrolling */
     overflow: auto;  /* Allow scrolling if content overflows */
 }
 
@@ -278,7 +277,6 @@ form p a:hover, .container a:hover {
 /* Ensure Scrolling on Pages with Large Content */
 .container {
     overflow-y: auto; /* Allow scrolling for overflowing content */
-    max-height: 100vh; /* Ensure the container does not exceed viewport height */
 }
 .input-group textarea {
     width: 100%; /* Full width of the container */

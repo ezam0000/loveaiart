@@ -26,13 +26,13 @@
         </ul>
     </nav>
 
-    <div class="container">
+    <main class="container">
         <div class="form-container">
-            <h1>LoveAi Art</h1>
+            <h1>Good, fast and free image generator</h1>
             <form id="imageForm">
                 <!-- Basic Prompt Fields -->
                 <div class="input-group">
-                    <textarea id="positivePrompt" placeholder="Positive Prompt" required></textarea>
+                    <textarea id="positivePrompt" placeholder="Enter positive prompt..." required></textarea>
                 </div>
 
                 <div class="input-group">
@@ -158,7 +158,7 @@
                         <input type="number" id="seed" placeholder="Seed" value="">
                     </div>
 
-                    <div class="input-group" style="display: flex; align-items: center;">
+                    <div class="input-group" id="toggleEnhance" style="display: flex; align-items: center;">
                         <span style="flex: 1;">Enhance Prompt</span>
                         <label class="toggle-switch" style="flex-shrink: 0;">
                             <input type="checkbox" id="enhanceToggle">
@@ -195,7 +195,7 @@
             <div id="cost"></div>
             <div id="result"></div>
         </div>
-    </div>
+    </main>
 
     <script src="script.js"></script>
 </body>
