@@ -34,12 +34,12 @@
 
     <main class="container">
         <div class="form-container">
-            <h1>Good, fast and free image generator</h1>
+            <h1>Out of ideas? Get a random prompt!</h1>
             <form id="imageForm">
-                <!-- Basic Prompt Fields -->
-                <div class="input-group">
+                <!-- Positive Prompt Field with Random Prompt Button -->
+                <div class="input-group" id="prompt-container">
+                    <button type="button" id="newPromptButton" class="random-prompt-btn">Get New Random Prompt</button>
                     <textarea id="positivePrompt" placeholder="Enter positive prompt..." required></textarea>
-                    <button type="button" id="newPromptButton">Get New Random Prompt</button>
                 </div>
 
                 <div class="input-group">
@@ -47,7 +47,7 @@
                 </div>
 
                 <!-- Advanced Settings Toggle Button -->
-                <button type="button" id="toggleAdvancedSettings">Show Advanced Settings</button>
+                <button type="button" id="toggleAdvancedSettings">Advanced Settings</button>
 
                 <!-- Advanced Settings Section -->
                 <div id="advancedSettings" class="hidden">
@@ -176,12 +176,9 @@
 
                 <button type="submit">Generate</button>
                 
-                <!-- Terms of Service link below the button -->
+                <!-- Terms & Policy Links -->
                 <p><a href="tos.html">By Clicking "Generate" you are accepting our Terms of Service</a></p>
-                <p><a href="pp.html">By Clicking "Generate" you are accepting our Privacy</a></p>
-
-                
-                </div>
+                <p><a href="pp.html">By Clicking "Generate" you are accepting our Privacy Policy</a></p>
             </form>
         </div>
         <div class="output-container">
@@ -189,16 +186,14 @@
             <div id="cost"></div>
             <div id="result"></div>
         </div>
-        
-        
     </main>
 
+    <div style="text-align: left; margin-top: 20px;">
+        <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" 
+            data-name="bmc-button" data-slug="loveaiart" data-color="#ebebeb" data-emoji="☕" data-font="Cookie" 
+            data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#FFDD00">
+        </script>
+    </div>
     <script src="script.js"></script>
 </body>
-        <div style="text-align: left; margin-top: 20px;">
-            <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" 
-                data-name="bmc-button" data-slug="loveaiart" data-color="#ebebeb" data-emoji="☕" data-font="Cookie" 
-                data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#FFDD00">
-            </script>
-        </div>
 </html>

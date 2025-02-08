@@ -44,10 +44,10 @@ photoMakerForm.addEventListener('submit', async (e) => {
         return new Promise((resolve) => {
             const reader = new FileReader();
             reader.onloadend = function () {
-                inputImagesArray.push(reader.result); // Push base64 string to array
+                inputImagesArray.push(reader.result);
                 resolve();
             };
-            reader.readAsDataURL(image); // Read image as base64
+            reader.readAsDataURL(image);
         });
     });
 
@@ -59,7 +59,7 @@ photoMakerForm.addEventListener('submit', async (e) => {
                 inputImages: inputImagesArray,
                 style: style,
                 model: model,
-                strength: strength, // Use the valid strength value
+                strength: strength,
                 positivePrompt: positivePrompt,
                 height: height,
                 width: width,
@@ -86,7 +86,7 @@ photoMakerForm.addEventListener('submit', async (e) => {
             return response.json();
         })
         .then(images => {
-            console.log('Response from server:', images); // Add this line
+            console.log('Response from server:', images);
             displayResults(images);
         })
         .catch(error => {
@@ -96,7 +96,6 @@ photoMakerForm.addEventListener('submit', async (e) => {
         .finally(() => {
             // Hide loading indicator
             loadingElement.style.display = 'none';
-
             // Re-enable the submit button
             submitButton.disabled = false;
             submitButton.textContent = 'Generate Image';
@@ -105,10 +104,10 @@ photoMakerForm.addEventListener('submit', async (e) => {
 });
 
 function displayResults(images) {
-    resultElement.innerHTML = ''; // Clear previous results
+    resultElement.innerHTML = '';
     if (images && images.length > 0) {
         images.forEach(image => {
-            if (image.imageURL) { // Check if imageURL exists
+            if (image.imageURL) {
                 const imgElement = document.createElement('img');
                 imgElement.src = image.imageURL;
                 imgElement.alt = 'Generated Image';

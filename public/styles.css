@@ -1,400 +1,454 @@
-/* General Body Styling */
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background: linear-gradient(135deg, #1a1a1a, #2b2b2b);
-    color: #f0f0f0;
-    margin: 0;
-    padding: 20px;
-    scroll-behavior: smooth;
-    min-height: 100vh;  /* Ensure the body takes at least full height */
+/* ============================================
+   Global Variables & Resets
+   ============================================ */
+:root {
+  --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --body-bg: linear-gradient(135deg, #1a1a1a, #2b2b2b);
+  --text-color: #f0f0f0;
+  --container-bg: #222;
+  --form-bg-gradient: linear-gradient(135deg, #333, #444);
+  --input-bg: #444;
+  --input-hover-bg: #555;
+  --button-bg: linear-gradient(to right, #ff6f00, #9c27b0);
+  --button-hover-bg: linear-gradient(to right, #e65100, #7b1fa2);
+  --toggle-slider-bg: #666;
+  --toggle-checked-bg: #ff6f00;
+  --nav-bg: #333;
+  --nav-hover-bg: #555;
+  --heading-color: #ff6f00;
 }
 
-/* Ensure the content container can scroll properly */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
 html, body {
-    overflow: auto;  /* Allow scrolling if content overflows */
+  overflow: auto; /* Allow scrolling if content overflows */
 }
 
-/* Main Container Styling */
+body {
+  font-family: var(--font-stack);
+  background: var(--body-bg);
+  color: var(--text-color);
+  margin: 0;
+  padding: 20px;
+  scroll-behavior: smooth;
+  min-height: 100vh;
+}
+
+/* ============================================
+   Containers & Layout
+   ============================================ */
 .container {
-    background: #222;
-    border-radius: 16px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-    padding: 30px;
-    max-width: 800px;
-    width: 100%;
-    box-sizing: border-box;
+  background: var(--container-bg);
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  padding: 30px;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto; /* Center horizontally */
+  overflow-y: auto; /* Scrolling for large content */
 }
 
-/* Form and Output Container Styling */
-.form-container, .output-container {
-    flex: 1;
-    min-width: 300px;
-    background: #222;
-    border-radius: 16px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-    padding: 20px;
-    box-sizing: border-box;
-    width: 100%;
+.form-container,
+.output-container {
+  flex: 1;
+  min-width: 300px;
+  background: var(--container-bg);
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  width: 100%;
 }
 
-/* Heading (H1) Styling */
+/* ============================================
+   Typography & Form Elements
+   ============================================ */
 h1 {
-    margin-bottom: 20px;
-    color: #ff6f00;
-    text-align: center;
+  margin-bottom: 20px;
+  color: var(--heading-color);
+  text-align: center;
 }
 
-/* Form Styling */
 form {
-    background: linear-gradient(135deg, #333, #444);
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-    width: 100%;
-    box-sizing: border-box;
+  background: var(--form-bg-gradient);
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  width: 100%;
 }
 
-/* Inputs, Selects, Buttons, and Labels Styling */
-input, select, button, label {
-    width: 100%;
-    display: block;
-    margin-bottom: 15px;
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 8px;
-    border: none;
-    box-sizing: border-box;
-    background: #444;
-    color: #f0f0f0;
-    transition: background 0.3s, color 0.3s;
+input,
+select,
+button,
+label {
+  width: 100%;
+  display: block;
+  margin-bottom: 15px;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  background: var(--input-bg);
+  color: var(--text-color);
+  transition: background 0.3s, color 0.3s;
 }
 
 select {
-    appearance: none;
-    cursor: pointer;
+  appearance: none;
+  cursor: pointer;
 }
 
-/* Hover Effects for Inputs, Selects, and Buttons */
-input:hover, select:hover, button:hover {
-    background: #555;
-    color: #fff;
+input:hover,
+select:hover,
+button:hover {
+  background: var(--input-hover-bg);
+  color: white;
 }
 
-/* Button Specific Styling */
+/* -------- Button Specific Styles -------- */
 button {
-    background: linear-gradient(to right, #ff6f00, #9c27b0);
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
+  background: var(--button-bg);
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
-    background: linear-gradient(to right, #e65100, #7b1fa2);
-    transform: scale(1.03);
+  background: var(--button-hover-bg);
+  transform: scale(1.03);
 }
 
-/* Toggle Switch Container Styling */
+/* ============================================
+   Prompt Container
+   ============================================ */
+#prompt-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 200px !important; /* Force the container to be taller */
+}
+
+#prompt-container textarea {
+  height: 240px; /* Increase the textarea height from 120px to 240px */
+}
+
+#prompt-container button {
+  margin-top: 10px;
+  align-self: flex-end;
+}
+
+/* ------------------------------------------------------------------
+   Updated styling for the 'Get New Random Prompt' button (Green Theme)
+   using a more specific selector to override other button rules
+   ------------------------------------------------------------------ */
+#prompt-container button#newPromptButton {
+  background-color: #28a745 !important; /* Green background */
+  color: #ffffff !important;
+  border: none !important;
+  padding: 10px 15px !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  font-size: 16px !important;
+  transition: background 0.3s ease !important;
+}
+
+#prompt-container button#newPromptButton:hover {
+  background-color: #218838 !important; /* Darker green for hover effect */
+}
+
+/* ============================================
+   Toggle Switch Styles
+   ============================================ */
 #toggleEnhance {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
 }
 
-/* Toggle Switch Styling */
 .toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 24px;
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
 }
 
 .toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
 .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #666;
-    transition: .4s;
-    border-radius: 24px;
-    box-shadow: 0 0 1px #000;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--toggle-slider-bg);
+  transition: 0.4s;
+  border-radius: 24px;
+  box-shadow: 0 0 1px #000;
 }
 
 .slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 2px;
-    bottom: 2px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
 }
 
 input:checked + .slider {
-    background-color: #ff6f00;
+  background-color: var(--toggle-checked-bg);
 }
 
 input:checked + .slider:before {
-    transform: translateX(26px);
+  transform: translateX(26px);
 }
 
-/* Status and Cost Text Styling */
-#status, #cost {
-    margin-top: 10px;
-    font-weight: bold;
-    text-align: center;
+/* ============================================
+   Utility Text & Image Styles
+   ============================================ */
+#status,
+#cost {
+  margin-top: 10px;
+  font-weight: bold;
+  text-align: center;
 }
 
-/* Image Result Styling */
 #result img {
-    max-width: 100%;
-    height: auto;
-    margin-top: 10px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+  max-width: 100%;
+  height: auto;
+  margin: 10px auto 0;
+  display: block;
 }
 
-/* Dropdown Additional Styling */
-select {
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 8px;
-    background-color: #444;
-    margin-bottom: 15px;
-    cursor: pointer;
-    box-sizing: border-box;
-}
-
-/* Tooltip Styling */
-.input-group[data-tooltip]:hover::after,
-button[data-tooltip]:hover::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 110%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 5px;
-    white-space: nowrap;
-    z-index: 10;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
+/* ============================================
+   Tooltip Styling
+   ============================================ */
+.input-group[data-tooltip]::after,
+button[data-tooltip]::after {
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  white-space: nowrap;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .input-group[data-tooltip]:hover::after,
 button[data-tooltip]:hover::after {
-    opacity: 1;
-    pointer-events: auto;
+  content: attr(data-tooltip);
+  opacity: 1;
+  pointer-events: auto;
 }
 
-/* Advanced Settings Visibility */
+/* ============================================
+   Advanced & Hidden
+   ============================================ */
 .hidden {
-    display: none;
+  display: none;
 }
 
-/* Update button styling for the advanced settings toggle */
 #toggleAdvancedSettings {
-    background: #444;
-    color: #f0f0f0;
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s ease, color 0.3s ease;
+  background: var(--input-bg);
+  color: var(--text-color);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 #toggleAdvancedSettings:hover {
-    background: #555;
-    color: #fff;
+  background: var(--input-hover-bg);
+  color: white;
 }
 
-/* Media Queries for Responsiveness */
+/* ============================================
+   Responsive Media Queries
+   ============================================ */
 @media (max-width: 768px) {
-    body {
-        padding: 10px;
-    }
-
-    .container {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .form-container, .output-container {
-        min-width: 100%;
-    }
-
-    button {
-        font-size: 14px;
-        padding: 10px;
-    }
+  body {
+    padding: 10px;
+  }
+  .container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .form-container,
+  .output-container {
+    min-width: 100%;
+  }
+  button {
+    font-size: 14px;
+    padding: 10px;
+  }
 }
 
 @media (max-width: 480px) {
-    form {
-        padding: 15px;
-    }
-
-    input, select, button, label {
-        padding: 10px;
-        font-size: 14px;
-    }
-
-    h1 {
-        font-size: 24px;
-        margin-bottom: 15px;
-    }
-}
-
-/* Styling for the Terms of Service and Privacy Policy Links */
-form p a, .container a {
-    color: #ff6f00; /* Match the color with your theme */
-    text-decoration: none;
+  form {
+    padding: 15px;
+  }
+  input,
+  select,
+  button,
+  label {
+    padding: 10px;
     font-size: 14px;
-    transition: color 0.3s ease;
+  }
+  h1 {
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
 }
 
-form p a:hover, .container a:hover {
-    color: #e65100; /* Darker color on hover */
-    text-decoration: underline;
+/* ============================================
+   Terms & Policy Links
+   ============================================ */
+form p a,
+.container a {
+  color: var(--heading-color);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s ease;
 }
 
-/* Ensure Scrolling on Pages with Large Content */
-.container {
-    overflow-y: auto; /* Allow scrolling for overflowing content */
+form p a:hover,
+.container a:hover {
+  color: #e65100;
+  text-decoration: underline;
 }
+
+/* ============================================
+   Textarea Styling
+   ============================================ */
 .input-group textarea {
-    width: 100%; /* Full width of the container */
-    height: 120px; /* Height for multi-line input */
-    padding: 15px; /* More padding for better aesthetics */
-    font-size: 18px; /* Slightly larger font for better readability */
-    line-height: 1.6; /* Improved line spacing for clarity */
-    font-family: 'Arial', sans-serif; /* Use a clean, modern font */
-    background-color: #333; /* Dark background to match the design */
-    color: #f1f1f1; /* Light text for readability */
-    border: 1px solid #444; /* Darker border */
-    border-radius: 8px; /* Slightly larger border radius for smoother edges */
-    box-sizing: border-box; /* Include padding in total width */
-    resize: vertical; /* Allow vertical resizing */
+  width: 100%;
+  height: 120px;
+  padding: 15px;
+  font-size: 18px;
+  line-height: 1.6;
+  font-family: 'Arial', sans-serif;
+  background-color: #333;
+  color: #f1f1f1;
+  border: 1px solid #444;
+  border-radius: 8px;
+  resize: vertical;
 }
 
-/* Optional: Placeholder styling for better contrast */
 textarea::placeholder {
-    color: #888; /* Slightly muted color for placeholder text */
-    font-style: italic; /* Add a subtle italic style for the placeholder */
+  color: #888;
+  font-style: italic;
 }
 
-/* Focus state for textarea */
-.input-group textarea:focus {
-    border-color: #f1f1f1; /* Lighten the border on focus */
-    background-color: #444; /* Lighter background on focus */
-    outline: none; /* Remove default focus outline */
+/* Focus Styling for textarea */
+.input-group textarea:focus,
+textarea:focus {
+  border-color: #f1f1f1;
+  background-color: #444;
+  outline: none;
 }
 
-/* Add this to your styles.css */
+/* ============================================
+   Navigation Styles
+   ============================================ */
 nav {
-    background-color: #333; /* Dark background */
-    padding: 10px; /* Padding around the nav */
+  background-color: var(--nav-bg);
+  padding: 10px;
 }
 
 nav ul {
-    list-style-type: none; /* Remove bullet points */
-    margin: 0; /* Remove default margin */
-    padding: 0; /* Remove default padding */
-    display: flex; /* Use flexbox for horizontal layout */
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
 }
 
 nav li {
-    margin-right: 20px; /* Space between links */
+  margin-right: 20px;
 }
 
 nav a {
-    color: white; /* White text color */
-    text-decoration: none; /* Remove underline */
-    padding: 8px 16px; /* Padding for clickable area */
-    border-radius: 4px; /* Rounded corners */
-    transition: background-color 0.3s; /* Smooth transition for hover effect */
+  color: white;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
 }
 
 nav a:hover {
-    background-color: #555; /* Darker background on hover */
+  background-color: var(--nav-hover-bg);
 }
 
+/* Mobile Navigation */
 @media screen and (max-width: 600px) {
-    .container {
-        flex-direction: column;
-    }
-
-    .form-container, .output-container {
-        width: 100%;
-    }
-
-    nav ul {
-        flex-direction: column;
-    }
-
-    .input-group {
-        width: 100%;
-    }
-
-    /* Display the hamburger menu */
-    .hamburger-menu {
-        display: flex;
-    }
-
-    /* Hide the navigation menu by default */
-    nav ul {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-    }
-
-    nav ul li {
-        margin: 0;
-    }
-
-    /* Show the menu when the checkbox is checked */
-    #menu-toggle:checked + .hamburger-menu + ul {
-        display: flex;
-    }
-
-    /* Ensure nav styles are mobile-friendly */
-    nav {
-        position: relative;
-    }
+  .container {
+    flex-direction: column;
+  }
+  .form-container,
+  .output-container {
+    width: 100%;
+  }
+  nav ul {
+    flex-direction: column;
+    display: none;
+    width: 100%;
+  }
+  nav ul li {
+    margin: 0;
+  }
+  .input-group {
+    width: 100%;
+  }
+  .hamburger-menu {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 10px;
+  }
+  /* Show menu when checkbox is checked */
+  #menu-toggle:checked + .hamburger-menu + ul {
+    display: flex;
+  }
+  nav {
+    position: relative;
+  }
 }
 
 /* Hamburger Menu Styles */
 .hamburger-menu {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-    padding: 10px;
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  padding: 10px;
 }
 
 .hamburger-menu span {
-    height: 3px;
-    width: 25px;
-    background-color: white;
-    margin: 4px 0;
-    border-radius: 2px;
+  height: 3px;
+  width: 25px;
+  background-color: white;
+  margin: 4px 0;
+  border-radius: 2px;
 }
 
 #menu-toggle {
-    display: none;
+  display: none;
 }

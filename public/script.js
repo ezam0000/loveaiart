@@ -238,6 +238,8 @@ document.getElementById('imageForm').addEventListener('submit', async (e) => {
 
             if (enhancedData && enhancedData.data && enhancedData.data.length > 0) {
                 positivePrompt = enhancedData.data[0].text || positivePrompt;
+                // Persist the enhanced prompt in the textarea
+                document.getElementById('positivePrompt').value = positivePrompt;
                 updateStatus('Prompt enhanced, generating image...');
             } else {
                 updateStatus('No enhancement received, proceeding with original prompt.');
@@ -308,22 +310,32 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
 // Add this code to set a random prompt when the DOM content has loaded
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM fully loaded'); // Debugging statement
+    // Set a random prompt in the positivePrompt textarea
     const positivePrompt = document.getElementById('positivePrompt');
     if (positivePrompt) {
         const randomPrompt = getRandomPrompt();
         positivePrompt.value = randomPrompt;
-        console.log('Random prompt set:', randomPrompt); // Debugging statement
+        console.log('Random prompt set:', randomPrompt);
     } else {
         console.error('Element with id "positivePrompt" not found.');
     }
-});
 
-// Get the new prompt button
-const newPromptButton = document.getElementById('newPromptButton');
+    // Set model defaults if available
+    const modelSelect = document.getElementById('model');
+    if (modelSelect) {
+        modelSelect.dispatchEvent(new Event('change'));
+    }
 
-// Add click event listener to the button
-newPromptButton.addEventListener('click', () => {
-    const randomPrompt = getRandomPrompt();
-    positivePrompt.value = randomPrompt;
+    // Remove interfering class from the "Get New Random Prompt" button and add click event listener
+    const newPromptButton = document.getElementById('newPromptButton');
+    if (newPromptButton) {
+        newPromptButton.classList.remove('random-prompt-btn');
+        newPromptButton.addEventListener('click', () => {
+            const randomPrompt = getRandomPrompt();
+            positivePrompt.value = randomPrompt;
+            console.log('New prompt generated:', randomPrompt);
+        });
+    } else {
+        console.error('Element with id "newPromptButton" not found.');
+    }
 });
