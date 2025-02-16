@@ -16,16 +16,34 @@ photoMakerForm.addEventListener('submit', async (e) => {
     const inputImages = document.getElementById('inputImages').files;
     const positivePrompt = document.getElementById('positivePrompt').value;
     const style = document.getElementById('style').value;
-    const strength = 0.8; // Set strength to a valid default value
+
+    // Changed from const to let so that they can be overridden
+    let strength = 0.8; // Default strength for general workflow
     const outputFormat = 'JPG'; // Default format
-    const model = document.getElementById('model').value;
+    let model = document.getElementById('model').value;
     let width = parseInt(document.getElementById('width').value);
     let height = parseInt(document.getElementById('height').value);
     const scheduler = "default"; // Default scheduler
-    const steps = 20; // Default steps
+    let steps = 20; // Default steps
     const CFGScale = 7.0; // Default CFGScale
     const includeCost = false; // Default includeCost
-    const numberResults = 1; // Default to 1 result
+    let numberResults = 1; // Default to 1 result
+
+    // --- New: Retrieve workflow selection and override parameters if needed ---
+    const workflow = document.getElementById('workflow').value;
+    let negativePrompt = ""; // Initialize negativePrompt
+
+    if (workflow === 'avatar') {
+        // Override parameters for Avatar Generation workflow
+        width = 1024;
+        height = 1024;
+        steps = 30;
+        model = 'civitai:139562@344487';
+        strength = 0.8; // Use the default float value between 0 and 1 as required by the API
+        numberResults = 4;
+        negativePrompt = "nsfw";
+    }
+    // -------------------------------------------------------------------------
 
     // Adjust width and height based on selected model
     if (model === 'civitai:139562@344487') {
@@ -59,6 +77,7 @@ photoMakerForm.addEventListener('submit', async (e) => {
                 inputImages: inputImagesArray,
                 style: style,
                 model: model,
+                negativePrompt: negativePrompt,
                 strength: strength,
                 positivePrompt: positivePrompt,
                 height: height,
