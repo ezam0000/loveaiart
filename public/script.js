@@ -4,95 +4,46 @@ const resultElement = document.getElementById('result');
 
 // Array of random prompts
 const prompts = [
-    "A hyper-realistic depiction of a mysterious woman standing alone in a dimly lit alleyway. Shadows envelop her silhouette, with the faint glow of distant neon signs reflecting off wet cobblestones. She wears a vintage trench coat and a wide-brimmed hat that partially obscures her face, adding to her enigmatic presence. Wisps of fog curl around her feet, and the alley is framed by old brick buildings with fire escapes. The atmosphere is moody and cinematic, evoking a sense of intrigue and suspense.",
-
-    "An enchanting sorceress casting spells under a moonlit sky atop an ancient stone circle. She is surrounded by swirling mist that glows with magical energy. Her flowing robes are adorned with intricate silver embroidery, and a jeweled amulet hangs around her neck. She holds an ornate staff topped with a glowing crystal, from which tendrils of light emanate. Her eyes shine with ethereal light, and her long hair cascades over her shoulders. The night sky is filled with stars, and the full moon bathes the scene in a soft, luminescent glow.",
-
-    "A detailed portrayal of a seductive vampire with piercing eyes, draped in an elegant dark gown made of velvet and lace. She stands on the balcony of a gothic mansion, overlooking a mist-covered forest bathed in moonlight. Her skin is porcelain pale, contrasting with her crimson lips and dark attire. A delicate necklace with a ruby pendant rests at her throat. The architecture features ornate stone carvings and gargoyles, and ivy climbs up the walls. The mood is mysterious and alluring.",
-
-    "A warrior princess wielding a glowing sword, her armor gleaming amidst a battlefield at dawn. She stands atop a hill with a determined expression, her cape flowing in the wind. The armor is intricately crafted, featuring engravings of mythical creatures and symbols. The blade of her sword emits a radiant light, illuminating the surrounding area. Behind her, warriors engage in battle, and banners bearing her kingdom's emblem wave amidst the chaos. The sky is painted with the first light of day, casting a dramatic backdrop.",
-
-    "An ethereal goddess emerging gracefully from the ocean waves, illuminated by the setting sun. She is draped in a dress made of flowing, translucent materials that blend seamlessly with the water. Pearls and seashells adorn her hair, which floats around her like a halo. The warm hues of the sunset reflect off the water, creating a serene and radiant atmosphere. Dolphins leap in the background, and seagulls soar across the sky. The scene captures the harmony between the divine and nature.",
-
-    "A hauntingly beautiful ghost wandering through an abandoned, grand mansion. She wears a vintage Victorian-era dress that seems to fade into mist at the edges. Her expression is melancholic, and her eyes gaze longingly into the distance. The mansion's opulent details—marble columns, crystal chandeliers, and ornate staircases—are in a state of decay, with cobwebs and dust covering surfaces. Moonlight streams through cracked windows, casting eerie shadows. The atmosphere is filled with a sense of nostalgia and mystery.",
-
-    "A fierce female dragon rider soaring above erupting volcanoes. She sits confidently atop a magnificent dragon whose scales are iridescent shades of red and gold. The rider wears armor crafted from dragon scales, with intricate designs and a helmet adorned with horns. Lava and ash spew from the volcanoes below, while plumes of smoke rise into the fiery sky. The heat distorts the air, and embers float around them. The scene is dynamic and intense, highlighting the bond between rider and dragon.",
-
-    "A cyberpunk femme fatale with neon tattoos, standing atop a skyscraper overlooking a futuristic cityscape at night. She wears a sleek, high-tech outfit with luminescent accents, and her short hair is styled sharply. The neon tattoos covering her arms glow in patterns that synchronize with the city's lights. Below, holographic advertisements and flying vehicles fill the bustling streets. She gazes out over the city with a confident smirk, embodying the essence of a high-tech, cybernetic world.",
-
-    "A glamorous diva performing on a grand, vintage stage under a brilliant spotlight. She wears an exquisite evening gown adorned with sequins and feathers, and a classic microphone stands before her. The stage is framed by luxurious red velvet curtains and Art Deco designs. The orchestra is visible in the background, and the audience watches in awe from the dimly lit auditorium. Her expression is passionate, and her pose elegant, capturing the golden age of performance arts.",
-
-    "A mystical forest nymph surrounded by enchanted creatures and glowing flora in a dense, ancient woodland. She is seated on a throne made from intertwined tree roots and vines. Her attire is crafted from leaves, petals, and delicate spider silk. Fireflies and ethereal beings like fairies and sprites gather around her. Bioluminescent plants cast a soft illumination, and the air is filled with floating pollen that sparkles. Sunlight filters through the canopy, creating dappled patterns on the forest floor. The scene exudes magic and serenity.",
-
-    "A powerful witch carefully concocting potions in an ancient, cluttered apothecary filled with shelves of mysterious ingredients and dusty tomes. She wears a flowing dark cloak with silver accents and a wide-brimmed hat adorned with feathers and trinkets. Her eyes focus intently on a bubbling cauldron emitting colorful vapors. The room is dimly lit by candles and lanterns, casting flickering shadows. Herbs hang from the ceiling, and enchanted artifacts are scattered around. The atmosphere is mystical and rich with detail.",
-
-    "A sensual siren lounging gracefully on rugged rocks by the sea, her tail shimmering with iridescent scales. She gazes up at the full moon, singing a haunting melody that ripples across the calm waters. Her long hair cascades over her shoulders like waves, adorned with seashells and pearls. The ocean reflects the moonlight, and gentle waves lap at the rocks. The sky is studded with stars, and the atmosphere is both enchanting and tranquil.",
-
-    "A steampunk adventuress dressed in intricately designed leather attire, complete with brass buckles and gears. She wears goggles with tinted lenses atop her head and a utility belt with various gadgets. She is navigating through a colossal clockwork mechanism, with massive gears and cogs surrounding her. Steam and sparks emanate from the machinery, and shafts of light filter through the metal framework. Her expression is determined as she consults a complex map. The scene blends industrial elements with Victorian aesthetics.",
-
-    "A regal queen seated upon an ornate throne embellished with precious gems and intricate carvings. She wears a magnificent crown and elegant royal robes made of luxurious fabrics embroidered with gold thread. Her posture is upright and poised, exuding authority and grace. The throne room features grand pillars, stained glass windows, and rich tapestries depicting historical events. Courtiers stand respectfully at a distance. The lighting highlights her as the focal point, emphasizing her prominence.",
-
-    "A rebellious pirate captain with windswept hair stands firmly at the helm of her ship amidst a raging storm. She wears a tricorne hat and a long coat with ornate epaulettes. Rain pours down, and lightning illuminates the turbulent sea. The ship's sails billow violently, and crew members scramble on deck. She grips the ship's wheel with determination, her eyes fixed ahead. The atmosphere is intense, conveying adventure and defiance against the elements.",
-
-    "A graceful ballet dancer poised in an elegant arabesque on a grand stage. She wears a delicate tutu embellished with glittering sequins and feathers. Soft golden light bathes the stage, casting a warm glow. The backdrop features a painted scene of a moonlit garden. Her expression is serene, and her movements convey fluidity and control. The audience is captivated in the shadows, and the atmosphere is one of beauty and artistry.",
-
-    "A mysterious fortune teller seated at a small, ornate table within a dimly lit tent draped with rich fabrics and tapestries. She wears exotic clothing adorned with jewelry, including bangles and necklaces that jingle softly. Her eyes are intense as she gazes into a glowing crystal ball that emits a soft, ethereal light. Candles flicker around her, and tarot cards are spread out on the table. The air is filled with wisps of incense smoke, creating an atmosphere of mystique and intrigue.",
-
-    "A dynamic illustration of a superheroine soaring through the skies above a bustling metropolis at sunset. She wears a sleek costume featuring her emblem and a flowing cape. Skyscrapers below reflect the warm hues of the setting sun, and city lights begin to twinkle. Her pose is confident, with one arm extended forward. Clouds trail behind her, and the wind causes her hair and cape to billow dramatically. The scene captures a sense of hope and guardianship.",
-
-    "A woman elegantly attired in a lavish gown stands amidst an extravagant ballroom adorned with chandeliers and gilded decor. She wears an ornate masquerade mask embellished with feathers and jewels. Guests in similarly elaborate attire mingle and dance around her. The marble floors reflect the shimmering lights, and live musicians play classical music. Her posture is poised, and she holds a decorative fan. The atmosphere exudes luxury and mystery.",
-
-    "A gothic princess dressed in a dark, intricately designed gown with lace and corset details stands in a misty cemetery at twilight. She holds a black parasol adorned with lace. Gravestones and ancient statues surround her, partially obscured by swirling mist. Her expression is contemplative, and a faint smile plays on her lips. The setting sun casts a purple and blue hue across the scene. The atmosphere is both haunting and romantic.",
-
-    "A fearless explorer navigating through a dense jungle filled with towering trees and exotic flora. She wears rugged attire suitable for adventure, with a wide-brimmed hat and a compass in hand. Beams of sunlight penetrate the canopy, illuminating her path. In the background, ancient ruins partially covered in vines hint at lost civilizations. Her expression is determined as she studies a map. The scene evokes a sense of discovery and exploration.",
-
-    "A futuristic android woman standing atop a high-tech platform, gazing into a sprawling cityscape of a future world. Her synthetic skin has transparent sections revealing glowing circuitry and mechanical components. Her eyes emit a soft light, and her expression is one of contemplation. She wears sleek attire integrated with advanced technology. The background features towering buildings with holographic advertisements and flying vehicles. The scene blends human elements with advanced robotics.",
-
-    "A mermaid with iridescent scales swimming gracefully through crystal-clear tropical waters. Sunlight filters down, creating dappled patterns on the ocean floor. Colorful coral reefs and schools of exotic fish surround her. Her tail moves fluidly, and her long hair floats weightlessly. She reaches out to interact with sea creatures, embodying harmony with the marine environment. The atmosphere is serene and vibrant with color.",
-
-    "A lone figure cloaked in a dark hooded garment walks cautiously through a haunted forest at night. The trees are gnarled and twisted, with branches forming eerie shapes. Mist clings to the ground, and shadows seem to move with a life of their own. Eyes appear to peer from the darkness, and whispers carry on the wind. The moon provides minimal illumination, adding to the ominous atmosphere. The scene is filled with tension and suspense.",
-
-    "A powerful image of a woman standing amidst swirling flames that do not harm her. She emerges from the fire with an expression of strength and serenity. Her attire is transformed into ethereal garments made of embers and sparks. The flames take on shapes resembling phoenix wings. The background is dark, making the fire's glow more intense. The scene symbolizes rebirth, resilience, and transformation.",
-
-    "A celestial being floating gracefully amidst a backdrop of stars, nebulas, and galaxies. Her form is ethereal, composed of stardust and light. She reaches out to touch swirling cosmic clouds of color. Comets and stellar objects orbit around her. Her expression is serene, and her eyes reflect the depths of the universe. The scene is vast and awe-inspiring, capturing the majesty of the cosmos.",
-
-    "An ancient priestess standing within a sacred temple adorned with hieroglyphics and grand pillars. She wears ceremonial robes and intricate jewelry. Golden light from torches illuminates the space. She performs a ritual, holding a ceremonial staff and reciting incantations. Sacred artifacts and offerings are arranged around her. The atmosphere is reverent and mystical, with an air of ancient wisdom.",
-
-    "A mysterious femme fatale stands under the flickering light of a street lamp on a deserted street. She wears a stylish trench coat and a fedora hat that casts a shadow over her eyes. The pavement glistens from recent rain, reflecting the dim lights. Smoke from a nearby grate drifts past. Her gaze is enigmatic, and she holds a subtle smile. The scene exudes film noir aesthetics and intrigue.",
-
-    "A lively scene of a girl roller-skating through a vibrant, retro-themed arcade filled with neon lights and classic game machines. She wears colorful 80s attire with leg warmers and headphones. The arcade is bustling with activity, and the sounds of games and laughter fill the air. Reflections of light glimmer off the polished floor. The mood is energetic and nostalgic, celebrating youthful fun.",
-
-    "A powerful enchantress stands atop a cliff during a raging thunderstorm, summoning elemental forces. Lightning bolts streak across the sky, and she manipulates them with her raised hands. Her robes billow dramatically, and her eyes glow with energy. The ocean below churns with massive waves. The scene is dynamic and intense, showcasing the raw power of nature and magic intertwined.",
-
-    "A vintage pin-up model poses confidently next to a polished classic car from the 1950s. She wears period-appropriate attire with polka dots and high heels. The studio is lit brightly, and the backdrop features stylized graphics. Her pose is playful and glamorous, evoking the charm of mid-20th-century advertisements. The scene is colorful and crisp, capturing a moment of timeless style.",
-
-    "A seductive dancer performs on a small stage in an elegant jazz club. She wears a shimmering dress with fringe that moves as she dances. The club is filled with a haze of smoke, and patrons sit at small round tables with candlelight. Musicians in the background play smooth jazz. The lighting is low and atmospheric, with spotlights highlighting the dancer's movements. The mood is intimate and sophisticated.",
-
-    "A dramatic image of a woman silhouetted against the backdrop of a stormy sea. She stands at the edge of a rugged cliff, her dress and hair blowing in the fierce wind. Dark clouds gather overhead, and waves crash against the rocks below. The scene is visually striking, conveying emotions of strength and contemplation amidst nature's fury.",
-
-    "A glamorous actress makes a grand entrance on the red carpet, surrounded by a flurry of flashing cameras and admiring fans. She wears an exquisite designer gown that sparkles under the bright lights. Photographers call out her name, and she smiles gracefully. The backdrop features event logos and banners. The atmosphere is electric, capturing the excitement of a star-studded event.",
-
-    "A mystical oracle sits in meditation within a circular chamber. She is surrounded by floating runes and arcane symbols that glow softly. She wears robes adorned with symbolic patterns, and her eyes are closed in deep concentration. The chamber's walls are inscribed with ancient texts. The air shimmers with energy. The scene evokes mystery and the pursuit of hidden knowledge.",
-
-    "A dark fairy with elaborate, translucent wings stands amidst an enchanted forest at twilight. Her attire blends with the natural elements, featuring leaves and dark feathers. She holds a small, glowing orb. The forest is dense with unusual plants and glowing fungi. Fireflies drift around her. The atmosphere is both magical and slightly eerie, highlighting the duality of beauty and darkness.",
-
-    "A fearless huntress stands poised in a moonlit forest clearing, drawing her bow with precision. She wears practical garb with elements of leather and fur. Her gaze is focused, and her muscles are tense, ready to release the arrow. The surrounding trees cast shadows, and the moonlight creates a silver sheen on the landscape. The scene exudes tension and skill.",
-
-    "A sultry singer leans elegantly on a grand piano in an upscale lounge. She wears a glamorous evening gown and holds a vintage microphone. The lounge features sophisticated decor with plush seating and subtle lighting. Patrons sip cocktails while watching her perform. The pianist plays softly. The atmosphere is smooth and refined, capturing the essence of classic entertainment.",
-
-    "A woman clad in traditional tribal attire dances energetically around a roaring bonfire under a starlit sky. Her clothing features vibrant patterns, beads, and feathers. Other members of the tribe play drums and instruments, accompanying her movements. Sparks from the fire rise into the night air. The scene is alive with rhythm and cultural richness, celebrating community and tradition",
-
-    "A hilarious scene of a squirrel wearing a tiny superhero cape, fighting off squirrels stealing his nuts.",
-    "A cute kitten attempting to catch a laser pointer on a spaceship's dashboard, with Earth visible through the window.",
-    "An endearing puppy with oversized ears and paws, trying to climb a stack of books in a cozy library.",
-    "A majestic lion with a playful expression, wearing a crown made of jungle vines and flowers.",
-    "A beautiful woman in a flowing dress made entirely of autumn leaves, dancing in a forest clearing.",
-    "An elegant ballerina performing en pointe atop a giant water lily floating on a serene lake.",
-    "A whimsical illustration of a panda eating bamboo while floating in space among the stars.",
-    "A charming fox wearing glasses and reading a newspaper in a quaint coffee shop.",
-    "A stunning portrait of a warrior princess with intricate armor, standing atop a mountain at sunrise.",
-    "A humorous image of a penguin in a tuxedo, sliding down a snow hill into a fancy gala event."
-    // Add more prompts as desired
+    "In a close-up shot inside a messy artist's studio, a slightly unhinged-looking guy in his late 30s, with wild hair and paint splattered all over his face and shirt, holds up a piece of paper proudly. He's grinning like he's just solved a life mystery, showing off his 'masterpiece' with pure, chaotic joy. The paper reads: 'Since SD 3.5 Large cannot draw me, I drew myself using Flux!' The self-portrait is a stick figure that looks like a child's scribble, but the man's expression says he genuinely believes it's a masterpiece. Behind him, paint tubes and half-finished canvases are scattered everywhere, adding to the creative madness of the scene",
+    
+    "In a wide shot of a night club, a man dressed as the grumpy character resembling SpongeBob is holding a balloon. Above him, a banner reads: \"THIS IS FINE. EVERYTHING IS FINE.\" People are drinking happily while he stands there, clearly not having it",
+    
+    "In a full-body shot at a comic book convention, a lanky guy dressed as a very homemade version of Spider-Man (think duct tape and sweatpants) stands proudly in front of a booth. He's holding a sign that reads: 'I May Not Be the Real Spiderman, but I Have Pizza Rolls!' His expression is one of pure determination, as if he's convinced this will somehow save the city. Other cosplayers in the background, dressed much more professionally, give him a mix of pity and admiration. The scene is filled with comic book posters, action figures, and a crowd of excited fans, but DIY Spider-Man is the real star of this hilarious moment",
+    
+    "A medium shot of an unusual garden sculpture of a 'Grass Man,' a human-like figure entirely made from thick green grass, moss, and vines, positioned in a quirky, lush setting. The Grass Man has an expression of intense concentration, his arms raised as he holds a stone toilet. From his grass-covered backside, water flows down like a waterfall, filling a small pool below. The scene is unexpectedly serene, despite the comical premise, as the water cascades down from his body into the pool, creating the image of a natural water source feeding the landscape. Palm leaves and bushes surround the sculpture, and the vibrant green plants covering his body give the impression that this figure has sprouted directly from the earth itself. Graffiti on a nearby tree reads \"Nature Calls\" in bright, playful letters, adding an extra layer of humor to the already absurd scene. The waterfall's gentle flow adds to the overall peaceful vibe, but the Grass Man's bathroom situation is the real highlight, mixing tranquility with pure absurdity in a landscape that seems to embrace the ridiculous",
+    
+    "A medium shot of two young women standing outdoors at a protest, holding signs advocating for climate action. Both women, likely of Caucasian descent, are dressed warmly for cold weather, wearing winter hats and gloves. The woman on the left is holding a cardboard sign that reads 'FTNA' in bold black and red letters, with smaller text beneath mentioning 'BIG BOOBS'. She is smiling slightly as she looks at the camera. The woman on the right holds a white sign with blue and green letters that reads 'FREE THE NIPPLE AGAIN' and includes a red circle with a slash through 'BRA,' referring to opposition to the Keystone XL pipeline. She is also smiling, standing close to her friend, and wearing red gloves, a blue headband, and a jacket. Behind them, other protestors are visible, some carrying signs, banners, or flags. A large flag with an image of the Earth is prominently seen to the right. The background includes a fence and some buildings, suggesting that the protest is taking place near a governmental or important public building. The atmosphere appears peaceful but determined, with people gathered in support of climate justice and renewable energy solutions",
+    
+    // Additional 15 prompts based on realistic output examples:
+    "In a bustling street market at dusk, a vendor stands behind a stall piled with colorful fruits and vegetables. His weathered face shows years of experience as he carefully arranges his produce, while passersby in casual attire stroll by, engaging in friendly chatter. The warm glow of street lamps and the vibrant display of goods create a lively and authentic urban scene",
+    
+    "Inside a quaint, cluttered home workshop, a middle-aged craftsman meticulously repairs an old clock. Tools are scattered across a wooden table, and shafts of soft afternoon light illuminate the intricate gears and delicate hands of the timepiece. His calm, focused expression tells a story of dedication and passion for his craft",
+    
+    "At a busy downtown café, a young woman with a confident smile sits by the window, typing rapidly on her laptop. The aroma of fresh coffee fills the air as other patrons engage in quiet conversation. The urban backdrop, with its mix of modern glass buildings and vintage storefronts, lends an energetic yet relaxed vibe to the scene",
+    
+    "In a serene public park during early autumn, an elderly man in a cozy sweater sits on a worn bench feeding pigeons. Fallen leaves in hues of amber and red create a natural carpet on the ground, while a gentle breeze causes them to swirl around. His face, lined with age and wisdom, reflects quiet contentment amid nature's subtle beauty",
+    
+    "At a vibrant outdoor music festival, a group of friends is captured mid-celebration. The scene is filled with dynamic lighting, a diverse crowd, and a stage where an energetic band plays. Laughter, movement, and the pulse of music create an immersive atmosphere that invites the viewer to join the festivity",
+    
+    "Inside a modern art gallery, a visitor with a contemplative gaze stands before a large abstract painting. The minimalist design of the space and the bold, contrasting colors of the artwork evoke a sense of introspection and appreciation for creative expression. The soft echo of footsteps and whispered musings add to the ambiance of refined culture",
+    
+    "In a suburban backyard at sunset, a family gathers for an impromptu barbecue. The warm hues of the fading light enhance the smile on each face as they enjoy simple pleasures. The scene is casual and heartfelt, with children playing on the grass and adults engaged in lively conversation",
+    
+    "On a rainy city day, a young man in a stylish trench coat waits at a bus stop. His eyes reflect the glistening reflections of neon signs and wet pavement, as droplets fall softly around him. The urban scene exudes a sense of quiet introspection amid the damp chill of a storm",
+    
+    "In a cozy library filled with tall bookshelves, a student is deeply absorbed in reading an ancient manuscript. Soft lamplight illuminates the pages, casting gentle shadows against the rows of worn books. The quiet rustling of pages and the smell of old paper create an inviting atmosphere of academic pursuit",
+    
+    "Amid the rustic charm of a countryside farmhouse, a chef is busy preparing a meal in a sunlit kitchen. Fresh produce from a nearby garden sits on the counter while the aroma of baked bread and simmering stew fills the air. The scene exudes warmth, tradition, and the joy of home cooking",
+    
+    "At a lively sports event, an enthusiastic fan clad in team colors cheers from the stands. The excitement is palpable as the crowd roars and banners wave. The moment captures pure passion and communal energy, emblematic of the deep connection between sports and its supporters",
+    
+    "Within a sleek, modern office environment, a duo of startup founders is engaged in a spirited discussion over innovative ideas. Their animated expressions and dynamic gestures highlight the creative energy and ambition that drive entrepreneurial success in today's competitive business world",
+    
+    "During a peaceful morning in a local farmer's market, an elderly woman exchanges a warm smile with a young vendor. The gentle banter and the abundant display of fresh, seasonal produce create a scene that is both timeless and full of community spirit",
+    
+    "At an intimate live jazz club, a saxophonist passionately performs on stage under soft spotlighting. The intimate ambiance, filled with the soulful notes of the instrument and the attentive faces of the audience, evokes the rich history of jazz and the deep emotional connection it fosters",
+    
+    "On a busy urban sidewalk, a street performer captivates an audience with his skillful magic tricks. Crowds gather around, their faces lighting up in astonishment as he performs sleight-of-hand illusions against the backdrop of the city's architectural beauty"
 ];
 
 // Function to select a random prompt from the array
@@ -155,10 +106,10 @@ document.getElementById('model').addEventListener('change', function () {
         document.getElementById('CFGScale').value = '3.5';
         document.getElementById('scheduler').value = 'FlowMatchEulerDiscreteScheduler';
 
-        // Set default LoRA model
-        if (loraInput) {
-            loraInput.value = 'civitai:631986@706528'; // XLABS FLUX REALISM LORA
-        }
+        // Removed default LoRA assignment for FLUX.1DEV so that default remains "No LoRa"
+        // if (loraInput) {
+        //     loraInput.value = 'civitai:631986@706528'; // XLABS FLUX REALISM LORA
+        // }
     } else if (selectedModel === 'runware:100@1') {
         document.getElementById('width').value = '896';
         document.getElementById('height').value = '512';
