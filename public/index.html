@@ -27,6 +27,7 @@
         <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="photomaker.html">PhotoMaker</a></li>
+            <li><a href="avatar.html">Avatar Generation</a></li>
             <li><a href="tos.html">Terms</a></li>
             <li><a href="pp.html">Privacy</a></li>
         </ul>
@@ -94,7 +95,7 @@
                     </div>
 
                     <div class="input-group">
-                        <select id="lora">
+                        <select id="lora" required>
                             <option value="" disabled>Select LoRA Configuration</option>
                             <option value="">No LoRa</option>
                             <option value="civitai:631986@706528">XLABS FLUX REALISM LORA</option>
@@ -102,7 +103,9 @@
                             <option value="civitai:684810@766464">Flux CCTV</option>
                             <option value="civitai:124347@148870">SDXL Art Enhancer</option>
                             <option value="civitai:121290@131944">SDXL Vintage Illustration</option>
-                            <option value="civitai:652699@993999" selected>Amateur Photography</option>
+                            <option value="civitai:652699@993999">Amateur Photography</option>
+                            <option value="civitai:689318@771472">Pixel Art Style</option>
+                            <option value="urn:air:flux1:lora:civitai:1270654@1433370">Flux1 LoRA</option>
                         </select>
                     </div>
 
@@ -114,8 +117,16 @@
                             <option value="civitai:684810@766464">Flux CCTV</option>
                             <option value="civitai:124347@148870">SDXL Art Enhancer</option>
                             <option value="civitai:121290@131944">SDXL Vintage Illustration</option>
+                            <option value="civitai:652699@993999">Amateur Photography</option>
                             <option value="civitai:689318@771472">Pixel Art Style</option>
+                            <option value="civitai:1270654@1433370">Flux1 LoRA</option>
+                            <option value="custom">Other (Enter Custom Air Identifier)</option>
                         </select>
+                    </div>
+
+                    <!-- Custom LoRA 2 input (hidden by default) -->
+                    <div class="input-group" id="customLora2Container" style="display: none;">
+                        <input type="text" id="customLora2" placeholder="Enter custom air identifier">
                     </div>
 
                     <div class="input-group">
@@ -208,5 +219,16 @@
         </script>
     </div>
     <script src="script.js"></script>
+    <script>
+        // Toggle the custom input based on the lora2 select value
+        document.getElementById('lora2').addEventListener('change', function() {
+            var customContainer = document.getElementById('customLora2Container');
+            if (this.value === 'custom') {
+                customContainer.style.display = 'block';
+            } else {
+                customContainer.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,18 @@
+[
+  {
+    "taskType": "modelUpload",
+    "taskUUID": "b92ea202-349f-4560-adae-abb55a8146ee",
+    "category": "lora",
+    "architecture": "flux1d", 
+    "format": "safetensors",
+    "air": "civitai:1270654@1433370",
+    "uniqueIdentifier": "9137913091830981038109383123",
+    "name": "9827974433",
+    "version": "1.0",
+    "downloadURL": "https://storage.googleapis.com/loraez/9827974433_epoch_5.safetensors",
+    "defaultWeight": 1.0,
+    "private": true,
+    "shortDescription": "A custom LoRA model ez.",
+    "comment": "Uploaded via API using my custom LoRA model."
+  }
+] 

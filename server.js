@@ -4,6 +4,7 @@ const path = require('path');
 const http = require('http');
 const { RunwareServer } = require('@runware/sdk-js');
 const { v4: uuidv4 } = require('uuid');
+const axios = require('axios');
 
 function generateUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -139,7 +140,7 @@ app.post('/photomaker', async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    console.log('Received request:', requestBody);
+    console.log('Received photomaker request:', requestBody);
 
     const images = await runware.requestImages({
       taskType: "photoMaker",
@@ -165,12 +166,10 @@ app.post('/photomaker', async (req, res) => {
 
     res.json(images);
   } catch (error) {
-    console.error('Error:', error);
-
+    console.error('Error in /photomaker:', error);
     if (error.response && error.response.data) {
       console.error('Runware API Error Response:', error.response.data);
     }
-
     res.status(500).json({ error: 'An error occurred while generating the image' });
   }
 });
@@ -203,6 +202,37 @@ app.post('/enhance-prompt', async (req, res) => {
   } catch (error) {
     console.error('Error enhancing prompt:', error);
     res.status(500).json({ error: 'An error occurred while enhancing the prompt' });
+  }
+});
+
+// Route to generate avatars using Runware PhotoMaker API
+app.post('/generate-avatar', async (req, res) => {
+  try {
+    // Extract task payload from the request body (handle array payloads)
+    const task = Array.isArray(req.body) ? req.body[0] : req.body;
+    console.log("Received avatar generation request:", task);
+
+    // POST the task directly to the Runware PhotoMaker endpoint,
+    // including configuration to handle large payloads and a longer timeout.
+    const response = await axios.post('https://api.runware.ai/photomaker', task, {
+      headers: {
+        'Authorization': `Bearer ${process.env.RUNWARE_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      maxContentLength: Infinity,  // Allow large response content
+      maxBodyLength: Infinity,     // Allow large request body
+      timeout: 60000               // Increase timeout to 60 seconds
+    });
+    const images = response.data;
+
+    console.log("Avatar generation - received response from Runware API:", images);
+    res.json(images);
+  } catch (error) {
+    console.error('Error in /generate-avatar:', error.message);
+    if (error.response && error.response.data) {
+      console.error('Runware API Error Response:', error.response.data);
+    }
+    res.status(500).json({ error: 'An error occurred while generating the avatar' });
   }
 });
 
