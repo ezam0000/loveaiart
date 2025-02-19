@@ -96,20 +96,20 @@ document.getElementById('model').addEventListener('change', function () {
 
     // Clear the LoRA input by default
     if (loraInput) {
-        loraInput.value = ''; // Turn off LoRA for non-compatible models
+        loraInput.value = ''; // Clear previously set value
     }
 
-    if (selectedModel === 'runware:101@1') { // FLUX.1DEV model
+    if (selectedModel === 'runware:101@1') { // FLUX.1DEV model defaults
         document.getElementById('width').value = '1024';
         document.getElementById('height').value = '1024';
         document.getElementById('steps').value = '28';
         document.getElementById('CFGScale').value = '3.5';
         document.getElementById('scheduler').value = 'FlowMatchEulerDiscreteScheduler';
-
-        // Removed default LoRA assignment for FLUX.1DEV so that default remains "No LoRa"
-        // if (loraInput) {
-        //     loraInput.value = 'civitai:631986@706528'; // XLABS FLUX REALISM LORA
-        // }
+        if (loraInput) {
+            loraInput.value = 'civitai:652699@993999'; // Set default LoRA as per new default settings
+        }
+        // Clear negative prompt as it is not used for flux models
+        document.getElementById('negativePrompt').value = "";
     } else if (selectedModel === 'runware:100@1') {
         document.getElementById('width').value = '896';
         document.getElementById('height').value = '512';
@@ -202,11 +202,23 @@ document.getElementById('imageForm').addEventListener('submit', async (e) => {
     }
 
     const loraInput = document.getElementById('lora').value.trim();
-    const loraArray = loraInput ? [{ model: loraInput, weight: 0.8 }] : [];
+    const loraArray = loraInput ? [{ model: loraInput, weight: 1 }] : [];
+    
+    // New: Retrieve the second LoRA configuration if selected
+    const loraInput2 = document.getElementById('lora2').value.trim();
+    if (loraInput2) {
+        loraArray.push({ model: loraInput2, weight: 1 });
+    }
+    
+    let negativePromptValue = document.getElementById('negativePrompt').value;
+    if (document.getElementById('model').value === 'runware:101@1') {
+        // Ensure negative prompt is empty for flux models regardless of any manual input
+        negativePromptValue = "";
+    }
 
     const formData = {
         positivePrompt,
-        negativePrompt: document.getElementById('negativePrompt').value,
+        negativePrompt: negativePromptValue,
         width: parseInt(document.getElementById('width').value),
         height: parseInt(document.getElementById('height').value),
         model: document.getElementById('model').value,
@@ -216,7 +228,7 @@ document.getElementById('imageForm').addEventListener('submit', async (e) => {
         steps: parseInt(document.getElementById('steps').value),
         CFGScale: parseFloat(document.getElementById('CFGScale').value),
         seed: document.getElementById('seed').value ? parseInt(document.getElementById('seed').value) : undefined,
-        lora: loraArray, // Include LoRA as an array of objects
+        lora: loraArray, // This now may include one or two LoRA configurations
         strength: 0.8, // Set default strength
         promptWeighting: 'none', // Set default promptWeighting
     };
