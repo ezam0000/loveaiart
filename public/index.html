@@ -1,234 +1,332 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text to Image | LoveAi Art</title>
-    <link rel="stylesheet" href="styles.css">
-    <meta name="description" content="LoveAi Art - Generate stunning AI-generated images from text prompts with customizable options.">
-    <meta name="keywords" content="AI, image generation, text to image, AI art, LoveAi Art, AI tools">
-    <meta name="author" content="LoveAi Art Team">
-    <link rel="canonical" href="https://www.loveaiart.com/">
-    <meta property="og:title" content="LoveAi Art - AI-Powered Image Generation">
-    <meta property="og:description" content="Generate stunning AI-generated images from text prompts with LoveAi Art.">
-    <meta property="og:url" content="https://www.loveaiart.com/">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="https://www.loveaiart.com/images/og-image.jpg">
-    <meta name="google-adsense-account" content="ca-pub-7974310621652998">
-</head>
-<body>
-    <nav>
-        <input type="checkbox" id="menu-toggle">
-        <label for="menu-toggle" class="hamburger-menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </label>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="photomaker.html">PhotoMaker</a></li>
-            <li><a href="avatar.html">Avatar Generation</a></li>
-            <li><a href="tos.html">Terms</a></li>
-            <li><a href="pp.html">Privacy</a></li>
-        </ul>
-    </nav>
-
-    <main class="container">
-        <div class="form-container">
-            <h1>Out of ideas? Get a random prompt!</h1>
-            <form id="imageForm">
-                <!-- Positive Prompt Field with Random Prompt Button -->
-                <div class="input-group" id="prompt-container">
-                    <button type="button" id="newPromptButton" class="random-prompt-btn">Get New Random Prompt</button>
-                    <textarea id="positivePrompt" placeholder="Enter positive prompt..." required></textarea>
-                </div>
-
-                <div class="input-group">
-                    <textarea id="negativePrompt" placeholder="Negative Prompt">blurry, ugly </textarea>
-                </div>
-
-                <!-- Advanced Settings Toggle Button -->
-                <button type="button" id="toggleAdvancedSettings">Advanced Settings</button>
-
-                <!-- Advanced Settings Section -->
-                <div id="advancedSettings" class="hidden">
-                    <div class="input-group">
-                        <select id="width" required>
-                            <option value="" disabled>Width</option>
-                            <option value="512" selected>512</option>
-                            <option value="640">640</option>
-                            <option value="768">768</option>
-                            <option value="896">896</option>
-                            <option value="1024">1024</option>  
-                            <option value="1280">1280</option>
-                            <option value="1536">1536</option>
-                            <option value="1792">1792</option>
-                            <option value="2048">2048</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <select id="height" required>
-                            <option value="" disabled>Height</option>
-                            <option value="512">512</option>
-                            <option value="640">640</option>
-                            <option value="768" selected>768</option>
-                            <option value="896">896</option>
-                            <option value="1024">1024</option>
-                            <option value="1280">1280</option>
-                            <option value="1536">1536</option>
-                            <option value="1792">1792</option>
-                            <option value="2048">2048</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <select id="model" required>
-                            <option value="" disabled>Select Model</option>
-                            <option value="runware:101@1" selected>FLUX.1DEV</option>
-                            <option value="runware:100@1">FLUX v1</option>
-                            <option value="civitai:277058@646523">SDXL</option>
-                            <option value="civitai:47274@102222">MIX9</option>
-                            <option value="civitai:257749@290640">Pony Diffusion V6</option>
-                            <option value="civitai:25694@143906">EpicRealism</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <select id="lora" required>
-                            <option value="" disabled>Select LoRA Configuration</option>
-                            <option value="">No LoRa</option>
-                            <option value="civitai:631986@706528">XLABS FLUX REALISM LORA</option>
-                            <option value="civitai:178910@200827">SDXL CCTV</option>
-                            <option value="civitai:684810@766464">Flux CCTV</option>
-                            <option value="civitai:124347@148870">SDXL Art Enhancer</option>
-                            <option value="civitai:121290@131944">SDXL Vintage Illustration</option>
-                            <option value="civitai:652699@993999">Amateur Photography</option>
-                            <option value="civitai:689318@771472">Pixel Art Style</option>
-                            <option value="urn:air:flux1:lora:civitai:1270654@1433370">Flux1 LoRA</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <select id="lora2">
-                            <option value="" selected>No LoRa</option>
-                            <option value="civitai:631986@706528">XLABS FLUX REALISM LORA</option>
-                            <option value="civitai:178910@200827">SDXL CCTV</option>
-                            <option value="civitai:684810@766464">Flux CCTV</option>
-                            <option value="civitai:124347@148870">SDXL Art Enhancer</option>
-                            <option value="civitai:121290@131944">SDXL Vintage Illustration</option>
-                            <option value="civitai:652699@993999">Amateur Photography</option>
-                            <option value="civitai:689318@771472">Pixel Art Style</option>
-                            <option value="civitai:1270654@1433370">Flux1 LoRA</option>
-                            <option value="custom">Other (Enter Custom Air Identifier)</option>
-                        </select>
-                    </div>
-
-                    <!-- Custom LoRA 2 input (hidden by default) -->
-                    <div class="input-group" id="customLora2Container" style="display: none;">
-                        <input type="text" id="customLora2" placeholder="Enter custom air identifier">
-                    </div>
-
-                    <div class="input-group">
-                        <select id="numberResults">
-                            <option value="" disabled>Number of Results</option>
-                            <option value="1" selected>1</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <select id="outputFormat">
-                            <option value="" disabled>Format</option>
-                            <option value="JPEG" selected>JPEG Output</option>
-                            <option value="WEBP">WEBP Output</option>
-                            <option value="PNG">PNG Output</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <select id="scheduler">
-                            <option value="Default">Default Scheduler</option>
-                            <option value="Euler a">Euler a</option>
-                            <option value="Euler">Euler</option>
-                            <option value="DPM++ 2M Karras">DPM++ 2M Karras</option>
-                            <option value="DPM++ SDE Karras">DPM++ SDE Karras</option>
-                            <option value="DPM++ 2M SDE">DPM++ 2M SDE</option>
-                            <option value="DPM++ 2M SDE Karras">DPM++ 2M SDE Karras</option>
-                            <option value="FlowMatchEulerDiscreteScheduler">FlowMatchEulerDiscreteScheduler</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <select id="steps">
-                            <option value="" disabled>Steps: Number of iterations (performance level)</option>
-                            <option value="4">4 Steps, ideal for Flux</option>
-                            <option value="20">20</option>
-                            <option value="28" selected>28 Steps, ideal for SDXL</option>
-                            <option value="30">30 Steps, ideal for MIX9</option>
-                            <option value="35">35 Steps, ideal for Pony Diffusion V6</option>
-                            <option value="40">40</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <select id="CFGScale">
-                            <option value="" disabled>Guidance Scale (1-30)</option>
-                            <option value="3.5" selected>3.5 Steps, ideal for SDXL</option>
-                            <option value="5">5 Steps, ideal for SDXL</option>
-                            <option value="7.5">7.5 Steps</option>
-                            <option value="8.5">8.5 Steps</option>
-                            <option value="10">10</option>
-                            <option value="15">15</option>
-                            <option value="20">20</option>
-                            <option value="25">25</option>
-                            <option value="30">30 CFG, ideal for Flux</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <input type="number" id="seed" placeholder="Seed" value="">
-                    </div>
-
-                    <div class="input-group" id="toggleEnhance" style="display: flex; align-items: center;">
-                        <span style="flex: 1;">Enhance Prompt</span>
-                        <label class="toggle-switch" style="flex-shrink: 0;">
-                            <input type="checkbox" id="enhanceToggle">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-
-                <button type="submit">Generate</button>
-                
-                <!-- Terms & Policy Links -->
-                <p><a href="tos.html">By Clicking "Generate" you are accepting our Terms of Service</a></p>
-                <p><a href="pp.html">By Clicking "Generate" you are accepting our Privacy Policy</a></p>
-            </form>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RealEngine - AI Image Generation</title>
+    <link rel="stylesheet" href="styles.css" />
+    <meta
+      name="description"
+      content="RealEngine - Generate stunning AI-generated images from text prompts with customizable options."
+    />
+    <meta
+      name="keywords"
+      content="AI, image generation, text to image, AI art, RealEngine, AI tools"
+    />
+    <meta name="author" content="RealEngine Team" />
+    <link rel="canonical" href="https://www.loveaiart.com/" />
+    <meta
+      property="og:title"
+      content="RealEngine - AI-Powered Image Generation"
+    />
+    <meta
+      property="og:description"
+      content="Generate stunning AI-generated images from text prompts with RealEngine."
+    />
+    <meta property="og:url" content="https://www.loveaiart.com/" />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:image"
+      content="https://www.loveaiart.com/images/og-image.jpg"
+    />
+  </head>
+  <body>
+    <!-- Main App Container -->
+    <div class="app-container">
+      <!-- Sidebar for Chat History -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <h2 class="logo">RealEngine</h2>
+          <button class="new-chat-btn" id="newChatBtn">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            New Chat
+          </button>
         </div>
-        <div class="output-container">
-            <div id="status"></div>
-            <div id="cost"></div>
-            <div id="result"></div>
-        </div>
-    </main>
 
-    <div style="text-align: left; margin-top: 20px;">
-        <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" 
-            data-name="bmc-button" data-slug="loveaiart" data-color="#ebebeb" data-emoji="☕" data-font="Cookie" 
-            data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#FFDD00">
-        </script>
+        <div class="chat-history" id="chatHistory">
+          <div class="chat-item active" data-chat-id="current">
+            <span class="chat-title">Current Session</span>
+            <button class="chat-menu-btn">⋯</button>
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          <button class="settings-btn" id="settingsBtn">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1" />
+            </svg>
+            Image & Model Settings
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="main-content">
+        <!-- Header -->
+        <header class="chat-header">
+          <button class="sidebar-toggle" id="sidebarToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <h1 class="chat-title">RealEngine</h1>
+          <button class="header-settings-btn" id="headerSettingsBtn">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1" />
+            </svg>
+          </button>
+        </header>
+
+        <!-- Chat Messages Container -->
+        <div class="chat-container" id="chatContainer">
+          <div class="welcome-message">
+            <h2>Welcome to RealEngine</h2>
+            <p>Enter a prompt to generate AI images</p>
+            <button class="random-prompt-btn" id="randomPromptBtn">
+              Get Random Prompt
+            </button>
+          </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-area">
+          <form id="imageForm" class="prompt-form">
+            <div class="prompt-input-container">
+              <textarea
+                id="positivePrompt"
+                placeholder="Describe the image you want to generate..."
+                rows="1"
+                required
+              ></textarea>
+              <button type="submit" class="send-btn" id="sendBtn">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <line x1="22" y1="2" x2="11" y2="13" />
+                  <polygon points="22,2 15,22 11,13 2,9 22,2" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Hidden form elements to maintain functionality -->
+            <input type="hidden" id="negativePrompt" value="blurry, ugly" />
+            <input type="hidden" id="width" value="512" />
+            <input type="hidden" id="height" value="768" />
+            <input type="hidden" id="model" value="runware:101@1" />
+            <input type="hidden" id="lora" value="" />
+            <input type="hidden" id="lora2" value="" />
+            <input type="hidden" id="numberResults" value="1" />
+            <input type="hidden" id="outputFormat" value="JPEG" />
+            <input type="hidden" id="scheduler" value="Default" />
+            <input type="hidden" id="steps" value="28" />
+            <input type="hidden" id="CFGScale" value="3.5" />
+            <input type="hidden" id="seed" value="" />
+            <input type="hidden" id="enhanceToggle" value="false" />
+          </form>
+
+          <div class="input-footer">
+            <span class="model-indicator" id="modelIndicator"
+              >RealEngine v1</span
+            >
+          </div>
+        </div>
+      </main>
+
+      <!-- Settings Panel -->
+      <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+          <h3>Image & Model Settings</h3>
+          <button class="close-settings" id="closeSettings">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="settings-content">
+          <!-- Aspect Ratio Section -->
+          <div class="setting-section">
+            <h4>Aspect Ratio</h4>
+            <div class="aspect-ratio-grid">
+              <button class="aspect-btn" data-width="1024" data-height="1024">
+                Square
+              </button>
+              <button class="aspect-btn" data-width="768" data-height="1024">
+                Portrait 3:4
+              </button>
+              <button class="aspect-btn" data-width="576" data-height="1024">
+                Portrait 9:16
+              </button>
+              <button class="aspect-btn" data-width="1024" data-height="768">
+                Landscape 4:3
+              </button>
+              <button class="aspect-btn" data-width="1024" data-height="576">
+                Landscape 16:9
+              </button>
+            </div>
+          </div>
+
+          <!-- Model Selection -->
+          <div class="setting-section">
+            <h4>Model</h4>
+            <select class="setting-select" id="modelSelect">
+              <option value="rundiffusion:130@100" selected>J-Pro</option>
+              <option value="runware:101@1">RealEngine v1</option>
+            </select>
+          </div>
+
+          <!-- LoRA Section -->
+          <div class="setting-section">
+            <h4>LoRA</h4>
+            <select class="setting-select" id="loraSelect">
+              <option value="">None</option>
+              <option value="civitai:652699@993999">Realism</option>
+              <option value="civitai:682349@763724">360degree</option>
+              <option value="civitai:757432@846937">LogoMaker</option>
+              <option value="civitai:669582@749547">TextLogo</option>
+            </select>
+
+            <div class="slider-container">
+              <label for="loraWeight"
+                >LoRA Weight: <span id="loraWeightValue">1.00</span></label
+              >
+              <input
+                type="range"
+                id="loraWeight"
+                min="0"
+                max="2"
+                step="0.1"
+                value="1.0"
+                class="slider"
+              />
+            </div>
+          </div>
+
+          <!-- Generation Parameters -->
+          <div class="setting-section">
+            <h4>Generation Parameters</h4>
+
+            <div class="slider-container">
+              <label for="cfgScale"
+                >CFG Scale: <span id="cfgScaleValue">3.50</span></label
+              >
+              <input
+                type="range"
+                id="cfgScaleSlider"
+                min="1"
+                max="30"
+                step="0.5"
+                value="3.5"
+                class="slider"
+              />
+            </div>
+
+            <div class="slider-container">
+              <label for="stepsSlider"
+                >Steps: <span id="stepsValue">28.00</span></label
+              >
+              <input
+                type="range"
+                id="stepsSlider"
+                min="4"
+                max="50"
+                step="1"
+                value="28"
+                class="slider"
+              />
+            </div>
+          </div>
+
+          <!-- Negative Prompt -->
+          <div class="setting-section">
+            <h4>Negative Prompt</h4>
+            <textarea
+              id="negativePromptInput"
+              class="setting-textarea"
+              placeholder="worst quality, low quality, blurry"
+            >
+blurry, ugly</textarea
+            >
+          </div>
+
+          <!-- Advanced Settings -->
+          <div class="setting-section">
+            <h4>Advanced Settings</h4>
+
+            <div class="toggle-setting">
+              <span>Enhance Prompt</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="enhancePromptToggle" />
+                <span class="slider-toggle"></span>
+              </label>
+            </div>
+
+            <select class="setting-select" id="schedulerSelect">
+              <option value="Default">Default Scheduler</option>
+              <option value="Euler a">Euler a</option>
+              <option value="Euler">Euler</option>
+              <option value="DPM++ 2M Karras">DPM++ 2M Karras</option>
+              <option value="FlowMatchEulerDiscreteScheduler" selected>
+                FlowMatchEulerDiscreteScheduler
+              </option>
+            </select>
+
+            <input
+              type="number"
+              id="seedInput"
+              class="setting-input"
+              placeholder="Seed (optional)"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Overlay -->
+      <div class="settings-overlay" id="settingsOverlay"></div>
     </div>
+
+    <!-- Status Display -->
+    <div id="status" class="status-message"></div>
+
+    <!-- Scripts -->
     <script src="script.js"></script>
-    <script>
-        // Toggle the custom input based on the lora2 select value
-        document.getElementById('lora2').addEventListener('change', function() {
-            var customContainer = document.getElementById('customLora2Container');
-            if (this.value === 'custom') {
-                customContainer.style.display = 'block';
-            } else {
-                customContainer.style.display = 'none';
-            }
-        });
-    </script>
-</body>
+  </body>
 </html>
