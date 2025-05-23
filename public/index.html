@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RealEngine - AI Image Generation</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="assets/css/main.css" />
     <meta
       name="description"
       content="RealEngine - Generate stunning AI-generated images from text prompts with customizable options."
@@ -83,7 +83,7 @@
       <main class="main-content">
         <!-- Header -->
         <header class="chat-header">
-          <button class="sidebar-toggle" id="sidebarToggle">
+          <button class="sidebar-toggle" id="menuBtn">
             <span></span>
             <span></span>
             <span></span>
@@ -213,7 +213,7 @@
       <div class="settings-panel" id="settingsPanel">
         <div class="settings-header">
           <h3>Image & Model Settings</h3>
-          <button class="close-settings" id="closeSettings">
+          <button class="close-settings" id="closeSettingsBtn">
             <svg
               width="20"
               height="20"
@@ -447,9 +447,9 @@ blurry, ugly</textarea
     </div>
 
     <!-- Status Display -->
-    <div id="status" class="status-message"></div>
+    <div id="statusMessage" class="status-message"></div>
 
     <!-- Scripts -->
-    <script src="script.js"></script>
+    <script type="module" src="assets/js/core/RealEngine.js"></script>
   </body>
 </html>

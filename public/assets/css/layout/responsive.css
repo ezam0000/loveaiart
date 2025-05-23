@@ -1,0 +1,48 @@
+/**
+ * Responsive Layout
+ * Media queries and responsive design adjustments
+ */
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    height: 100vh;
+    z-index: 1001;
+    transition: left 0.3s ease;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  .sidebar-toggle {
+    display: flex;
+  }
+
+  .main-content {
+    width: 100%;
+  }
+
+  .settings-panel {
+    width: 100%;
+    right: -100%;
+  }
+
+  .chat-container {
+    padding: 16px;
+  }
+
+  .input-area {
+    padding: 16px;
+  }
+
+  .settings-content {
+    padding: 16px;
+  }
+
+  .aspect-ratio-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

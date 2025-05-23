@@ -1,0 +1,43 @@
+/**
+ * CSS Variables
+ * Global design tokens for the LoveAIArt application
+ */
+
+:root {
+  /* Background Colors */
+  --bg-primary: #000000;
+  --bg-secondary: #0d0d0d;
+  --bg-tertiary: #1a1a1a;
+  --bg-quaternary: #262626;
+
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --text-muted: #666666;
+
+  /* Border Colors */
+  --border-color: #333333;
+  --border-light: #404040;
+
+  /* Accent Colors */
+  --accent-color: #ffffff;
+  --hover-bg: #1a1a1a;
+
+  /* Input Colors */
+  --input-bg: #1a1a1a;
+  --input-border: #333333;
+
+  /* Button Colors */
+  --button-bg: #333333;
+  --button-hover: #404040;
+
+  /* Effects */
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+  /* Border Radius */
+  --radius: 12px;
+  --radius-sm: 8px;
+
+  /* Transitions */
+  --transition: all 0.2s ease;
+}

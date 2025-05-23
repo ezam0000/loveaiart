@@ -1,0 +1,179 @@
+/**
+ * Chat Component
+ * Chat interface, messages, and welcome screen
+ */
+
+.welcome-message {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 40px 20px;
+  margin: auto;
+  max-width: 600px;
+}
+
+.welcome-message h2 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.welcome-message p {
+  font-size: 16px;
+  margin-bottom: 24px;
+}
+
+.random-prompt-btn {
+  background-color: var(--button-bg);
+  color: var(--text-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.random-prompt-btn:hover {
+  background-color: var(--button-hover);
+}
+
+.message {
+  display: flex;
+  gap: 16px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  opacity: 0;
+  animation: fadeIn 0.3s ease forwards;
+  margin-bottom: 24px;
+}
+
+.message.user {
+  flex-direction: row-reverse;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+
+.message.user .avatar {
+  background-color: var(--accent-color);
+  color: var(--bg-primary);
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.message-text {
+  background-color: var(--bg-tertiary);
+  padding: 16px;
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  line-height: 1.5;
+  font-size: 15px;
+}
+
+.message.user .message-text {
+  background-color: var(--accent-color);
+  color: var(--bg-primary);
+}
+
+.message-images {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 500px;
+}
+
+.image-container {
+  position: relative;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.image-container img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.image-actions {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.image-container:hover .image-actions {
+  opacity: 1;
+}
+
+.image-actions button {
+  background-color: rgba(0, 0, 0, 0.8);
+  border: none;
+  color: white;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.message-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.content:hover .message-actions {
+  opacity: 1;
+}
+
+.copy-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: var(--transition);
+}
+
+.copy-btn:hover {
+  background-color: var(--hover-bg);
+  color: var(--text-secondary);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
