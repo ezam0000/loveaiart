@@ -96,6 +96,12 @@ app.post("/generate", async (req, res) => {
       includeCost: false,
     };
 
+    // Add prompt enhancement if enabled
+    if (enhancePrompt === true || enhancePrompt === "true") {
+      requestPayload.enhancePrompt = true;
+      console.log("Prompt enhancement enabled");
+    }
+
     // Add LoRA if specified - try simple string format first
     if (lora && lora.trim() !== "") {
       console.log(
@@ -114,6 +120,12 @@ app.post("/generate", async (req, res) => {
     }
 
     console.log("Generating image with payload:", requestPayload);
+    console.log(
+      "enhancePrompt received:",
+      enhancePrompt,
+      "type:",
+      typeof enhancePrompt
+    );
 
     const images = await runware.requestImages(requestPayload);
 
@@ -344,6 +356,82 @@ app.post("/generate-avatar", async (req, res) => {
     res
       .status(500)
       .json({ error: "An error occurred while generating the avatar" });
+  }
+});
+
+// Route to handle chat requests using OpenAI
+app.post("/chat", async (req, res) => {
+  try {
+    const { message, history = [] } = req.body;
+
+    if (
+      !process.env.OPENAI_API_KEY ||
+      process.env.OPENAI_API_KEY === "your_openai_api_key_here"
+    ) {
+      return res.status(500).json({
+        error:
+          "OpenAI API key not configured. Please add OPENAI_API_KEY to environment variables.",
+      });
+    }
+
+    // Prepare messages for OpenAI API
+    const messages = [
+      {
+        role: "system",
+        content:
+          "You are RealEngine AI, a helpful assistant specialized in AI image generation. You can help users improve their prompts, suggest creative ideas, answer questions about image generation, and provide general assistance. Keep responses concise and helpful.",
+      },
+    ];
+
+    // Add conversation history
+    history.forEach((item) => {
+      if (item.type === "user") {
+        messages.push({ role: "user", content: item.content });
+      } else if (item.type === "assistant") {
+        messages.push({ role: "assistant", content: item.content });
+      }
+    });
+
+    // Add current message
+    messages.push({ role: "user", content: message });
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini", // Using available model
+        messages: messages,
+        max_tokens: 500,
+        temperature: 0.7,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("OpenAI API Error:", errorData);
+      return res.status(500).json({
+        error:
+          "Failed to get response from OpenAI: " +
+          (errorData.error?.message || "Unknown error"),
+      });
+    }
+
+    const data = await response.json();
+    const assistantMessage = data.choices[0]?.message?.content;
+
+    if (!assistantMessage) {
+      return res.status(500).json({ error: "No response from OpenAI" });
+    }
+
+    res.json({ response: assistantMessage });
+  } catch (error) {
+    console.error("Chat error:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while processing your message" });
   }
 });
 

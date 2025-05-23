@@ -86,7 +86,7 @@
             <span></span>
             <span></span>
           </button>
-          <h1 class="chat-title">RealEngine</h1>
+
           <button class="header-settings-btn" id="headerSettingsBtn">
             <svg
               width="20"
@@ -116,6 +116,67 @@
         <!-- Input Area -->
         <div class="input-area">
           <form id="imageForm" class="prompt-form">
+            <!-- Mode Toggle -->
+            <div class="mode-toggle-container">
+              <div class="mode-toggle">
+                <button type="button" class="mode-btn active" id="imageModeBtn">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                    <circle cx="9" cy="9" r="2" />
+                    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                  </svg>
+                  Image Gen
+                </button>
+                <button type="button" class="mode-btn" id="chatModeBtn">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z" />
+                  </svg>
+                  Chat
+                </button>
+              </div>
+
+              <!-- Prompt Enhancer Toggle - Only visible in image mode -->
+              <div
+                class="enhancer-toggle-container"
+                id="enhancerToggleContainer"
+              >
+                <button
+                  type="button"
+                  class="enhancer-toggle"
+                  id="enhancerToggleBtn"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                    />
+                  </svg>
+                  <span class="enhancer-text">Enhance</span>
+                  <div class="enhancer-indicator"></div>
+                </button>
+              </div>
+            </div>
+
             <div class="prompt-input-container">
               <textarea
                 id="positivePrompt"
@@ -155,9 +216,7 @@
           </form>
 
           <div class="input-footer">
-            <span class="model-indicator" id="modelIndicator"
-              >RealEngine v1</span
-            >
+            <span class="model-indicator" id="modelIndicator">J-Pro</span>
           </div>
         </div>
       </main>
@@ -208,8 +267,10 @@
           <div class="setting-section">
             <h4>Model</h4>
             <select class="setting-select" id="modelSelect">
-              <option value="rundiffusion:130@100" selected>J-Pro</option>
+              <option value="runware:97@1" selected>Dream</option>
+              <option value="rundiffusion:130@100">J-Pro</option>
               <option value="runware:101@1">RealEngine v1</option>
+              <option value="runware:120@4">Layerz</option>
             </select>
           </div>
 
@@ -222,6 +283,8 @@
               <option value="civitai:682349@763724">360degree</option>
               <option value="civitai:757432@846937">LogoMaker</option>
               <option value="civitai:669582@749547">TextLogo</option>
+              <option value="rundiffusion:500@100">Photo</option>
+              <option value="civitai:1260139@1420893">Medieval</option>
             </select>
 
             <div class="slider-container">
@@ -237,6 +300,55 @@
                 value="1.0"
                 class="slider"
               />
+            </div>
+          </div>
+
+          <!-- Personal LoRAs Section -->
+          <div class="setting-section">
+            <h4>Personal LoRAs</h4>
+            <div class="personal-lora-inputs">
+              <input
+                type="text"
+                id="personalLoraName"
+                class="setting-input"
+                placeholder="LoRA Name (e.g., My Custom Style)"
+              />
+              <input
+                type="text"
+                id="personalLoraId"
+                class="setting-input"
+                placeholder="AIR ID (e.g., air:12345@6789)"
+                style="margin-top: 8px"
+              />
+              <input
+                type="text"
+                id="personalLoraTrigger"
+                class="setting-input"
+                placeholder="Trigger Words (optional, e.g., in the style of)"
+                style="margin-top: 8px"
+              />
+              <button
+                type="button"
+                class="add-lora-btn"
+                id="addPersonalLoraBtn"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Add Personal LoRA
+              </button>
+            </div>
+
+            <div class="personal-loras-list" id="personalLorasList">
+              <!-- Personal LoRAs will be dynamically added here -->
             </div>
           </div>
 
@@ -315,6 +427,29 @@ blurry, ugly</textarea
               class="setting-input"
               placeholder="Seed (optional)"
             />
+
+            <!-- Clear History Button -->
+            <button
+              type="button"
+              class="clear-history-btn"
+              id="clearHistoryBtn"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                />
+                <line x1="10" y1="11" x2="10" y2="17" />
+                <line x1="14" y1="11" x2="14" y2="17" />
+              </svg>
+              Clear Chat History
+            </button>
           </div>
         </div>
       </div>
