@@ -1,5 +1,110 @@
 # LoveAIArt Development Quick Guide
 
+## 🎉 MAJOR FEATURE UPDATES - MAY 2025
+
+### ✅ LayerDiffuse & PuLID - CORRECTLY IMPLEMENTED
+
+**CRITICAL BREAKTHROUGH**: Both LayerDiffuse and PuLID are now working perfectly with transparent backgrounds and identity consistency respectively. These implementations required switching from SDK to direct HTTP API calls to match Runware's exact documentation.
+
+#### LayerDiffuse Implementation ✅
+
+**Location**: `services/runware.js` - `generateLayerDiffuse()` method
+
+**Key Success Factors**:
+
+1. **Minimal Payload Structure** - Matches documentation exactly:
+
+   ```json
+   {
+     "taskType": "imageInference",
+     "taskUUID": "uuid-here",
+     "positivePrompt": "prompt text",
+     "height": 1024,
+     "width": 1024,
+     "model": "runware:101@1",
+     "outputFormat": "PNG",
+     "advancedFeatures": {
+       "layerDiffuse": true
+     }
+   }
+   ```
+
+2. **Direct HTTP API Calls** - Bypassed SDK limitations:
+
+   ```javascript
+   const response = await fetch("https://api.runware.ai/v1", {
+     method: "POST",
+     headers: {
+       "Content-Type": "application/json",
+       Authorization: `Bearer ${this.apiKey}`,
+     },
+     body: JSON.stringify(requestPayload),
+   });
+   ```
+
+3. **FLUX Model Enforcement** - Auto-switches to FLUX models (runware:100@1 or runware:101@1)
+4. **PNG Format Forced** - Ensures transparency support
+5. **No Extra Parameters** - Removed negativePrompt, steps, CFGScale, etc.
+
+#### PuLID Implementation ✅
+
+**Location**: `services/runware.js` - `generatePuLID()` method
+
+**Key Success Factors**:
+
+1. **Minimal Payload Structure** - Matches documentation exactly:
+
+   ```json
+   {
+     "taskType": "imageInference",
+     "taskUUID": "uuid-here",
+     "positivePrompt": "portrait prompt",
+     "height": 1024,
+     "width": 1024,
+     "model": "runware:101@1",
+     "puLID": {
+       "inputImages": ["image-uuid"],
+       "idWeight": 1,
+       "trueCFGScale": 1.5
+     }
+   }
+   ```
+
+2. **Mutually Exclusive Parameters** - Fixed API conflict:
+
+   - Uses `trueCFGScale` OR `CFGStartStep`, never both
+   - Frontend defaults to `trueCFGScale: 1.5` (was 10.0)
+   - Only sends non-default values to API
+
+3. **Image Upload to UUID** - Proper image handling:
+
+   ```javascript
+   const uploadResponse = await this.uploadImage(referenceImageData);
+   const referenceImageUUID = uploadResponse.imageUUID;
+   ```
+
+4. **FLUX Model Enforcement** - Auto-switches to FLUX models for compatibility
+
+#### Frontend Updates ✅
+
+**Location**: `public/assets/js/core/ImageGenerator.js` & `public/index.html`
+
+**Key Improvements**:
+
+1. **Smart Parameter Handling** - Only sends non-default values
+2. **Conflict Prevention** - Avoids sending both trueCFGScale and CFGStartStep
+3. **Better Defaults** - trueCFGScale default changed from 10.0 to 1.5
+4. **Proper Endpoint Routing** - Uses `/layer-diffuse` and `/pulid` endpoints
+
+#### Testing Results ✅
+
+- **LayerDiffuse**: Generates PNG images with transparent backgrounds
+- **PuLID**: Maintains facial identity with proper reference image handling
+- **API Compliance**: Payloads match Runware documentation exactly
+- **Error-Free**: No more parameter conflicts or SDK limitations
+
+---
+
 ## 🚨 Current State Analysis
 
 ### Files Requiring Immediate Attention

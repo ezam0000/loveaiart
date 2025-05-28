@@ -224,35 +224,67 @@ class RunwareService {
 
     console.log(`Using PuLID with model: ${pulidModel}`);
 
-    // Build the request payload for PuLID according to Runware docs with proven working defaults
-    const requestPayload = {
-      taskType: "imageInference",
-      taskUUID: uuidv4(),
-      positivePrompt,
-      height: parseInt(height) || 1024,
-      width: parseInt(width) || 1024,
-      model: pulidModel,
-      // PuLID specific parameters with aggressive settings for maximum identity preservation
-      puLID: {
-        inputImages: [referenceImageUUID], // Use UUID instead of base64
-        idWeight: parseInt(idWeight) || 1, // Use the user's setting
-        trueCFGScale: parseFloat(trueCFGScale) || 10.0, // Reduced from 15.0 for better balance
-        CFGStartStep: parseInt(CFGStartStep) || 0, // Start from step 0 for maximum influence
+    // Build the EXACT payload from documentation - minimal parameters only
+    const requestPayload = [
+      {
+        taskType: "imageInference",
+        taskUUID: uuidv4(),
+        positivePrompt,
+        height: parseInt(height) || 1024,
+        width: parseInt(width) || 1024,
+        model: pulidModel,
+        puLID: {
+          inputImages: [referenceImageUUID], // Use UUID instead of base64
+          idWeight: parseInt(idWeight) || 1,
+        },
       },
-    };
+    ];
+
+    // Add either trueCFGScale OR CFGStartStep, not both (they are mutually exclusive)
+    if (CFGStartStep !== undefined && CFGStartStep !== null) {
+      requestPayload[0].puLID.CFGStartStep = parseInt(CFGStartStep);
+    } else if (trueCFGScale !== undefined && trueCFGScale !== null) {
+      requestPayload[0].puLID.trueCFGScale = parseFloat(trueCFGScale);
+    }
 
     console.log(
-      "Generating PuLID image with optimized parameters:",
+      "Generating PuLID image with EXACT payload from docs:",
       JSON.stringify(requestPayload, null, 2)
     );
 
     try {
-      const images = await this.runware.requestImages(requestPayload);
+      // Use direct HTTP request to ensure proper handling of puLID
+      const response = await fetch("https://api.runware.ai/v1", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.RUNWARE_API_KEY}`,
+        },
+        body: JSON.stringify(requestPayload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          `HTTP ${response.status}: ${JSON.stringify(errorData)}`
+        );
+      }
+
+      const result = await response.json();
+      console.log("PuLID API response:", JSON.stringify(result, null, 2));
+
+      // Handle the response format
+      let images = [];
+      if (result && result.data && result.data.length > 0) {
+        images = result.data;
+      } else {
+        throw new Error("No images returned from PuLID API");
+      }
 
       console.log("PuLID generation successful:", {
         imageCount: images.length,
         cost: images.reduce((total, img) => total + (img.cost || 0), 0),
-        firstImageUrl: images[0]?.imageURL || images[0]?.image || images[0],
+        firstImageUrl: images[0]?.imageURL,
       });
 
       // Format response to match frontend expectations

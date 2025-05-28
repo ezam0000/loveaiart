@@ -87,14 +87,23 @@ export class ImageGenerator {
             "Please upload at least one reference image for PuLID"
           );
         }
-        formData.puLID = {
+
+        // Build PuLID object with only the parameters that are set
+        const pulidConfig = {
           inputImages: pulidImages,
           idWeight: parseInt(document.getElementById("idWeight")?.value || "1"),
-          trueCFGScale: parseFloat(
-            document.getElementById("trueCFGScale")?.value || "10.0"
-          ),
-          // Let server use optimized default for CFGStartStep (0)
         };
+
+        // Only add trueCFGScale if it's different from default
+        const trueCFGScale = parseFloat(
+          document.getElementById("trueCFGScale")?.value || "1.5"
+        );
+        if (trueCFGScale !== 1.5) {
+          pulidConfig.trueCFGScale = trueCFGScale;
+        }
+        // Note: We don't set CFGStartStep to avoid conflicts with trueCFGScale
+
+        formData.puLID = pulidConfig;
         endpoint = "/pulid";
         console.log("Using PuLID endpoint with optimized parameters");
         console.log("PuLID formData:", JSON.stringify(formData, null, 2));
