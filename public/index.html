@@ -120,7 +120,16 @@
                     <circle cx="9" cy="9" r="2" />
                     <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
                   </svg>
-                  Image Gen
+                  Standard
+                </button>
+                <button type="button" class="mode-btn" id="pulidModeBtn">
+                  🧬 PuLID
+                </button>
+                <button type="button" class="mode-btn" id="layerDiffuseModeBtn">
+                  🧼 LayerDiffuse
+                </button>
+                <button type="button" class="mode-btn" id="acceleratedModeBtn">
+                  ⚡️ Accelerated
                 </button>
                 <button type="button" class="mode-btn" id="chatModeBtn">
                   <svg
@@ -137,31 +146,43 @@
                 </button>
               </div>
 
-              <!-- Prompt Enhancer Toggle - Only visible in image mode -->
-              <div
-                class="enhancer-toggle-container"
-                id="enhancerToggleContainer"
-              >
-                <button
-                  type="button"
-                  class="enhancer-toggle"
-                  id="enhancerToggleBtn"
+              <!-- Feature Indicator & Enhancer -->
+              <div class="mode-indicators">
+                <!-- Feature Mode Badge -->
+                <div
+                  class="feature-badge"
+                  id="featureBadge"
+                  style="display: none"
                 >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
+                  <span id="featureBadgeText">🧬 PuLID</span>
+                </div>
+
+                <!-- Prompt Enhancer Toggle - Only visible in image mode -->
+                <div
+                  class="enhancer-toggle-container"
+                  id="enhancerToggleContainer"
+                >
+                  <button
+                    type="button"
+                    class="enhancer-toggle"
+                    id="enhancerToggleBtn"
                   >
-                    <path
-                      d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-                    />
-                  </svg>
-                  <span class="enhancer-text">Enhance</span>
-                  <div class="enhancer-indicator"></div>
-                </button>
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                      />
+                    </svg>
+                    <span class="enhancer-text">Enhance</span>
+                    <div class="enhancer-indicator"></div>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -187,11 +208,56 @@
               </button>
             </div>
 
+            <!-- Minimal Feature Controls -->
+            <div class="feature-inline-controls">
+              <!-- PuLID: Only essential image upload -->
+              <div
+                class="inline-control"
+                id="pulidControl"
+                style="display: none"
+              >
+                <input
+                  type="file"
+                  id="pulidImageUpload"
+                  accept="image/*"
+                  style="display: none"
+                />
+                <button
+                  type="button"
+                  class="mini-upload-btn"
+                  onclick="document.getElementById('pulidImageUpload').click()"
+                >
+                  📸 Reference Image
+                </button>
+                <div id="pulidImagePreview" class="mini-preview"></div>
+
+                <!-- ID Weight Control -->
+                <div class="mini-slider-container" style="margin-top: 8px">
+                  <label
+                    for="idWeight"
+                    style="font-size: 12px; color: rgba(255, 255, 255, 0.8)"
+                  >
+                    ID Weight: <span id="idWeightValue">1</span>
+                  </label>
+                  <input
+                    type="range"
+                    id="idWeight"
+                    min="0"
+                    max="3"
+                    step="1"
+                    value="1"
+                    class="mini-slider"
+                    style="width: 100%; margin-top: 4px"
+                  />
+                </div>
+              </div>
+            </div>
+
             <!-- Hidden form elements to maintain functionality -->
             <input type="hidden" id="negativePrompt" value="blurry, ugly" />
             <input type="hidden" id="width" value="512" />
             <input type="hidden" id="height" value="768" />
-            <input type="hidden" id="model" value="runware:101@1" />
+            <input type="hidden" id="model" value="rundiffusion:130@100" />
             <input type="hidden" id="lora" value="" />
             <input type="hidden" id="lora2" value="" />
             <input type="hidden" id="numberResults" value="1" />
@@ -255,9 +321,10 @@
           <div class="setting-section">
             <h4>Model</h4>
             <select class="setting-select" id="modelSelect">
-              <option value="runware:97@1" selected>Dream</option>
-              <option value="rundiffusion:130@100">J-Pro</option>
-              <option value="runware:101@1">RealEngine v1</option>
+              <option value="runware:97@1">Dream</option>
+              <option value="rundiffusion:130@100" selected>J-Pro</option>
+              <option value="runware:100@1">FLUX Dev</option>
+              <option value="runware:101@1">FLUX Schnell</option>
               <option value="runware:120@4">Layerz</option>
             </select>
           </div>

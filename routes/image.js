@@ -12,7 +12,34 @@ const router = express.Router();
 // Route to generate images using Runware API (main endpoint)
 router.post("/generate", async (req, res) => {
   try {
-    const result = await runwareService.generateImages(req.body);
+    let result;
+
+    // Check for feature-specific properties and route accordingly
+    if (req.body.puLID) {
+      // Route to PuLID generation
+      console.log("Detected puLID object, routing to PuLID generation");
+      result = await runwareService.generatePuLID(req.body);
+    } else if (req.body.layerDiffuse) {
+      // Route to LayerDiffuse generation
+      console.log(
+        "Detected layerDiffuse flag, routing to LayerDiffuse generation"
+      );
+      result = await runwareService.generateLayerDiffuse(req.body);
+    } else if (
+      req.body.acceleratorOptions ||
+      req.body.teaCache ||
+      req.body.deepCache
+    ) {
+      // Route to accelerated generation
+      console.log(
+        "Detected accelerator options, routing to accelerated generation"
+      );
+      result = await runwareService.generateWithAccelerators(req.body);
+    } else {
+      // Standard image generation
+      result = await runwareService.generateImages(req.body);
+    }
+
     res.json(result);
   } catch (error) {
     console.error("Error:", error);
@@ -115,6 +142,99 @@ router.post("/enhance-prompt", async (req, res) => {
     console.error("Error enhancing prompt:", error);
     res.status(500).json({
       error: error.message || "An error occurred while enhancing the prompt",
+    });
+  }
+});
+
+// Route to generate images using PuLID for identity consistency
+router.post("/pulid", async (req, res) => {
+  try {
+    console.log("Received PuLID request:", req.body);
+
+    // Validate required fields
+    if (!req.body.positivePrompt) {
+      return res.status(400).json({
+        error: "Missing required field: positivePrompt is required",
+      });
+    }
+
+    // Check for inputImages in the puLID object
+    if (
+      !req.body.puLID ||
+      !req.body.puLID.inputImages ||
+      req.body.puLID.inputImages.length === 0
+    ) {
+      return res.status(400).json({
+        error:
+          "Missing required fields: puLID.inputImages is required and must contain at least one image",
+      });
+    }
+
+    const result = await runwareService.generatePuLID(req.body);
+    console.log("PuLID generation successful:", result);
+    res.json(result);
+  } catch (error) {
+    console.error("Error in /pulid:", error);
+    res.status(500).json({
+      error: "An error occurred while generating PuLID image",
+      details: error.message,
+    });
+  }
+});
+
+// Route to generate images with transparent backgrounds using LayerDiffuse
+router.post("/layer-diffuse", async (req, res) => {
+  try {
+    console.log("Received LayerDiffuse request:", req.body);
+
+    // Validate required fields
+    if (!req.body.positivePrompt) {
+      return res.status(400).json({
+        error: "Missing required field: positivePrompt is required",
+      });
+    }
+
+    const result = await runwareService.generateLayerDiffuse(req.body);
+    console.log("LayerDiffuse generation successful:", result);
+    res.json(result);
+  } catch (error) {
+    console.error("Error in /layer-diffuse:", error);
+    res.status(500).json({
+      error: "An error occurred while generating LayerDiffuse image",
+      details: error.message,
+    });
+  }
+});
+
+// Route to generate images with accelerator methods (TeaCache/DeepCache)
+router.post("/accelerated", async (req, res) => {
+  try {
+    console.log("Received accelerated request:", req.body);
+
+    // Validate required fields
+    if (!req.body.positivePrompt) {
+      return res.status(400).json({
+        error: "Missing required field: positivePrompt is required",
+      });
+    }
+
+    // Validate accelerator options
+    const { teaCache, deepCache } = req.body;
+    if (!teaCache && !deepCache) {
+      return res.status(400).json({
+        error:
+          "At least one accelerator option (teaCache or deepCache) must be enabled",
+      });
+    }
+
+    const result = await runwareService.generateWithAccelerators(req.body);
+    console.log("Accelerated generation successful:", result);
+    res.json(result);
+  } catch (error) {
+    console.error("Error in /accelerated:", error);
+    res.status(500).json({
+      error: "An error occurred while generating accelerated image",
+      details: error.message,
     });
   }
 });

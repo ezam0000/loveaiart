@@ -3,20 +3,33 @@ description:
 globs: 
 alwaysApply: false
 ---
-# RealEngine Project Rules & Guidelines
+# LoveAIArt Project Rules & Guidelines
 
 ## 📁 Project Structure Overview
 
 ```
 loveaiart/
-├── server.js                 # Main backend server (456 lines - NEEDS REFACTORING)
+├── server.js                 # Main backend server (56 lines - MODULARIZED)
+├── routes/                   # Route modules
+│   ├── image.js              # Image generation routes (123 lines)
+│   ├── chat.js               # Chat functionality routes (30 lines)
+│   └── api.js                # API utility routes (80 lines)
+├── services/                 # Service layer
+│   ├── runware.js            # Runware API integration (194 lines)
+│   └── openai.js             # OpenAI service (89 lines)
+├── middleware/               # Express middleware
+│   └── validation.js         # Request validation middleware
+├── config/                   # Configuration files
 ├── public/                   # Frontend static files
 │   ├── index.html            # Main UI (456 lines)
-│   ├── script.js             # Main frontend logic (1427 lines - NEEDS REFACTORING)
-│   ├── styles.css            # Main styles (1111 lines - NEEDS REFACTORING)
+│   ├── script.js             # Main frontend logic (32 lines - REFACTORED)
+│   ├── styles.css            # Main styles (42 lines - REFACTORED)
 │   ├── photomaker.js         # PhotoMaker functionality (152 lines)
 │   ├── photomaker.html       # PhotoMaker UI (81 lines)
 │   ├── avatar.html           # Avatar generation (158 lines)
+│   ├── pulid.html            # PuLID identity consistency (NEW)
+│   ├── layer-diffuse.html    # LayerDiffuse transparent bg (NEW)
+│   ├── accelerated.html      # Accelerator options (NEW)
 │   ├── login.html            # Authentication UI (130 lines)
 │   ├── tos.html              # Terms of Service (63 lines)
 │   └── pp.html               # Privacy Policy (99 lines)
@@ -25,13 +38,36 @@ loveaiart/
 └── documentation/            # Project docs
 ```
 
-## 🚨 Critical Refactoring Targets (Files > 1000 lines)
+## ✅ Modularization Status & New Features
 
-### Priority 1 - Immediate Action Required:
+### Completed Refactoring:
 
-- `public/script.js` (1427 lines) → Target: Multiple modules
-- `public/styles.css` (1111 lines) → Target: Component-based CSS
-- `server.js` (456 lines) → Target: Route-based modules
+- ✅ `server.js` (56 lines) → Modularized into routes, services, middleware
+- ✅ `public/script.js` (32 lines) → Core functionality extracted
+- ✅ `public/styles.css` (42 lines) → Base styles only
+
+### New Features Implementation Plan:
+
+#### 🧬 PuLID - Identity Consistency
+
+- **Backend**: `services/runware.js` → `generatePuLID()` method
+- **API**: `routes/image.js` → `POST /pulid` endpoint
+- **Frontend**: `public/pulid.html` + `public/pulid.js`
+- **Features**: Single reference image facial identity preservation
+
+#### 🧼 LayerDiffuse - Transparent Backgrounds
+
+- **Backend**: `services/runware.js` → `generateLayerDiffuse()` method
+- **API**: `routes/image.js` → `POST /layer-diffuse` endpoint
+- **Frontend**: `public/layer-diffuse.html` + `public/layer-diffuse.js`
+- **Features**: Direct transparent background generation
+
+#### ⚡️ Accelerator Methods - Cost & Time Optimization
+
+- **Backend**: `services/runware.js` → `generateWithAccelerators()` method
+- **API**: `routes/image.js` → `POST /accelerated` endpoint
+- **Frontend**: `public/accelerated.html` + `public/accelerated.js`
+- **Features**: TeaCache & DeepCache for 70% cost savings
 
 ## 📋 Code Organization Rules
 
@@ -43,67 +79,119 @@ loveaiart/
 
 ### 2. Modularization Strategy
 
-#### Backend Modularization (`server.js` → modules/)
+#### Backend Modularization (✅ IMPLEMENTED)
 
 ```
-modules/
-├── routes/
-│   ├── auth.js           # Authentication routes
-│   ├── image.js          # Image generation routes
-│   ├── api.js            # API endpoints
-│   └── static.js         # Static file serving
-├── middleware/
-│   ├── auth.js           # Authentication middleware
-│   ├── validation.js     # Request validation
-│   └── redirect.js       # URL redirects
-├── services/
-│   ├── runware.js        # Runware API integration
-│   ├── prompt.js         # Prompt handling
-│   └── uuid.js           # UUID generation
-└── config/
-    ├── database.js       # DB configuration
-    └── express.js        # Express setup
+routes/
+├── image.js              # Image generation routes
+│   ├── /generate         # Standard image generation
+│   ├── /generate-image   # Legacy image generation
+│   ├── /photomaker       # PhotoMaker API endpoint
+│   ├── /generate-avatar  # Avatar generation
+│   ├── /enhance-prompt   # Prompt enhancement
+│   ├── /pulid            # PuLID identity consistency (NEW)
+│   ├── /layer-diffuse    # LayerDiffuse transparent bg (NEW)
+│   └── /accelerated      # Accelerator methods (NEW)
+├── chat.js               # Chat functionality routes
+└── api.js                # API utility routes
+
+services/
+├── runware.js            # Runware API integration
+│   ├── generateImages()         # Standard generation
+│   ├── generateImagesLegacy()   # Legacy generation
+│   ├── generatePhotoMaker()     # PhotoMaker generation
+│   ├── generatePuLID()          # PuLID generation (NEW)
+│   ├── generateLayerDiffuse()   # LayerDiffuse generation (NEW)
+│   ├── generateWithAccelerators() # Accelerated generation (NEW)
+│   └── enhancePrompt()          # Prompt enhancement
+└── openai.js             # OpenAI service integration
+
+middleware/
+├── validation.js         # Request validation middleware
+└── redirectWWW()         # WWW redirect middleware
+
+config/                   # Configuration files (planned)
+├── express.js            # Express setup
+└── environment.js        # Environment validation
 ```
 
-#### Frontend Modularization (`public/script.js` → assets/js/`)
+#### Frontend Modularization (🔄 IN PROGRESS)
+
+**Current Structure:**
+
+```
+public/
+├── index.html            # Main UI (456 lines)
+├── script.js             # Main frontend logic (32 lines - REFACTORED)
+├── styles.css            # Main styles (42 lines - REFACTORED)
+├── photomaker.js         # PhotoMaker functionality (152 lines)
+├── photomaker.html       # PhotoMaker UI (81 lines)
+├── avatar.html           # Avatar generation (158 lines)
+├── pulid.html            # PuLID identity consistency (NEW)
+├── pulid.js              # PuLID frontend logic (NEW)
+├── layer-diffuse.html    # LayerDiffuse transparent bg (NEW)
+├── layer-diffuse.js      # LayerDiffuse frontend logic (NEW)
+├── accelerated.html      # Accelerator options (NEW)
+├── accelerated.js        # Accelerator frontend logic (NEW)
+└── assets/               # Static assets
+    ├── css/
+    │   ├── base/
+    │   ├── components/
+    │   └── layout/
+    └── js/
+        ├── core/
+        ├── utils/
+        └── components/
+```
+
+**Target Modular Structure:**
 
 ```
 assets/
 ├── js/
 │   ├── core/
-│   │   ├── RealEngine.js     # Main class (max 400 lines)
-│   │   ├── ChatManager.js    # Chat functionality
-│   │   ├── ImageGenerator.js # Image generation
-│   │   └── SettingsManager.js # Settings panel
+│   │   ├── RealEngine.js          # Main class (max 400 lines)
+│   │   ├── ChatManager.js         # Chat functionality
+│   │   ├── ImageGenerator.js      # Standard image generation
+│   │   ├── PuLIDGenerator.js      # PuLID identity generation (NEW)
+│   │   ├── LayerDiffuseGen.js     # LayerDiffuse generation (NEW)
+│   │   ├── AcceleratedGen.js      # Accelerated generation (NEW)
+│   │   └── SettingsManager.js     # Settings panel
 │   ├── ui/
-│   │   ├── UIManager.js      # UI interactions
-│   │   ├── Modal.js          # Modal components
-│   │   └── Sidebar.js        # Sidebar management
+│   │   ├── UIManager.js           # UI interactions
+│   │   ├── Modal.js               # Modal components
+│   │   ├── ImageUpload.js         # Image upload component (NEW)
+│   │   └── Sidebar.js             # Sidebar management
 │   ├── utils/
-│   │   ├── storage.js        # Local storage handling
-│   │   ├── validation.js     # Content filtering
-│   │   └── helpers.js        # Utility functions
+│   │   ├── storage.js             # Local storage handling
+│   │   ├── validation.js          # Content filtering
+│   │   ├── imageUtils.js          # Image processing utilities (NEW)
+│   │   └── helpers.js             # Utility functions
 │   └── components/
-│       ├── PromptEnhancer.js # Prompt enhancement
-│       ├── LoraManager.js    # LoRA management
-│       └── ModelManager.js   # Model handling
+│       ├── PromptEnhancer.js      # Prompt enhancement
+│       ├── LoraManager.js         # LoRA management
+│       ├── ModelManager.js        # Model handling
+│       ├── AcceleratorPanel.js    # Accelerator options (NEW)
+│       └── IdentityUpload.js      # PuLID image upload (NEW)
 └── css/
     ├── base/
-    │   ├── reset.css         # CSS reset
-    │   ├── variables.css     # CSS custom properties
-    │   └── typography.css    # Typography rules
+    │   ├── reset.css              # CSS reset
+    │   ├── variables.css          # CSS custom properties
+    │   └── typography.css         # Typography rules
     ├── components/
-    │   ├── sidebar.css       # Sidebar styles
-    │   ├── chat.css          # Chat interface
-    │   ├── forms.css         # Form elements
-    │   ├── buttons.css       # Button styles
-    │   └── modals.css        # Modal styles
+    │   ├── sidebar.css            # Sidebar styles
+    │   ├── chat.css               # Chat interface
+    │   ├── forms.css              # Form elements
+    │   ├── buttons.css            # Button styles
+    │   ├── modals.css             # Modal styles
+    │   ├── image-upload.css       # Image upload component (NEW)
+    │   └── accelerator-panel.css  # Accelerator options (NEW)
     ├── layout/
-    │   ├── app.css           # Main app layout
-    │   ├── header.css        # Header styles
-    │   └── responsive.css    # Media queries
+    │   ├── app.css                # Main app layout
+    │   ├── header.css             # Header styles
+    │   └── responsive.css         # Media queries
     └── themes/
-        └── dark.css          # Dark theme (current)
+        └── dark.css               # Dark theme (current)
 ```
 
 ## 🎨 UI/UX Design Rules
@@ -409,12 +497,28 @@ async generateImages(params) {
 4. Document changes in code and README
 5. Submit PR with detailed description
 
-### 2. Refactoring Priorities
+### 2. Implementation Priorities
 
-1. **Immediate**: `script.js` (1427 lines)
-2. **High**: `styles.css` (1111 lines)
-3. **Medium**: `server.js` (456 lines)
-4. **Low**: Other files under 300 lines
+#### Phase 1: New Runware Features (Current Focus)
+
+1. **🧬 PuLID Implementation**: Backend service + API + Frontend UI
+2. **🧼 LayerDiffuse Implementation**: Backend service + API + Frontend UI
+3. **⚡️ Accelerator Implementation**: Backend service + API + Frontend UI
+4. **🔗 Integration**: Add new features to main UI navigation
+
+#### Phase 2: Enhanced User Experience
+
+1. **📱 Mobile Optimization**: Responsive design for new features
+2. **🎨 UI/UX Polish**: Consistent design across all feature pages
+3. **📊 Analytics Integration**: Track usage of new features
+4. **🧪 Testing**: Comprehensive testing of all new endpoints
+
+#### Phase 3: Advanced Features (Future)
+
+1. **🔄 Batch Processing**: Multiple image generation queues
+2. **💾 Result Caching**: Local storage for generated images
+3. **🎯 Preset Management**: Save/load generation presets
+4. **📈 Usage Dashboard**: Cost tracking and optimization insights
 
 ### 3. Code Review Checklist
 
@@ -426,14 +530,37 @@ async generateImages(params) {
 - [ ] Security best practices
 - [ ] Documentation updated
 
-## 🎯 Immediate Action Items
+## 🎯 Current Development Focus
 
-1. **Create modular structure** for frontend JavaScript
-2. **Split CSS** into component-based files
-3. **Extract server routes** into separate modules
-4. **Implement proper error boundaries**
-5. **Add comprehensive logging**
-6. **Create development documentation**
+### Immediate Action Items (Phase 1):
+
+1. **🧬 Implement PuLID Feature**
+   - Add `generatePuLID()` method to `services/runware.js`
+   - Create `POST /pulid` endpoint in `routes/image.js`
+   - Build `public/pulid.html` and `public/pulid.js`
+2. **🧼 Implement LayerDiffuse Feature**
+
+   - Add `generateLayerDiffuse()` method to `services/runware.js`
+   - Create `POST /layer-diffuse` endpoint in `routes/image.js`
+   - Build `public/layer-diffuse.html` and `public/layer-diffuse.js`
+
+3. **⚡️ Implement Accelerator Methods**
+
+   - Add `generateWithAccelerators()` method to `services/runware.js`
+   - Create `POST /accelerated` endpoint in `routes/image.js`
+   - Build `public/accelerated.html` and `public/accelerated.js`
+
+4. **🔗 Navigation Integration**
+   - Update main navigation to include new features
+   - Add feature cards/buttons to main dashboard
+   - Implement feature discovery and onboarding
+
+### Completed Items:
+
+- ✅ **Modular backend structure** - Routes, services, middleware separated
+- ✅ **File size optimization** - All files under 200 lines
+- ✅ **Express setup** - Clean server.js with modular imports
+- ✅ **Error handling** - Consistent error responses across APIs
 
 ---
 

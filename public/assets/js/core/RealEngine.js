@@ -12,7 +12,7 @@ export class RealEngine {
     this.settings = {
       width: 1024,
       height: 1024,
-      model: "runware:97@1", // Dream as default
+      model: "rundiffusion:130@100", // J-Pro as default instead of Dream
       lora: "",
       lora2: "",
       steps: 8, // Dream default steps (higher quality)
@@ -69,10 +69,11 @@ export class RealEngine {
     // Form submission
     document.getElementById("imageForm").addEventListener("submit", (e) => {
       e.preventDefault();
-      if (this.currentMode === "image") {
-        this.generateImage();
-      } else {
+      if (this.currentMode === "chat") {
         this.sendChatMessage();
+      } else {
+        // All other modes are image generation modes
+        this.generateImage();
       }
     });
 
@@ -80,6 +81,22 @@ export class RealEngine {
     document.getElementById("imageModeBtn").addEventListener("click", () => {
       this.switchMode("image");
     });
+
+    document.getElementById("pulidModeBtn").addEventListener("click", () => {
+      this.switchMode("pulid");
+    });
+
+    document
+      .getElementById("layerDiffuseModeBtn")
+      .addEventListener("click", () => {
+        this.switchMode("layerdiffuse");
+      });
+
+    document
+      .getElementById("acceleratedModeBtn")
+      .addEventListener("click", () => {
+        this.switchMode("accelerated");
+      });
 
     document.getElementById("chatModeBtn").addEventListener("click", () => {
       this.switchMode("chat");
@@ -138,10 +155,11 @@ export class RealEngine {
         if (e.key === "Enter" && !e.shiftKey) {
           e.preventDefault();
           // Trigger form submission
-          if (this.currentMode === "image") {
-            this.generateImage();
-          } else {
+          if (this.currentMode === "chat") {
             this.sendChatMessage();
+          } else {
+            // All other modes are image generation modes
+            this.generateImage();
           }
         }
       });
@@ -152,6 +170,9 @@ export class RealEngine {
       .addEventListener("click", () => {
         this.addPersonalLora();
       });
+
+    // Feature-specific controls
+    this.bindFeatureControls();
 
     // Settings events
     this.modules.settingsManager.bindSettingsEvents(
@@ -189,6 +210,51 @@ export class RealEngine {
   }
 
   /**
+   * Bind feature-specific controls
+   */
+  bindFeatureControls() {
+    // PuLID image upload
+    const pulidImageUpload = document.getElementById("pulidImageUpload");
+    if (pulidImageUpload) {
+      pulidImageUpload.addEventListener("change", (e) => {
+        this.handlePulidImageUpload(e);
+      });
+    }
+
+    // PuLID ID weight slider
+    const idWeightSlider = document.getElementById("idWeight");
+    const idWeightValue = document.getElementById("idWeightValue");
+    if (idWeightSlider && idWeightValue) {
+      idWeightSlider.addEventListener("input", (e) => {
+        idWeightValue.textContent = e.target.value;
+      });
+    }
+  }
+
+  /**
+   * Handle PuLID image upload
+   */
+  handlePulidImageUpload(event) {
+    const file = event.target.files[0]; // Only take the first file
+    const previewContainer = document.getElementById("pulidImagePreview");
+
+    // Clear existing previews
+    previewContainer.innerHTML = "";
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        previewContainer.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+
+      console.log("PuLID reference image uploaded:", file.name);
+    }
+  }
+
+  /**
    * Generate an image using the ImageGenerator module
    */
   async generateImage() {
@@ -201,6 +267,7 @@ export class RealEngine {
       addMessage: this.addMessage.bind(this),
       showStatus: this.showStatus.bind(this),
       autoResizeTextarea: this.autoResizeTextarea.bind(this),
+      currentMode: this.currentMode,
     });
 
     // Add to chat history if successful
@@ -442,12 +509,85 @@ export class RealEngine {
    */
   switchMode(mode) {
     this.currentMode = mode;
-    this.modules.settingsManager.switchMode(
-      mode,
-      this.updateWelcomeMessage.bind(this),
-      this.saveToStorage.bind(this),
-      this.isInitialized
+
+    // Update mode buttons
+    document
+      .querySelectorAll(".mode-btn")
+      .forEach((btn) => btn.classList.remove("active"));
+
+    if (mode === "image") {
+      document.getElementById("imageModeBtn").classList.add("active");
+    } else if (mode === "pulid") {
+      document.getElementById("pulidModeBtn").classList.add("active");
+
+      // PuLID requires FLUX models - validate and switch if needed
+      if (
+        this.settings.model !== "runware:100@1" &&
+        this.settings.model !== "runware:101@1"
+      ) {
+        const oldModel = this.settings.model;
+        this.settings.model = "runware:100@1"; // Switch to FLUX Dev
+        this.updateHiddenInput("model", this.settings.model);
+
+        // Update the settings panel dropdown
+        const modelSelect = document.getElementById("modelSelect");
+        if (modelSelect) {
+          modelSelect.value = this.settings.model;
+        }
+
+        console.log(
+          `PuLID mode: Auto-switched model from ${oldModel} to FLUX Dev`
+        );
+        this.showStatus(
+          "Switched to FLUX Dev model for PuLID compatibility",
+          3000
+        );
+      }
+    } else if (mode === "layerdiffuse") {
+      document.getElementById("layerDiffuseModeBtn").classList.add("active");
+    } else if (mode === "accelerated") {
+      document.getElementById("acceleratedModeBtn").classList.add("active");
+    } else if (mode === "chat") {
+      document.getElementById("chatModeBtn").classList.add("active");
+    }
+
+    // Hide all inline controls
+    document.querySelectorAll(".inline-control").forEach((control) => {
+      control.style.display = "none";
+    });
+
+    // Show/hide feature badge and controls
+    const featureBadge = document.getElementById("featureBadge");
+    const featureBadgeText = document.getElementById("featureBadgeText");
+
+    if (mode === "pulid") {
+      featureBadge.style.display = "block";
+      featureBadgeText.textContent = "🧬 PuLID";
+      document.getElementById("pulidControl").style.display = "flex";
+    } else if (mode === "layerdiffuse") {
+      featureBadge.style.display = "block";
+      featureBadgeText.textContent = "🧼 LayerDiffuse";
+    } else if (mode === "accelerated") {
+      featureBadge.style.display = "block";
+      featureBadgeText.textContent = "⚡️ Accelerated";
+    } else {
+      featureBadge.style.display = "none";
+    }
+
+    // Show/hide enhancer toggle based on mode
+    const enhancerContainer = document.getElementById(
+      "enhancerToggleContainer"
     );
+    if (mode === "chat") {
+      enhancerContainer.classList.add("hidden");
+    } else {
+      enhancerContainer.classList.remove("hidden");
+    }
+
+    // Update model indicator to reflect current model
+    this.updateModelIndicator();
+    this.updateWelcomeMessage();
+    this.saveToStorage();
   }
 
   /**
@@ -462,6 +602,24 @@ export class RealEngine {
         welcomeMessage.innerHTML = `
           <h2>Welcome to RealEngine</h2>
           <p>Enter a prompt to generate AI images</p>
+          <button class="random-prompt-btn" onclick="realEngine.getRandomPrompt()">Get Random Prompt</button>
+        `;
+      } else if (this.currentMode === "pulid") {
+        welcomeMessage.innerHTML = `
+          <h2>🧬 PuLID - Identity Consistency</h2>
+          <p>Upload reference images and generate with preserved facial identity</p>
+          <button class="random-prompt-btn" onclick="realEngine.getRandomPrompt()">Get Random Prompt</button>
+        `;
+      } else if (this.currentMode === "layerdiffuse") {
+        welcomeMessage.innerHTML = `
+          <h2>🧼 LayerDiffuse - Transparent Backgrounds</h2>
+          <p>Generate images with transparent backgrounds directly</p>
+          <button class="random-prompt-btn" onclick="realEngine.getRandomPrompt()">Get Random Prompt</button>
+        `;
+      } else if (this.currentMode === "accelerated") {
+        welcomeMessage.innerHTML = `
+          <h2>⚡️ Accelerated Generation</h2>
+          <p>Save up to 70% time & cost with advanced caching</p>
           <button class="random-prompt-btn" onclick="realEngine.getRandomPrompt()">Get Random Prompt</button>
         `;
       } else {

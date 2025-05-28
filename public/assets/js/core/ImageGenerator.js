@@ -23,6 +23,7 @@ export class ImageGenerator {
     addMessage,
     showStatus,
     autoResizeTextarea,
+    currentMode = "image",
   }) {
     if (this.isGenerating)
       return { success: false, reason: "Already generating" };
@@ -70,11 +71,45 @@ export class ImageGenerator {
     const loadingMessage = addMessage("Generating image...", false);
 
     try {
-      const formData = this.collectFormData(settings);
+      const formData = this.collectFormData(settings, currentMode);
       // Override the prompt with trigger words added
       formData.positivePrompt = finalPrompt;
 
-      const response = await fetch("/generate", {
+      // Determine the correct API endpoint based on mode
+      let endpoint = "/generate"; // Default endpoint
+
+      // Add feature-specific properties and set endpoint
+      if (currentMode === "pulid") {
+        const pulidImages = this.collectPulidImages();
+
+        if (pulidImages.length === 0) {
+          throw new Error(
+            "Please upload at least one reference image for PuLID"
+          );
+        }
+        formData.puLID = {
+          inputImages: pulidImages,
+          idWeight: parseInt(document.getElementById("idWeight")?.value || "1"), // Use documentation default of 1
+          trueCFGScale: 1.5, // Use documentation default of 1.5
+          CFGStartStep: 3, // Use documentation default of 3
+        };
+        endpoint = "/pulid";
+        console.log("Using PuLID endpoint with optimized parameters");
+      } else if (currentMode === "layerdiffuse") {
+        formData.layerDiffuse = true;
+        endpoint = "/layer-diffuse";
+        console.log("Using LayerDiffuse endpoint with data:", formData);
+      } else if (currentMode === "accelerated") {
+        formData.acceleratorOptions = {
+          TeaCache: true,
+          DeepCache: true,
+        };
+        endpoint = "/accelerated";
+        console.log("Using Accelerated endpoint with data:", formData);
+      }
+
+      console.log("Making request to:", endpoint);
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -83,7 +118,10 @@ export class ImageGenerator {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || `HTTP error! status: ${response.status}`
+        );
       }
 
       const data = await response.json();
@@ -107,7 +145,7 @@ export class ImageGenerator {
       console.error("Generation error:", error);
       loadingMessage.remove();
       addMessage(
-        "An error occurred while generating the image. Please try again.",
+        `An error occurred: ${error.message}. Please try again.`,
         false
       );
       showStatus("Generation failed", 3000);
@@ -124,13 +162,29 @@ export class ImageGenerator {
   /**
    * Collect form data for image generation
    * @param {Object} settings - Current settings object
+   * @param {string} currentMode - Current generation mode
    * @returns {Object} - Form data for API call
    */
-  collectFormData(settings) {
-    // Check if current model supports LoRA
+  collectFormData(settings, currentMode = "image") {
+    // For PuLID mode, use minimal structure matching documentation
+    if (currentMode === "pulid") {
+      return {
+        positivePrompt: document.getElementById("positivePrompt").value,
+        height: settings.height,
+        width: settings.width,
+        model:
+          settings.model === "runware:100@1" ||
+          settings.model === "runware:101@1"
+            ? settings.model
+            : "runware:100@1", // Auto-switch to FLUX Dev if not already FLUX
+      };
+    }
+
+    // For all other modes, use the full structure
     const isDreamModel = settings.model === "runware:97@1";
 
-    console.log("collectFormData - Model:", settings.model);
+    console.log("collectFormData - Mode:", currentMode);
+    console.log("collectFormData - Original Model:", settings.model);
     console.log("collectFormData - isDreamModel:", isDreamModel);
     console.log("collectFormData - settings.lora:", settings.lora);
 
@@ -140,8 +194,8 @@ export class ImageGenerator {
       width: settings.width,
       height: settings.height,
       model: settings.model,
-      lora: isDreamModel ? "" : settings.lora, // Clear LoRA for Dream model
-      lora2: isDreamModel ? "" : settings.lora2 || "", // Clear secondary LoRA for Dream model
+      lora: isDreamModel ? "" : settings.lora,
+      lora2: isDreamModel ? "" : settings.lora2 || "",
       loraWeight: document.getElementById("loraWeight")
         ? parseFloat(document.getElementById("loraWeight").value)
         : 1.0,
@@ -154,8 +208,29 @@ export class ImageGenerator {
       numberResults: settings.numberResults,
     };
 
-    console.log("collectFormData - Final lora value:", formData.lora);
+    console.log("collectFormData - Final formData:", formData);
     return formData;
+  }
+
+  /**
+   * Collect PuLID reference images from the UI
+   * @returns {Array} - Array of base64 encoded images
+   */
+  collectPulidImages() {
+    const images = [];
+    const previewContainer = document.getElementById("pulidImagePreview");
+
+    if (previewContainer) {
+      const imageElements = previewContainer.querySelectorAll("img");
+
+      imageElements.forEach((img) => {
+        if (img.src && img.src.startsWith("data:")) {
+          images.push(img.src);
+        }
+      });
+    }
+
+    return images;
   }
 
   /**
