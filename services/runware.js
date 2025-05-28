@@ -272,19 +272,7 @@ class RunwareService {
    * @returns {Promise<Array>} - Array of generated images with transparency
    */
   async generateLayerDiffuse(params) {
-    const {
-      positivePrompt,
-      negativePrompt,
-      width,
-      height,
-      model,
-      numberResults,
-      outputFormat,
-      scheduler,
-      steps,
-      CFGScale,
-      seed,
-    } = params;
+    const { positivePrompt, width, height, model, numberResults } = params;
 
     // LayerDiffuse requires FLUX models - force switch if needed
     let layerDiffuseModel = model;
@@ -295,39 +283,79 @@ class RunwareService {
       );
     }
 
-    // Build the request payload for LayerDiffuse
-    const requestPayload = {
-      taskType: "imageInference",
-      taskUUID: uuidv4(),
-      positivePrompt,
-      negativePrompt: negativePrompt || "blurry, ugly, low quality",
-      width: parseInt(width) || 1024,
-      height: parseInt(height) || 1024,
-      model: layerDiffuseModel,
-      numberResults: parseInt(numberResults) || 1,
-      outputType: "URL",
-      outputFormat: "PNG", // Force PNG for transparency
-      scheduler: scheduler || "Default",
-      steps: parseInt(steps) || 28,
-      CFGScale: parseFloat(CFGScale) || 3.5,
-      seed: seed ? parseInt(seed) : undefined,
-      checkNSFW: false,
-      includeCost: true,
-      // LayerDiffuse automatically applies the required LoRA and VAE
-      advancedFeatures: {
-        layerDiffuse: true, // This automatically applies runware:120@2 LoRA and runware:120@4 VAE
+    // Build the EXACT payload from documentation - minimal parameters only
+    const requestPayload = [
+      {
+        taskType: "imageInference",
+        taskUUID: uuidv4(),
+        outputFormat: "PNG",
+        positivePrompt,
+        height: parseInt(height) || 1024,
+        width: parseInt(width) || 1024,
+        advancedFeatures: {
+          layerDiffuse: true,
+        },
+        model: layerDiffuseModel,
       },
-    };
+    ];
 
-    console.log("Generating LayerDiffuse image with payload:", requestPayload);
+    // Add numberResults only if specified
+    if (numberResults && parseInt(numberResults) > 1) {
+      requestPayload[0].numberResults = parseInt(numberResults);
+    }
 
-    const images = await this.runware.requestImages(requestPayload);
+    console.log(
+      "Generating LayerDiffuse image with EXACT payload from docs:",
+      JSON.stringify(requestPayload, null, 2)
+    );
 
-    // Format response to match frontend expectations
-    return {
-      images: images.map((img) => img.imageURL || img.image || img),
-      cost: images.reduce((total, img) => total + (img.cost || 0), 0),
-    };
+    try {
+      // Use direct HTTP request to ensure proper handling of advancedFeatures
+      const response = await fetch("https://api.runware.ai/v1", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.RUNWARE_API_KEY}`,
+        },
+        body: JSON.stringify(requestPayload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          `HTTP ${response.status}: ${JSON.stringify(errorData)}`
+        );
+      }
+
+      const result = await response.json();
+      console.log(
+        "LayerDiffuse API response:",
+        JSON.stringify(result, null, 2)
+      );
+
+      // Handle the response format
+      let images = [];
+      if (result && result.data && result.data.length > 0) {
+        images = result.data;
+      } else {
+        throw new Error("No images returned from LayerDiffuse API");
+      }
+
+      console.log("LayerDiffuse generation successful:", {
+        imageCount: images.length,
+        cost: images.reduce((total, img) => total + (img.cost || 0), 0),
+        firstImageUrl: images[0]?.imageURL,
+      });
+
+      // Format response to match frontend expectations
+      return {
+        images: images.map((img) => img.imageURL || img.image || img),
+        cost: images.reduce((total, img) => total + (img.cost || 0), 0),
+      };
+    } catch (error) {
+      console.error("LayerDiffuse generation failed:", error);
+      throw error;
+    }
   }
 
   /**

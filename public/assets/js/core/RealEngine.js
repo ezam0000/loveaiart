@@ -636,7 +636,9 @@ export class RealEngine {
       } else if (this.currentMode === "layerdiffuse") {
         welcomeMessage.innerHTML = `
           <h2>🧼 LayerDiffuse - Transparent Backgrounds</h2>
-          <p>Generate images with transparent backgrounds using FLUX models (PNG format)</p>
+          <p>Generate images with built-in transparency using FLUX models. Best results with isolated subjects and clean backgrounds.</p>
+          <p><strong>Tips:</strong> Use terms like "isolated subject", "product photography", "studio lighting", "no background"</p>
+          <p><strong>Example:</strong> "red apple, product photography, isolated subject, studio lighting, soft shadows"</p>
           <button class="random-prompt-btn" onclick="realEngine.getRandomPrompt()">Get Random Prompt</button>
         `;
       } else {
