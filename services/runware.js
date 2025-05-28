@@ -208,19 +208,23 @@ class RunwareService {
     // Use only the first image as PuLID supports exactly 1 image
     const referenceImageData = inputImages[0];
 
-    // Upload the reference image first to get UUID
-    console.log("Uploading reference image for PuLID...");
+    // Upload the reference image and get UUID
+    console.log("Uploading PuLID reference image...");
     const referenceImageUUID = await this.uploadImage(referenceImageData);
+    console.log(
+      "PuLID reference image uploaded successfully, UUID:",
+      referenceImageUUID
+    );
 
-    // PuLID works specifically with FLUX models - use FLUX Dev as default
-    let pulidModel = "runware:100@1"; // FLUX Dev
+    // PuLID works specifically with FLUX models - use FLUX Dev as default for better quality
+    let pulidModel = "runware:100@1"; // FLUX Dev for better identity preservation
     if (model === "runware:100@1" || model === "runware:101@1") {
       pulidModel = model;
     }
 
     console.log(`Using PuLID with model: ${pulidModel}`);
 
-    // Build the request payload for PuLID according to Runware docs
+    // Build the request payload for PuLID according to Runware docs with proven working defaults
     const requestPayload = {
       taskType: "imageInference",
       taskUUID: uuidv4(),
@@ -228,32 +232,28 @@ class RunwareService {
       height: parseInt(height) || 1024,
       width: parseInt(width) || 1024,
       model: pulidModel,
-      // PuLID specific parameters
+      // PuLID specific parameters with aggressive settings for maximum identity preservation
       puLID: {
         inputImages: [referenceImageUUID], // Use UUID instead of base64
-        idWeight:
-          parseInt(idWeight) !== undefined && !isNaN(parseInt(idWeight))
-            ? parseInt(idWeight)
-            : 1, // Use documentation default of 1
-        trueCFGScale:
-          parseFloat(trueCFGScale) !== undefined &&
-          !isNaN(parseFloat(trueCFGScale))
-            ? parseFloat(trueCFGScale)
-            : 1.5, // Use documentation default of 1.5
-        CFGStartStep:
-          parseInt(CFGStartStep) !== undefined && !isNaN(parseInt(CFGStartStep))
-            ? parseInt(CFGStartStep)
-            : 3, // Use documentation default of 3
+        idWeight: parseInt(idWeight) || 1, // Use the user's setting
+        trueCFGScale: parseFloat(trueCFGScale) || 10.0, // Reduced from 15.0 for better balance
+        CFGStartStep: parseInt(CFGStartStep) || 0, // Start from step 0 for maximum influence
       },
     };
 
     console.log(
-      "Generating PuLID image with payload:",
+      "Generating PuLID image with optimized parameters:",
       JSON.stringify(requestPayload, null, 2)
     );
 
     try {
       const images = await this.runware.requestImages(requestPayload);
+
+      console.log("PuLID generation successful:", {
+        imageCount: images.length,
+        cost: images.reduce((total, img) => total + (img.cost || 0), 0),
+        firstImageUrl: images[0]?.imageURL || images[0]?.image || images[0],
+      });
 
       // Format response to match frontend expectations
       return {
@@ -261,8 +261,8 @@ class RunwareService {
         cost: images.reduce((total, img) => total + (img.cost || 0), 0),
       };
     } catch (error) {
-      console.error("PuLID generation error:", error);
-      throw new Error(`PuLID generation failed: ${error.message}`);
+      console.error("PuLID generation failed:", error);
+      throw error;
     }
   }
 
@@ -286,6 +286,15 @@ class RunwareService {
       seed,
     } = params;
 
+    // LayerDiffuse requires FLUX models - force switch if needed
+    let layerDiffuseModel = model;
+    if (model !== "runware:100@1" && model !== "runware:101@1") {
+      layerDiffuseModel = "runware:101@1"; // Default to FLUX Schnell
+      console.log(
+        `LayerDiffuse: Auto-switched model from ${model} to ${layerDiffuseModel}`
+      );
+    }
+
     // Build the request payload for LayerDiffuse
     const requestPayload = {
       taskType: "imageInference",
@@ -294,18 +303,19 @@ class RunwareService {
       negativePrompt: negativePrompt || "blurry, ugly, low quality",
       width: parseInt(width) || 1024,
       height: parseInt(height) || 1024,
-      model: model || "runware:100@1", // Default model for LayerDiffuse
+      model: layerDiffuseModel,
       numberResults: parseInt(numberResults) || 1,
       outputType: "URL",
-      outputFormat: outputFormat || "PNG", // PNG preferred for transparency
+      outputFormat: "PNG", // Force PNG for transparency
       scheduler: scheduler || "Default",
       steps: parseInt(steps) || 28,
       CFGScale: parseFloat(CFGScale) || 3.5,
       seed: seed ? parseInt(seed) : undefined,
       checkNSFW: false,
       includeCost: true,
+      // LayerDiffuse automatically applies the required LoRA and VAE
       advancedFeatures: {
-        layerDiffuse: true, // Enable LayerDiffuse for transparent backgrounds
+        layerDiffuse: true, // This automatically applies runware:120@2 LoRA and runware:120@4 VAE
       },
     };
 
@@ -462,19 +472,30 @@ class RunwareService {
       }
 
       const result = await response.json();
+      console.log(
+        "Upload response structure:",
+        JSON.stringify(result, null, 2)
+      );
 
-      if (
-        result &&
-        result.data &&
-        result.data.length > 0 &&
-        result.data[0].imageUUID
-      ) {
-        console.log(
-          "Image uploaded successfully, UUID:",
-          result.data[0].imageUUID
-        );
-        return result.data[0].imageUUID;
+      // Handle different response formats
+      let imageUUID = null;
+
+      if (result && result.data && result.data.length > 0) {
+        // Standard format: result.data[0].imageUUID
+        imageUUID = result.data[0].imageUUID;
+      } else if (result && result.length > 0) {
+        // Alternative format: result[0].imageUUID
+        imageUUID = result[0].imageUUID;
+      } else if (result && result.imageUUID) {
+        // Direct format: result.imageUUID
+        imageUUID = result.imageUUID;
+      }
+
+      if (imageUUID) {
+        console.log("Image uploaded successfully, UUID:", imageUUID);
+        return imageUUID;
       } else {
+        console.error("Upload response:", result);
         throw new Error("Failed to get image UUID from upload response");
       }
     } catch (error) {

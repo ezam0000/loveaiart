@@ -92,12 +92,6 @@ export class RealEngine {
         this.switchMode("layerdiffuse");
       });
 
-    document
-      .getElementById("acceleratedModeBtn")
-      .addEventListener("click", () => {
-        this.switchMode("accelerated");
-      });
-
     document.getElementById("chatModeBtn").addEventListener("click", () => {
       this.switchMode("chat");
     });
@@ -227,6 +221,15 @@ export class RealEngine {
     if (idWeightSlider && idWeightValue) {
       idWeightSlider.addEventListener("input", (e) => {
         idWeightValue.textContent = e.target.value;
+      });
+    }
+
+    // PuLID trueCFGScale slider
+    const trueCFGScaleSlider = document.getElementById("trueCFGScale");
+    const trueCFGScaleValue = document.getElementById("trueCFGScaleValue");
+    if (trueCFGScaleSlider && trueCFGScaleValue) {
+      trueCFGScaleSlider.addEventListener("input", (e) => {
+        trueCFGScaleValue.textContent = parseFloat(e.target.value).toFixed(1);
       });
     }
   }
@@ -526,7 +529,7 @@ export class RealEngine {
         this.settings.model !== "runware:101@1"
       ) {
         const oldModel = this.settings.model;
-        this.settings.model = "runware:100@1"; // Switch to FLUX Dev
+        this.settings.model = "runware:100@1"; // Switch to FLUX Dev for better quality
         this.updateHiddenInput("model", this.settings.model);
 
         // Update the settings panel dropdown
@@ -545,8 +548,30 @@ export class RealEngine {
       }
     } else if (mode === "layerdiffuse") {
       document.getElementById("layerDiffuseModeBtn").classList.add("active");
-    } else if (mode === "accelerated") {
-      document.getElementById("acceleratedModeBtn").classList.add("active");
+
+      // LayerDiffuse requires FLUX models - validate and switch if needed
+      if (
+        this.settings.model !== "runware:100@1" &&
+        this.settings.model !== "runware:101@1"
+      ) {
+        const oldModel = this.settings.model;
+        this.settings.model = "runware:101@1"; // Switch to FLUX Schnell
+        this.updateHiddenInput("model", this.settings.model);
+
+        // Update the settings panel dropdown
+        const modelSelect = document.getElementById("modelSelect");
+        if (modelSelect) {
+          modelSelect.value = this.settings.model;
+        }
+
+        console.log(
+          `LayerDiffuse mode: Auto-switched model from ${oldModel} to FLUX Schnell`
+        );
+        this.showStatus(
+          "Switched to FLUX Schnell model for LayerDiffuse compatibility",
+          3000
+        );
+      }
     } else if (mode === "chat") {
       document.getElementById("chatModeBtn").classList.add("active");
     }
@@ -567,9 +592,6 @@ export class RealEngine {
     } else if (mode === "layerdiffuse") {
       featureBadge.style.display = "block";
       featureBadgeText.textContent = "🧼 LayerDiffuse";
-    } else if (mode === "accelerated") {
-      featureBadge.style.display = "block";
-      featureBadgeText.textContent = "⚡️ Accelerated";
     } else {
       featureBadge.style.display = "none";
     }
@@ -606,20 +628,15 @@ export class RealEngine {
         `;
       } else if (this.currentMode === "pulid") {
         welcomeMessage.innerHTML = `
-          <h2>🧬 PuLID - Identity Consistency</h2>
-          <p>Upload reference images and generate with preserved facial identity</p>
+          <h2>🎭 PuLID - Identity Preservation</h2>
+          <p>Upload a reference image and describe the person with specific details for best results</p>
+          <p><strong>Example:</strong> "elderly man with white mustache and wild hair, scientist, portrait"</p>
           <button class="random-prompt-btn" onclick="realEngine.getRandomPrompt()">Get Random Prompt</button>
         `;
       } else if (this.currentMode === "layerdiffuse") {
         welcomeMessage.innerHTML = `
           <h2>🧼 LayerDiffuse - Transparent Backgrounds</h2>
-          <p>Generate images with transparent backgrounds directly</p>
-          <button class="random-prompt-btn" onclick="realEngine.getRandomPrompt()">Get Random Prompt</button>
-        `;
-      } else if (this.currentMode === "accelerated") {
-        welcomeMessage.innerHTML = `
-          <h2>⚡️ Accelerated Generation</h2>
-          <p>Save up to 70% time & cost with advanced caching</p>
+          <p>Generate images with transparent backgrounds using FLUX models (PNG format)</p>
           <button class="random-prompt-btn" onclick="realEngine.getRandomPrompt()">Get Random Prompt</button>
         `;
       } else {

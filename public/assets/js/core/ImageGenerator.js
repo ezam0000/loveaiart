@@ -76,7 +76,7 @@ export class ImageGenerator {
       formData.positivePrompt = finalPrompt;
 
       // Determine the correct API endpoint based on mode
-      let endpoint = "/generate"; // Default endpoint
+      let endpoint = "/accelerated"; // Default to accelerated endpoint for cost savings
 
       // Add feature-specific properties and set endpoint
       if (currentMode === "pulid") {
@@ -89,21 +89,37 @@ export class ImageGenerator {
         }
         formData.puLID = {
           inputImages: pulidImages,
-          idWeight: parseInt(document.getElementById("idWeight")?.value || "1"), // Use documentation default of 1
-          trueCFGScale: 1.5, // Use documentation default of 1.5
-          CFGStartStep: 3, // Use documentation default of 3
+          idWeight: parseInt(document.getElementById("idWeight")?.value || "1"),
+          trueCFGScale: parseFloat(
+            document.getElementById("trueCFGScale")?.value || "10.0"
+          ),
+          // Let server use optimized default for CFGStartStep (0)
         };
         endpoint = "/pulid";
         console.log("Using PuLID endpoint with optimized parameters");
+        console.log("PuLID formData:", JSON.stringify(formData, null, 2));
       } else if (currentMode === "layerdiffuse") {
+        // LayerDiffuse requires FLUX model - validate and switch if needed
+        if (
+          settings.model !== "runware:100@1" &&
+          settings.model !== "runware:101@1"
+        ) {
+          const oldModel = settings.model;
+          formData.model = "runware:101@1"; // Switch to FLUX Schnell for faster generation
+          console.log(
+            `LayerDiffuse mode: Auto-switched model from ${oldModel} to FLUX Schnell`
+          );
+        }
+
+        // Force PNG format for transparency support
+        formData.outputFormat = "PNG";
         formData.layerDiffuse = true;
         endpoint = "/layer-diffuse";
         console.log("Using LayerDiffuse endpoint with data:", formData);
-      } else if (currentMode === "accelerated") {
-        formData.acceleratorOptions = {
-          TeaCache: true,
-          DeepCache: true,
-        };
+      } else {
+        // For all other modes (including "image" and "accelerated"), use accelerated by default
+        formData.teaCache = true;
+        formData.deepCache = true;
         endpoint = "/accelerated";
         console.log("Using Accelerated endpoint with data:", formData);
       }
