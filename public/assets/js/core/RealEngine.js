@@ -221,24 +221,6 @@ export class RealEngine {
         this.handlePulidImageUpload(e);
       });
     }
-
-    // PuLID ID weight slider
-    const idWeightSlider = document.getElementById("idWeight");
-    const idWeightValue = document.getElementById("idWeightValue");
-    if (idWeightSlider && idWeightValue) {
-      idWeightSlider.addEventListener("input", (e) => {
-        idWeightValue.textContent = e.target.value;
-      });
-    }
-
-    // PuLID trueCFGScale slider
-    const trueCFGScaleSlider = document.getElementById("trueCFGScale");
-    const trueCFGScaleValue = document.getElementById("trueCFGScaleValue");
-    if (trueCFGScaleSlider && trueCFGScaleValue) {
-      trueCFGScaleSlider.addEventListener("input", (e) => {
-        trueCFGScaleValue.textContent = parseFloat(e.target.value).toFixed(1);
-      });
-    }
   }
 
   /**
@@ -625,8 +607,15 @@ export class RealEngine {
 
     // Hide all inline controls
     document.querySelectorAll(".inline-control").forEach((control) => {
-      control.style.display = "none";
+      control.style.visibility = "hidden";
     });
+
+    // Show/hide reference image button
+    const referenceImageBtn = document.getElementById("referenceImageBtn");
+    if (referenceImageBtn) {
+      referenceImageBtn.style.visibility =
+        mode === "pulid" ? "visible" : "hidden";
+    }
 
     // Show/hide feature badge and controls
     const featureBadge = document.getElementById("featureBadge");
@@ -635,7 +624,7 @@ export class RealEngine {
     if (mode === "pulid") {
       featureBadge.style.display = "block";
       featureBadgeText.textContent = "👤 Face Match";
-      document.getElementById("pulidControl").style.display = "flex";
+      document.getElementById("pulidControl").style.visibility = "visible";
     } else if (mode === "layerdiffuse") {
       featureBadge.style.display = "block";
       featureBadgeText.textContent = "📐 Vector";

@@ -178,6 +178,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  height: 36px;
+  width: 36px;
 }
 
 .send-btn:hover {
@@ -201,6 +203,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  height: 36px;
+  width: 36px;
 }
 
 .recycle-btn:hover {
@@ -210,6 +214,33 @@
 }
 
 .recycle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.reference-image-btn {
+  background-color: var(--bg-tertiary);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 36px;
+  width: 36px;
+}
+
+.reference-image-btn:hover {
+  background-color: var(--hover-bg);
+  color: var(--text-primary);
+  border-color: var(--border-light);
+}
+
+.reference-image-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -395,6 +426,7 @@ input:checked + .slider-toggle:before {
 /* Minimal Feature Controls */
 .feature-inline-controls {
   margin-top: 8px;
+  min-height: 20px; /* Reserve space to prevent layout shifts */
 }
 
 .inline-control {
