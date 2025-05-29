@@ -588,7 +588,7 @@ export class RealEngine {
       document.getElementById("pulidControl").style.display = "flex";
     } else if (mode === "layerdiffuse") {
       featureBadge.style.display = "block";
-      featureBadgeText.textContent = "🖼️ Transparent";
+      featureBadgeText.textContent = "📐 Vector";
     } else {
       featureBadge.style.display = "none";
     }
@@ -636,8 +636,8 @@ export class RealEngine {
           "Upload a reference image above, then describe the person's appearance, setting, and style...";
       } else if (this.currentMode === "layerdiffuse") {
         welcomeMessage.innerHTML = `
-          <h2>🖼️ Transparent Backgrounds</h2>
-          <p>Generate images with built-in transparency using FLUX models. Best results with isolated subjects and clean backgrounds.</p>
+          <h2>📐 Vector Graphics</h2>
+          <p>Generate clean, isolated graphics with transparent backgrounds - perfect for logos, icons, and design elements.</p>
           <p><strong>Tips:</strong> Use terms like "isolated subject", "product photography", "studio lighting", "no background"</p>
           <p><strong>Example:</strong> "red apple, product photography, isolated subject, studio lighting, soft shadows"</p>
           <button class="random-prompt-btn" onclick="realEngine.getRandomPrompt()">Get Random Prompt</button>
