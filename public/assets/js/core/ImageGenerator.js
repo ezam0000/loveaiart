@@ -108,15 +108,12 @@ export class ImageGenerator {
         console.log("Using PuLID async endpoint to handle timeouts");
         console.log("PuLID formData:", JSON.stringify(formData, null, 2));
       } else if (currentMode === "layerdiffuse") {
-        // LayerDiffuse requires FLUX model - validate and switch if needed
-        if (
-          settings.model !== "runware:100@1" &&
-          settings.model !== "runware:101@1"
-        ) {
+        // LayerDiffuse only works with FLUX Schnell - validate and switch if needed
+        if (settings.model !== "runware:101@1") {
           const oldModel = settings.model;
-          formData.model = "runware:101@1"; // Switch to FLUX Schnell for faster generation
+          formData.model = "runware:101@1"; // Always use FLUX Schnell for LayerDiffuse
           console.log(
-            `LayerDiffuse mode: Auto-switched model from ${oldModel} to FLUX Schnell`
+            `LayerDiffuse mode: Auto-switched model from ${oldModel} to FLUX Schnell (LayerDiffuse only supports FLUX Schnell)`
           );
         }
 

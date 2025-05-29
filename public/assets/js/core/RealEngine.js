@@ -549,13 +549,10 @@ export class RealEngine {
     } else if (mode === "layerdiffuse") {
       document.getElementById("layerDiffuseModeBtn").classList.add("active");
 
-      // LayerDiffuse requires FLUX models - validate and switch if needed
-      if (
-        this.settings.model !== "runware:100@1" &&
-        this.settings.model !== "runware:101@1"
-      ) {
+      // LayerDiffuse only works with FLUX Schnell - force switch if needed
+      if (this.settings.model !== "runware:101@1") {
         const oldModel = this.settings.model;
-        this.settings.model = "runware:101@1"; // Switch to FLUX Schnell
+        this.settings.model = "runware:101@1"; // Always use FLUX Schnell for LayerDiffuse
         this.updateHiddenInput("model", this.settings.model);
 
         // Update the settings panel dropdown
@@ -565,7 +562,7 @@ export class RealEngine {
         }
 
         console.log(
-          `LayerDiffuse mode: Auto-switched model from ${oldModel} to FLUX Schnell`
+          `LayerDiffuse mode: Auto-switched model from ${oldModel} to FLUX Schnell (LayerDiffuse only supports FLUX Schnell)`
         );
         this.showStatus(
           "Switched to FLUX Schnell model for LayerDiffuse compatibility",
@@ -587,11 +584,11 @@ export class RealEngine {
 
     if (mode === "pulid") {
       featureBadge.style.display = "block";
-      featureBadgeText.textContent = "🧬 PuLID";
+      featureBadgeText.textContent = "👤 Face Match";
       document.getElementById("pulidControl").style.display = "flex";
     } else if (mode === "layerdiffuse") {
       featureBadge.style.display = "block";
-      featureBadgeText.textContent = "🧼 LayerDiffuse";
+      featureBadgeText.textContent = "🖼️ Transparent";
     } else {
       featureBadge.style.display = "none";
     }
@@ -618,6 +615,7 @@ export class RealEngine {
   updateWelcomeMessage() {
     const chatContainer = document.getElementById("chatContainer");
     const welcomeMessage = chatContainer.querySelector(".welcome-message");
+    const promptInput = document.getElementById("positivePrompt");
 
     if (welcomeMessage) {
       if (this.currentMode === "image") {
@@ -626,27 +624,34 @@ export class RealEngine {
           <p>Enter a prompt to generate AI images</p>
           <button class="random-prompt-btn" onclick="realEngine.getRandomPrompt()">Get Random Prompt</button>
         `;
+        promptInput.placeholder = "Describe the image you want to generate...";
       } else if (this.currentMode === "pulid") {
         welcomeMessage.innerHTML = `
-          <h2>🎭 PuLID - Identity Preservation</h2>
+          <h2>👤 Face Match - Identity Preservation</h2>
           <p>Upload a reference image and describe the person with specific details for best results</p>
           <p><strong>Example:</strong> "elderly man with white mustache and wild hair, scientist, portrait"</p>
           <button class="random-prompt-btn" onclick="realEngine.getRandomPrompt()">Get Random Prompt</button>
         `;
+        promptInput.placeholder =
+          "Upload a reference image above, then describe the person's appearance, setting, and style...";
       } else if (this.currentMode === "layerdiffuse") {
         welcomeMessage.innerHTML = `
-          <h2>🧼 LayerDiffuse - Transparent Backgrounds</h2>
+          <h2>🖼️ Transparent Backgrounds</h2>
           <p>Generate images with built-in transparency using FLUX models. Best results with isolated subjects and clean backgrounds.</p>
           <p><strong>Tips:</strong> Use terms like "isolated subject", "product photography", "studio lighting", "no background"</p>
           <p><strong>Example:</strong> "red apple, product photography, isolated subject, studio lighting, soft shadows"</p>
           <button class="random-prompt-btn" onclick="realEngine.getRandomPrompt()">Get Random Prompt</button>
         `;
+        promptInput.placeholder =
+          "Describe your subject with terms like: isolated subject, product photography, no background...";
       } else {
         welcomeMessage.innerHTML = `
           <h2>Chat with RealEngine AI</h2>
           <p>Ask questions, get prompt suggestions, or just chat!</p>
           <button class="random-prompt-btn" onclick="realEngine.modules.promptEnhancer.askForPromptHelp(realEngine.autoResizeTextarea.bind(realEngine))">Help me create a prompt</button>
         `;
+        promptInput.placeholder =
+          "Ask me anything about AI art, get prompt suggestions, or just chat...";
       }
     }
   }

@@ -308,12 +308,11 @@ class RunwareService {
   async generateLayerDiffuse(params) {
     const { positivePrompt, width, height, model, numberResults } = params;
 
-    // LayerDiffuse requires FLUX models - force switch if needed
-    let layerDiffuseModel = model;
-    if (model !== "runware:100@1" && model !== "runware:101@1") {
-      layerDiffuseModel = "runware:101@1"; // Default to FLUX Schnell
+    // LayerDiffuse only works with FLUX Schnell - force switch if needed
+    let layerDiffuseModel = "runware:101@1"; // Always use FLUX Schnell for LayerDiffuse
+    if (model !== "runware:101@1") {
       console.log(
-        `LayerDiffuse: Auto-switched model from ${model} to ${layerDiffuseModel}`
+        `LayerDiffuse: Auto-switched model from ${model} to FLUX Schnell (LayerDiffuse only supports FLUX Schnell)`
       );
     }
 
