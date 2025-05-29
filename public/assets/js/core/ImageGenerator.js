@@ -123,8 +123,12 @@ export class ImageGenerator {
         // Force PNG format for transparency support
         formData.outputFormat = "PNG";
         formData.layerDiffuse = true;
-        endpoint = "/layer-diffuse";
-        console.log("Using LayerDiffuse endpoint with data:", formData);
+        endpoint = "/layer-diffuse-async"; // Use async endpoint for Heroku timeout handling
+        console.log("Using LayerDiffuse async endpoint to handle timeouts");
+        console.log(
+          "LayerDiffuse formData:",
+          JSON.stringify(formData, null, 2)
+        );
       } else {
         // For all other modes (including "image" and "accelerated"), use accelerated by default
         formData.teaCache = true;

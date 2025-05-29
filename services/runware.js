@@ -632,6 +632,71 @@ class RunwareService {
   }
 
   /**
+   * Start a LayerDiffuse generation job in the background
+   * @param {Object} params - LayerDiffuse generation parameters
+   * @returns {Promise<string>} - Job ID
+   */
+  async startLayerDiffuseJob(params) {
+    const jobId = uuidv4();
+
+    // Initialize job status
+    this.jobs.set(jobId, {
+      status: "started",
+      createdAt: new Date(),
+      progress: "Initializing LayerDiffuse generation...",
+    });
+
+    // Start background processing (don't await)
+    this.processLayerDiffuseJob(jobId, params).catch((error) => {
+      console.error(`Job ${jobId} failed:`, error);
+      this.jobs.set(jobId, {
+        status: "failed",
+        error: error.message,
+        finishedAt: new Date(),
+      });
+    });
+
+    return jobId;
+  }
+
+  /**
+   * Process LayerDiffuse generation job in the background
+   * @param {string} jobId - Job ID
+   * @param {Object} params - LayerDiffuse generation parameters
+   */
+  async processLayerDiffuseJob(jobId, params) {
+    try {
+      // Update status to processing
+      this.jobs.set(jobId, {
+        ...this.jobs.get(jobId),
+        status: "processing",
+        progress: "Generating LayerDiffuse image...",
+      });
+
+      // Generate the image using existing LayerDiffuse method
+      const result = await this.generateLayerDiffuse(params);
+
+      // Update status to completed
+      this.jobs.set(jobId, {
+        status: "completed",
+        result: result,
+        finishedAt: new Date(),
+        progress: "Generation completed successfully!",
+      });
+
+      console.log(`Job ${jobId} completed successfully`);
+    } catch (error) {
+      console.error(`Job ${jobId} processing failed:`, error);
+      this.jobs.set(jobId, {
+        status: "failed",
+        error: error.message,
+        finishedAt: new Date(),
+        progress: "Generation failed",
+      });
+    }
+  }
+
+  /**
    * Get job status and result
    * @param {string} jobId - Job ID
    * @returns {Object} - Job status and result

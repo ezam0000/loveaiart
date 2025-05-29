@@ -264,6 +264,37 @@ router.post("/layer-diffuse", async (req, res) => {
   }
 });
 
+// Route to start LayerDiffuse generation as background job (for Heroku timeout handling)
+router.post("/layer-diffuse-async", async (req, res) => {
+  try {
+    console.log("Received async LayerDiffuse request:", req.body);
+
+    // Validate required fields
+    if (!req.body.positivePrompt) {
+      return res.status(400).json({
+        error: "Missing required field: positivePrompt is required",
+      });
+    }
+
+    // Generate job ID and start background processing
+    const jobId = await runwareService.startLayerDiffuseJob(req.body);
+
+    console.log("LayerDiffuse job started with ID:", jobId);
+    res.json({
+      success: true,
+      jobId: jobId,
+      message:
+        "LayerDiffuse generation started. Use the job ID to check status.",
+    });
+  } catch (error) {
+    console.error("Error starting LayerDiffuse job:", error);
+    res.status(500).json({
+      error: "An error occurred while starting LayerDiffuse generation",
+      details: error.message,
+    });
+  }
+});
+
 // Route to generate images with accelerator methods (TeaCache/DeepCache)
 router.post("/accelerated", async (req, res) => {
   try {
