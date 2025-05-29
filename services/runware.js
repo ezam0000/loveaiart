@@ -9,6 +9,8 @@ const { v4: uuidv4 } = require("uuid");
 class RunwareService {
   constructor() {
     this.runware = new RunwareServer({ apiKey: process.env.RUNWARE_API_KEY });
+    // In-memory job store (in production, use Redis or database)
+    this.jobs = new Map();
   }
 
   /**
@@ -562,6 +564,100 @@ class RunwareService {
       console.error("Image upload error:", error);
       throw new Error(`Image upload failed: ${error.message}`);
     }
+  }
+
+  /**
+   * Start a PuLID generation job in the background
+   * @param {Object} params - PuLID generation parameters
+   * @returns {Promise<string>} - Job ID
+   */
+  async startPuLIDJob(params) {
+    const jobId = uuidv4();
+
+    // Initialize job status
+    this.jobs.set(jobId, {
+      status: "started",
+      createdAt: new Date(),
+      progress: "Initializing PuLID generation...",
+    });
+
+    // Start background processing (don't await)
+    this.processPuLIDJob(jobId, params).catch((error) => {
+      console.error(`Job ${jobId} failed:`, error);
+      this.jobs.set(jobId, {
+        status: "failed",
+        error: error.message,
+        finishedAt: new Date(),
+      });
+    });
+
+    return jobId;
+  }
+
+  /**
+   * Process PuLID generation job in the background
+   * @param {string} jobId - Job ID
+   * @param {Object} params - PuLID generation parameters
+   */
+  async processPuLIDJob(jobId, params) {
+    try {
+      // Update status to processing
+      this.jobs.set(jobId, {
+        ...this.jobs.get(jobId),
+        status: "processing",
+        progress: "Generating PuLID image...",
+      });
+
+      // Generate the image using existing PuLID method
+      const result = await this.generatePuLID(params);
+
+      // Update status to completed
+      this.jobs.set(jobId, {
+        status: "completed",
+        result: result,
+        finishedAt: new Date(),
+        progress: "Generation completed successfully!",
+      });
+
+      console.log(`Job ${jobId} completed successfully`);
+    } catch (error) {
+      console.error(`Job ${jobId} processing failed:`, error);
+      this.jobs.set(jobId, {
+        status: "failed",
+        error: error.message,
+        finishedAt: new Date(),
+        progress: "Generation failed",
+      });
+    }
+  }
+
+  /**
+   * Get job status and result
+   * @param {string} jobId - Job ID
+   * @returns {Object} - Job status and result
+   */
+  async getJobStatus(jobId) {
+    const job = this.jobs.get(jobId);
+
+    if (!job) {
+      throw new Error("Job not found");
+    }
+
+    // Clean up completed/failed jobs after 1 hour
+    if (job.finishedAt && new Date() - job.finishedAt > 3600000) {
+      this.jobs.delete(jobId);
+      throw new Error("Job expired");
+    }
+
+    return {
+      jobId,
+      status: job.status,
+      progress: job.progress,
+      result: job.result || null,
+      error: job.error || null,
+      createdAt: job.createdAt,
+      finishedAt: job.finishedAt || null,
+    };
   }
 }
 

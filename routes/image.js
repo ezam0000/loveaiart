@@ -182,6 +182,64 @@ router.post("/pulid", async (req, res) => {
   }
 });
 
+// Route to start PuLID generation as background job (for Heroku timeout handling)
+router.post("/pulid-async", async (req, res) => {
+  try {
+    console.log("Received async PuLID request:", req.body);
+
+    // Validate required fields
+    if (!req.body.positivePrompt) {
+      return res.status(400).json({
+        error: "Missing required field: positivePrompt is required",
+      });
+    }
+
+    // Check for inputImages in the puLID object
+    if (
+      !req.body.puLID ||
+      !req.body.puLID.inputImages ||
+      req.body.puLID.inputImages.length === 0
+    ) {
+      return res.status(400).json({
+        error:
+          "Missing required fields: puLID.inputImages is required and must contain at least one image",
+      });
+    }
+
+    // Generate job ID and start background processing
+    const jobId = await runwareService.startPuLIDJob(req.body);
+
+    console.log("PuLID job started with ID:", jobId);
+    res.json({
+      success: true,
+      jobId: jobId,
+      message: "PuLID generation started. Use the job ID to check status.",
+    });
+  } catch (error) {
+    console.error("Error starting PuLID job:", error);
+    res.status(500).json({
+      error: "An error occurred while starting PuLID generation",
+      details: error.message,
+    });
+  }
+});
+
+// Route to check job status and get results
+router.get("/job-status/:jobId", async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const jobStatus = await runwareService.getJobStatus(jobId);
+
+    res.json(jobStatus);
+  } catch (error) {
+    console.error("Error checking job status:", error);
+    res.status(500).json({
+      error: "An error occurred while checking job status",
+      details: error.message,
+    });
+  }
+});
+
 // Route to generate images with transparent backgrounds using LayerDiffuse
 router.post("/layer-diffuse", async (req, res) => {
   try {

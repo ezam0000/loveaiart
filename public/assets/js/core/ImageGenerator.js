@@ -104,8 +104,8 @@ export class ImageGenerator {
         // Note: We don't set CFGStartStep to avoid conflicts with trueCFGScale
 
         formData.puLID = pulidConfig;
-        endpoint = "/pulid";
-        console.log("Using PuLID endpoint with optimized parameters");
+        endpoint = "/pulid-async"; // Use async endpoint for Heroku timeout handling
+        console.log("Using PuLID async endpoint to handle timeouts");
         console.log("PuLID formData:", JSON.stringify(formData, null, 2));
       } else if (currentMode === "layerdiffuse") {
         // LayerDiffuse requires FLUX model - validate and switch if needed
@@ -151,6 +151,18 @@ export class ImageGenerator {
 
       const data = await response.json();
 
+      // Handle async job response (for PuLID timeout handling)
+      if (data.jobId) {
+        loadingMessage.textContent = "Starting generation job...";
+        return await this.pollJobStatus(
+          data.jobId,
+          loadingMessage,
+          addMessage,
+          showStatus
+        );
+      }
+
+      // Handle regular response
       // Remove loading message
       loadingMessage.remove();
 
@@ -360,5 +372,90 @@ export class ImageGenerator {
    */
   getRandomPrompts() {
     return this.randomPrompts;
+  }
+
+  /**
+   * Poll job status until completion
+   * @param {string} jobId - Job ID to poll
+   * @param {HTMLElement} loadingMessage - Loading message element
+   * @param {Function} addMessage - Function to add messages
+   * @param {Function} showStatus - Function to show status
+   * @returns {Promise<Object>} - Generation result
+   */
+  async pollJobStatus(jobId, loadingMessage, addMessage, showStatus) {
+    const maxAttempts = 60; // 60 attempts * 3 seconds = 3 minutes max
+    let attempts = 0;
+
+    while (attempts < maxAttempts) {
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 3000)); // Wait 3 seconds
+
+        const response = await fetch(`/job-status/${jobId}`);
+        if (!response.ok) {
+          throw new Error(`Failed to check job status: ${response.status}`);
+        }
+
+        const jobStatus = await response.json();
+
+        // Update loading message with progress
+        loadingMessage.textContent = jobStatus.progress || "Processing...";
+
+        if (jobStatus.status === "completed") {
+          // Remove loading message
+          loadingMessage.remove();
+
+          if (
+            jobStatus.result &&
+            jobStatus.result.images &&
+            jobStatus.result.images.length > 0
+          ) {
+            addMessage(
+              "Here's your generated image:",
+              false,
+              jobStatus.result.images
+            );
+            showStatus("Image generated successfully!", 3000);
+            return { success: true, images: jobStatus.result.images };
+          } else {
+            addMessage(
+              "Sorry, I couldn't generate an image. Please try again.",
+              false
+            );
+            showStatus("Generation failed", 3000);
+            return { success: false, reason: "No images returned" };
+          }
+        } else if (jobStatus.status === "failed") {
+          // Remove loading message
+          loadingMessage.remove();
+
+          const errorMsg = jobStatus.error || "Generation failed";
+          addMessage(
+            `An error occurred: ${errorMsg}. Please try again.`,
+            false
+          );
+          showStatus("Generation failed", 3000);
+          return { success: false, reason: "Job failed", error: errorMsg };
+        }
+
+        // Continue polling if still processing
+        attempts++;
+      } catch (error) {
+        console.error("Error polling job status:", error);
+        attempts++;
+
+        if (attempts >= maxAttempts) {
+          loadingMessage.remove();
+          addMessage("Generation timed out. Please try again.", false);
+          showStatus("Generation timed out", 3000);
+          return { success: false, reason: "Polling timeout" };
+        }
+      }
+    }
+
+    // Max attempts reached
+    loadingMessage.remove();
+    addMessage("Generation timed out. Please try again.", false);
+    showStatus("Generation timed out", 3000);
+    return { success: false, reason: "Polling timeout" };
   }
 }
