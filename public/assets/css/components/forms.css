@@ -189,6 +189,31 @@
   cursor: not-allowed;
 }
 
+.recycle-btn {
+  background-color: var(--bg-tertiary);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.recycle-btn:hover {
+  background-color: var(--hover-bg);
+  color: var(--text-primary);
+  border-color: var(--border-light);
+}
+
+.recycle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Settings Form Elements */
 .setting-select,
 .setting-input,

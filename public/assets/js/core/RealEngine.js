@@ -9,6 +9,7 @@ export class RealEngine {
   constructor() {
     this.currentChat = null;
     this.currentMode = "image"; // "image" or "chat"
+    this.lastPrompt = ""; // Store the last used prompt
     this.settings = {
       width: 1024,
       height: 1024,
@@ -59,6 +60,7 @@ export class RealEngine {
     this.modules.imageGenerator.loadRandomPrompts();
     this.updateModelIndicator();
     this.showWelcomeMessage();
+    this.updateRecycleButtonState();
     this.isInitialized = true;
   }
 
@@ -125,6 +127,11 @@ export class RealEngine {
     // Random prompt button
     document.getElementById("randomPromptBtn").addEventListener("click", () => {
       this.getRandomPrompt();
+    });
+
+    // Recycle button
+    document.getElementById("recycleBtn").addEventListener("click", () => {
+      this.recycleLastPrompt();
     });
 
     // New chat button
@@ -261,6 +268,15 @@ export class RealEngine {
    * Generate an image using the ImageGenerator module
    */
   async generateImage() {
+    // Store the current prompt before generating
+    const currentPrompt = document
+      .getElementById("positivePrompt")
+      .value.trim();
+    if (currentPrompt) {
+      this.lastPrompt = currentPrompt;
+      this.updateRecycleButtonState();
+    }
+
     const result = await this.modules.imageGenerator.generateImage({
       settings: this.settings,
       validationManager: this.modules.validation,
@@ -286,6 +302,15 @@ export class RealEngine {
    * Send a chat message using the ChatManager module
    */
   async sendChatMessage() {
+    // Store the current prompt before sending
+    const currentPrompt = document
+      .getElementById("positivePrompt")
+      .value.trim();
+    if (currentPrompt) {
+      this.lastPrompt = currentPrompt;
+      this.updateRecycleButtonState();
+    }
+
     const result = await this.modules.chatManager.sendChatMessage({
       addMessage: this.addMessage.bind(this),
       showStatus: this.showStatus.bind(this),
@@ -486,12 +511,37 @@ export class RealEngine {
   }
 
   /**
-   * Get random prompt
+   * Load a random prompt
    */
   getRandomPrompt() {
-    this.modules.imageGenerator.getRandomPrompt(
+    this.modules.imageGenerator.loadRandomPrompt(
       this.autoResizeTextarea.bind(this)
     );
+  }
+
+  /**
+   * Restore the last used prompt
+   */
+  recycleLastPrompt() {
+    if (this.lastPrompt) {
+      const promptInput = document.getElementById("positivePrompt");
+      promptInput.value = this.lastPrompt;
+      this.autoResizeTextarea(promptInput);
+      promptInput.focus();
+      this.showStatus("Last prompt restored", 2000);
+    } else {
+      this.showStatus("No previous prompt to restore", 2000);
+    }
+  }
+
+  /**
+   * Update recycle button state based on availability of last prompt
+   */
+  updateRecycleButtonState() {
+    const recycleBtn = document.getElementById("recycleBtn");
+    if (recycleBtn) {
+      recycleBtn.disabled = !this.lastPrompt;
+    }
   }
 
   /**
@@ -780,7 +830,8 @@ export class RealEngine {
       this.currentMode,
       this.recentPrompts,
       this.modules.chatManager.getHistoryForStorage(),
-      this.personalLoras
+      this.personalLoras,
+      this.lastPrompt
     );
   }
 
@@ -804,6 +855,9 @@ export class RealEngine {
       }
       if (data.personalLoras) {
         this.personalLoras = data.personalLoras;
+      }
+      if (data.lastPrompt) {
+        this.lastPrompt = data.lastPrompt;
       }
     }
   }

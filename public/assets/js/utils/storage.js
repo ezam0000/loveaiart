@@ -10,20 +10,35 @@ export class StorageManager {
 
   /**
    * Save data to localStorage
-   * @param {Object} data - Data object to save
+   * @param {string} storageKey - Storage key
+   * @param {Object} settings - Application settings
+   * @param {string} currentMode - Current application mode
+   * @param {Array} recentPrompts - Recent prompts array
+   * @param {Array} chatHistory - Chat history array
+   * @param {Array} personalLoras - Personal LoRAs array
+   * @param {string} lastPrompt - Last used prompt
    */
-  saveToStorage(data) {
+  saveToStorage(
+    storageKey,
+    settings,
+    currentMode,
+    recentPrompts,
+    chatHistory,
+    personalLoras,
+    lastPrompt
+  ) {
     const dataToSave = {
-      settings: data.settings,
-      currentMode: data.currentMode,
-      recentPrompts: data.recentPrompts?.slice(-20), // Keep last 20 prompts
-      chatHistory: data.chatHistory?.slice(-50), // Keep last 50 chat messages
-      personalLoras: data.personalLoras, // Save personal LoRAs
+      settings,
+      currentMode,
+      recentPrompts: recentPrompts?.slice(-20), // Keep last 20 prompts
+      chatHistory: chatHistory?.slice(-50), // Keep last 50 chat messages
+      personalLoras, // Save personal LoRAs
+      lastPrompt, // Save last used prompt
       timestamp: Date.now(),
     };
 
     try {
-      localStorage.setItem(this.storageKey, JSON.stringify(dataToSave));
+      localStorage.setItem(storageKey, JSON.stringify(dataToSave));
       console.log("Data saved to localStorage");
       return true;
     } catch (error) {
@@ -34,11 +49,12 @@ export class StorageManager {
 
   /**
    * Load data from localStorage
+   * @param {string} storageKey - Storage key
    * @returns {Object|null} - Loaded data or null if error
    */
-  loadFromStorage() {
+  loadFromStorage(storageKey) {
     try {
-      const savedData = localStorage.getItem(this.storageKey);
+      const savedData = localStorage.getItem(storageKey);
       if (savedData) {
         const data = JSON.parse(savedData);
         console.log("Data loaded from localStorage");
@@ -53,10 +69,11 @@ export class StorageManager {
 
   /**
    * Clear all stored data
+   * @param {string} storageKey - Storage key
    */
-  clearStorage() {
+  clearStorage(storageKey) {
     try {
-      localStorage.removeItem(this.storageKey);
+      localStorage.removeItem(storageKey);
       console.log("Storage cleared");
       return true;
     } catch (error) {
