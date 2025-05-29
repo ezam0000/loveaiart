@@ -1,0 +1,28 @@
+Request
+
+[
+  {
+    "taskType": "imageInference",
+    "taskUUID": "c82268d3-d379-45ee-904a-859d01211b1f",
+    "positivePrompt": "portrait of a woman in watercolor style, soft brush strokes, flowing hair, translucent layers, isolated on transparent background",
+    "width": 1024,
+    "height": 1024,
+    "model": "runware:101@1",
+    "steps": 30,
+    "outputFormat": "WEBP",
+    "advancedFeatures": {
+      "layerDiffuse": true
+    }
+  }
+]
+
+
+response 
+
+{
+  "taskType": "imageInference",
+  "imageUUID": "fbdcda23-373d-4b5e-927a-55f797fb06e6",
+  "taskUUID": "c82268d3-d379-45ee-904a-859d01211b1f",
+  "seed": 8281372671984302,
+  "imageURL": "https://im.runware.ai/image/ws/2/ii/fbdcda23-373d-4b5e-927a-55f797fb06e6.webp"
+}

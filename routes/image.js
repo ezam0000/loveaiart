@@ -185,7 +185,7 @@ router.post("/pulid", async (req, res) => {
 // Route to start PuLID generation as background job (for Heroku timeout handling)
 router.post("/pulid-async", async (req, res) => {
   try {
-    console.log("Received async PuLID request:", req.body);
+    console.log("Received async PuLID request");
 
     // Validate required fields
     if (!req.body.positivePrompt) {
@@ -267,7 +267,7 @@ router.post("/layer-diffuse", async (req, res) => {
 // Route to start LayerDiffuse generation as background job (for Heroku timeout handling)
 router.post("/layer-diffuse-async", async (req, res) => {
   try {
-    console.log("Received async LayerDiffuse request:", req.body);
+    console.log("Received async LayerDiffuse request");
 
     // Validate required fields
     if (!req.body.positivePrompt) {

@@ -316,29 +316,25 @@ class RunwareService {
       );
     }
 
-    // Build the EXACT payload from documentation - minimal parameters only
+    // Build the EXACT payload structure as specified
     const requestPayload = [
       {
         taskType: "imageInference",
         taskUUID: uuidv4(),
-        outputFormat: "PNG",
         positivePrompt,
-        height: parseInt(height) || 1024,
         width: parseInt(width) || 1024,
+        height: parseInt(height) || 1024,
+        model: layerDiffuseModel,
+        steps: 30,
+        outputFormat: "WEBP",
         advancedFeatures: {
           layerDiffuse: true,
         },
-        model: layerDiffuseModel,
       },
     ];
 
-    // Add numberResults only if specified
-    if (numberResults && parseInt(numberResults) > 1) {
-      requestPayload[0].numberResults = parseInt(numberResults);
-    }
-
     console.log(
-      "Generating LayerDiffuse image with EXACT payload from docs:",
+      "Generating LayerDiffuse image with EXACT payload structure:",
       JSON.stringify(requestPayload, null, 2)
     );
 
