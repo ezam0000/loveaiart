@@ -109,9 +109,9 @@ export class ImageGenerator {
         console.log("PuLID formData:", JSON.stringify(formData, null, 2));
       } else if (currentMode === "layerdiffuse") {
         // LayerDiffuse only works with FLUX Schnell - validate and switch if needed
-        if (settings.model !== "runware:101@1") {
+        if (settings.model !== "runware:100@1") {
           const oldModel = settings.model;
-          formData.model = "runware:101@1"; // Always use FLUX Schnell for LayerDiffuse
+          formData.model = "runware:100@1"; // Always use FLUX Schnell for LayerDiffuse
           console.log(
             `LayerDiffuse mode: Auto-switched model from ${oldModel} to FLUX Schnell (LayerDiffuse only supports FLUX Schnell)`
           );
@@ -204,9 +204,9 @@ export class ImageGenerator {
    * @returns {Object} - Form data for API call
    */
   collectFormData(settings, currentMode = "image") {
-    // For PuLID mode, use minimal structure matching documentation
+    // For PuLID mode, use minimal structure matching documentation but exclude LoRA
     if (currentMode === "pulid") {
-      return {
+      const formData = {
         positivePrompt: document.getElementById("positivePrompt").value,
         height: settings.height,
         width: settings.width,
@@ -214,8 +214,13 @@ export class ImageGenerator {
           settings.model === "runware:100@1" ||
           settings.model === "runware:101@1"
             ? settings.model
-            : "runware:100@1", // Auto-switch to FLUX Dev if not already FLUX
+            : "runware:101@1", // Auto-switch to FLUX Dev if not already FLUX
       };
+
+      // Note: LoRA cannot be used with PuLID according to Runware API limitations
+      // LoRA is intentionally excluded from PuLID requests
+
+      return formData;
     }
 
     // For all other modes, use the full structure

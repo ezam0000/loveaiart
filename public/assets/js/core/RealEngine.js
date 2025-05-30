@@ -552,6 +552,19 @@ export class RealEngine {
 
     if (mode === "image") {
       document.getElementById("imageModeBtn").classList.add("active");
+
+      // Re-enable LoRA for non-PuLID modes
+      const loraSelect = document.getElementById("loraSelect");
+      const loraSection = loraSelect?.closest(".setting-section");
+      if (loraSelect && loraSection) {
+        // Check if current model supports LoRA (not Dream)
+        const isDreamModel = this.settings.model === "runware:97@1";
+        loraSelect.disabled = isDreamModel;
+        loraSection.style.opacity = isDreamModel ? "0.5" : "1";
+        loraSection.title = isDreamModel
+          ? "LoRA not compatible with Dream model"
+          : "";
+      }
     } else if (mode === "pulid") {
       document.getElementById("pulidModeBtn").classList.add("active");
 
@@ -561,7 +574,7 @@ export class RealEngine {
         this.settings.model !== "runware:101@1"
       ) {
         const oldModel = this.settings.model;
-        this.settings.model = "runware:100@1"; // Switch to FLUX Dev for better quality
+        this.settings.model = "runware:101@1"; // Switch to FLUX Dev for better quality
         this.updateHiddenInput("model", this.settings.model);
 
         // Update the settings panel dropdown
@@ -578,13 +591,26 @@ export class RealEngine {
           3000
         );
       }
+
+      // PuLID cannot be used with LoRA - disable LoRA selection
+      const loraSelect = document.getElementById("loraSelect");
+      const loraSection = loraSelect?.closest(".setting-section");
+      if (loraSelect && loraSection) {
+        loraSelect.disabled = true;
+        loraSelect.value = "";
+        this.settings.lora = "";
+        this.updateHiddenInput("lora", "");
+        loraSection.style.opacity = "0.5";
+        loraSection.title = "LoRA cannot be used with PuLID";
+        console.log("LoRA disabled for PuLID mode (API limitation)");
+      }
     } else if (mode === "layerdiffuse") {
       document.getElementById("layerDiffuseModeBtn").classList.add("active");
 
       // LayerDiffuse only works with FLUX Schnell - force switch if needed
-      if (this.settings.model !== "runware:101@1") {
+      if (this.settings.model !== "runware:100@1") {
         const oldModel = this.settings.model;
-        this.settings.model = "runware:101@1"; // Always use FLUX Schnell for LayerDiffuse
+        this.settings.model = "runware:100@1"; // Always use FLUX Schnell for LayerDiffuse
         this.updateHiddenInput("model", this.settings.model);
 
         // Update the settings panel dropdown
@@ -601,8 +627,34 @@ export class RealEngine {
           3000
         );
       }
+
+      // Re-enable LoRA for LayerDiffuse mode
+      const loraSelect = document.getElementById("loraSelect");
+      const loraSection = loraSelect?.closest(".setting-section");
+      if (loraSelect && loraSection) {
+        // Check if current model supports LoRA (not Dream)
+        const isDreamModel = this.settings.model === "runware:97@1";
+        loraSelect.disabled = isDreamModel;
+        loraSection.style.opacity = isDreamModel ? "0.5" : "1";
+        loraSection.title = isDreamModel
+          ? "LoRA not compatible with Dream model"
+          : "";
+      }
     } else if (mode === "chat") {
       document.getElementById("chatModeBtn").classList.add("active");
+
+      // Re-enable LoRA for chat mode (though not used)
+      const loraSelect = document.getElementById("loraSelect");
+      const loraSection = loraSelect?.closest(".setting-section");
+      if (loraSelect && loraSection) {
+        // Check if current model supports LoRA (not Dream)
+        const isDreamModel = this.settings.model === "runware:97@1";
+        loraSelect.disabled = isDreamModel;
+        loraSection.style.opacity = isDreamModel ? "0.5" : "1";
+        loraSection.title = isDreamModel
+          ? "LoRA not compatible with Dream model"
+          : "";
+      }
     }
 
     // Hide all inline controls

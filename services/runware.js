@@ -197,7 +197,8 @@ class RunwareService {
    * @returns {Promise<Array>} - Array of generated images
    */
   async generatePuLID(params) {
-    const { positivePrompt, width, height, model, puLID } = params;
+    const { positivePrompt, width, height, model, puLID, lora, loraWeight } =
+      params;
 
     // Extract PuLID-specific parameters from the puLID object
     const { inputImages, idWeight, trueCFGScale, CFGStartStep } = puLID || {};
@@ -219,7 +220,7 @@ class RunwareService {
     );
 
     // PuLID works specifically with FLUX models - use FLUX Dev as default for better quality
-    let pulidModel = "runware:100@1"; // FLUX Dev for better identity preservation
+    let pulidModel = "runware:101@1"; // FLUX Dev for better identity preservation
     if (model === "runware:100@1" || model === "runware:101@1") {
       pulidModel = model;
     }
@@ -239,8 +240,19 @@ class RunwareService {
           inputImages: [referenceImageUUID], // Use UUID instead of base64
           idWeight: parseInt(idWeight) || 1,
         },
+        // Add accelerator options for cost savings
+        acceleratorOptions: {
+          teaCache: true,
+        },
       },
     ];
+
+    // Note: LoRA cannot be used with PuLID according to Runware API limitations
+    if (lora && lora.trim()) {
+      console.log(
+        `Warning: LoRA (${lora}) cannot be used with PuLID. Skipping LoRA.`
+      );
+    }
 
     // Add either trueCFGScale OR CFGStartStep, not both (they are mutually exclusive)
     if (CFGStartStep !== undefined && CFGStartStep !== null) {
@@ -309,8 +321,8 @@ class RunwareService {
     const { positivePrompt, width, height, model, numberResults } = params;
 
     // LayerDiffuse only works with FLUX Schnell - force switch if needed
-    let layerDiffuseModel = "runware:101@1"; // Always use FLUX Schnell for LayerDiffuse
-    if (model !== "runware:101@1") {
+    let layerDiffuseModel = "runware:100@1"; // Always use FLUX Schnell for LayerDiffuse
+    if (model !== "runware:100@1") {
       console.log(
         `LayerDiffuse: Auto-switched model from ${model} to FLUX Schnell (LayerDiffuse only supports FLUX Schnell)`
       );
