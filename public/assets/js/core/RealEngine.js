@@ -94,6 +94,10 @@ export class RealEngine {
         this.switchMode("layerdiffuse");
       });
 
+    document
+      .getElementById("kontextModeBtn")
+      .addEventListener("click", () => this.switchMode("kontext"));
+
     document.getElementById("chatModeBtn").addEventListener("click", () => {
       this.switchMode("chat");
     });
@@ -221,6 +225,14 @@ export class RealEngine {
         this.handlePulidImageUpload(e);
       });
     }
+
+    // Kontext image upload
+    const kontextImageUpload = document.getElementById("kontextImageUpload");
+    if (kontextImageUpload) {
+      kontextImageUpload.addEventListener("change", (e) => {
+        this.handleKontextImageUpload(e);
+      });
+    }
   }
 
   /**
@@ -243,6 +255,29 @@ export class RealEngine {
       reader.readAsDataURL(file);
 
       console.log("PuLID reference image uploaded:", file.name);
+    }
+  }
+
+  /**
+   * Handle Kontext base image upload
+   */
+  handleKontextImageUpload(event) {
+    const file = event.target.files[0]; // Only take the first file
+    const previewContainer = document.getElementById("kontextImagePreview");
+
+    // Clear existing previews
+    previewContainer.innerHTML = "";
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        previewContainer.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+
+      console.log("Kontext base image uploaded:", file.name);
     }
   }
 
@@ -640,6 +675,21 @@ export class RealEngine {
           ? "LoRA not compatible with Dream model"
           : "";
       }
+    } else if (mode === "kontext") {
+      document.getElementById("kontextModeBtn").classList.add("active");
+
+      // Re-enable LoRA for kontext mode
+      const loraSelect = document.getElementById("loraSelect");
+      const loraSection = loraSelect?.closest(".setting-section");
+      if (loraSelect && loraSection) {
+        // Check if current model supports LoRA (not Dream)
+        const isDreamModel = this.settings.model === "runware:97@1";
+        loraSelect.disabled = isDreamModel;
+        loraSection.style.opacity = isDreamModel ? "0.5" : "1";
+        loraSection.title = isDreamModel
+          ? "LoRA not compatible with Dream model"
+          : "";
+      }
     } else if (mode === "chat") {
       document.getElementById("chatModeBtn").classList.add("active");
 
@@ -669,6 +719,12 @@ export class RealEngine {
         mode === "pulid" ? "visible" : "hidden";
     }
 
+    // Show/hide base image button
+    const baseImageBtn = document.getElementById("baseImageBtn");
+    if (baseImageBtn) {
+      baseImageBtn.style.visibility = mode === "kontext" ? "visible" : "hidden";
+    }
+
     // Show/hide feature badge and controls
     const featureBadge = document.getElementById("featureBadge");
     const featureBadgeText = document.getElementById("featureBadgeText");
@@ -680,6 +736,10 @@ export class RealEngine {
     } else if (mode === "layerdiffuse") {
       featureBadge.style.display = "block";
       featureBadgeText.textContent = "📐 Vector";
+    } else if (mode === "kontext") {
+      featureBadge.style.display = "block";
+      featureBadgeText.textContent = "✏️ Edit";
+      document.getElementById("kontextControl").style.visibility = "visible";
     } else {
       featureBadge.style.display = "none";
     }
@@ -735,6 +795,16 @@ export class RealEngine {
         `;
         promptInput.placeholder =
           "Describe your subject with terms like: isolated subject, product photography, no background...";
+      } else if (this.currentMode === "kontext") {
+        welcomeMessage.innerHTML = `
+          <h2>✏️ Instruction-Based Image Editing</h2>
+          <p>Upload a base image and give simple edit instructions. Kontext will surgically modify only what you specify while keeping everything else intact.</p>
+          <p><strong>Examples:</strong> "change the car color to red", "replace 'OPEN' with 'CLOSED'", "add sunglasses to the person"</p>
+          <p><strong>Tips:</strong> Be specific about what to change. Use action verbs like "change", "add", "remove", "replace"</p>
+          <button class="random-prompt-btn" onclick="realEngine.getRandomPrompt()">Get Random Prompt</button>
+        `;
+        promptInput.placeholder =
+          "Upload a base image above, then describe what you want to change...";
       } else {
         welcomeMessage.innerHTML = `
           <h2>Chat with RealEngine AI</h2>

@@ -213,7 +213,8 @@ class RunwareService {
 
     // Upload the reference image and get UUID
     console.log("Uploading PuLID reference image...");
-    const referenceImageUUID = await this.uploadImage(referenceImageData);
+    const uploadResult = await this.uploadImage(referenceImageData);
+    const referenceImageUUID = uploadResult.imageUUID || uploadResult; // Handle both new and old format
     console.log(
       "PuLID reference image uploaded successfully, UUID:",
       referenceImageUUID
@@ -400,6 +401,109 @@ class RunwareService {
   }
 
   /**
+   * Generate images using FLUX.1 Kontext for instruction-based image editing
+   * @param {Object} params - Kontext generation parameters
+   * @returns {Promise<Array>} - Array of edited images
+   */
+  async generateKontext(params) {
+    const { positivePrompt, width, height, model, inputImages } = params;
+
+    // Kontext requires exactly 1 input image for editing
+    if (!inputImages || inputImages.length === 0) {
+      throw new Error("Kontext requires exactly one input image for editing");
+    }
+
+    // Use only the first image as Kontext supports exactly 1 image
+    const inputImageData = inputImages[0];
+
+    // Upload the input image and get UUID
+    console.log("Uploading Kontext input image...");
+    const uploadResult = await this.uploadImage(inputImageData);
+    const { imageUUID: inputImageUUID, imageURL: inputImageURL } = uploadResult;
+    console.log(
+      "Kontext input image uploaded successfully, UUID:",
+      inputImageUUID
+    );
+
+    // Validate Kontext model (bfl:3@1 for Pro, bfl:4@1 for Max)
+    let kontextModel = "bfl:3@1"; // Always use Kontext Pro
+    if (model !== "bfl:3@1") {
+      console.log(
+        `Kontext: Auto-switched model from ${model} to Kontext Pro (${kontextModel})`
+      );
+    }
+
+    console.log(`Using Kontext with model: ${kontextModel}`);
+
+    // Build the EXACT payload structure from Runware playground example
+    const requestPayload = [
+      {
+        taskType: "imageInference",
+        taskUUID: uuidv4(),
+        positivePrompt, // This should be the edit instruction
+        width: parseInt(width) || 1024,
+        height: parseInt(height) || 1024,
+        model: kontextModel,
+        outputFormat: "JPEG",
+        includeCost: true,
+        outputType: ["URL"],
+        referenceImages: [inputImageURL], // Use referenceImages array with the imageURL
+        numberResults: 1,
+      },
+    ];
+
+    console.log(
+      "Generating Kontext edit with payload:",
+      JSON.stringify(requestPayload, null, 2)
+    );
+
+    try {
+      // Use direct HTTP request for Kontext
+      const response = await fetch("https://api.runware.ai/v1", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.RUNWARE_API_KEY}`,
+        },
+        body: JSON.stringify(requestPayload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          `HTTP ${response.status}: ${JSON.stringify(errorData)}`
+        );
+      }
+
+      const result = await response.json();
+      console.log("Kontext API response:", JSON.stringify(result, null, 2));
+
+      // Handle the response format
+      let images = [];
+      if (result && result.data && result.data.length > 0) {
+        images = result.data;
+      } else {
+        throw new Error("No images returned from Kontext API");
+      }
+
+      console.log("Kontext generation successful:", {
+        imageCount: images.length,
+        cost: images.reduce((total, img) => total + (img.cost || 0), 0),
+        firstImageUrl: images[0]?.imageURL,
+      });
+
+      // Format response to match frontend expectations
+      return {
+        images: images.map((img) => img.imageURL || img.image || img),
+        cost: images.reduce((total, img) => total + (img.cost || 0), 0),
+      };
+    } catch (error) {
+      console.error("Kontext generation failed:", error);
+      throw error;
+    }
+  }
+
+  /**
    * Generate images with accelerator methods (TeaCache/DeepCache)
    * @param {Object} params - Accelerated generation parameters
    * @returns {Promise<Array>} - Array of generated images with cost savings
@@ -548,21 +652,28 @@ class RunwareService {
 
       // Handle different response formats
       let imageUUID = null;
+      let imageURL = null;
 
       if (result && result.data && result.data.length > 0) {
         // Standard format: result.data[0].imageUUID
         imageUUID = result.data[0].imageUUID;
+        imageURL = result.data[0].imageURL;
       } else if (result && result.length > 0) {
         // Alternative format: result[0].imageUUID
         imageUUID = result[0].imageUUID;
+        imageURL = result[0].imageURL;
       } else if (result && result.imageUUID) {
         // Direct format: result.imageUUID
         imageUUID = result.imageUUID;
+        imageURL = result.imageURL;
       }
 
       if (imageUUID) {
         console.log("Image uploaded successfully, UUID:", imageUUID);
-        return imageUUID;
+        if (imageURL) {
+          console.log("Image URL:", imageURL);
+        }
+        return { imageUUID, imageURL };
       } else {
         console.error("Upload response:", result);
         throw new Error("Failed to get image UUID from upload response");
@@ -699,6 +810,71 @@ class RunwareService {
         error: error.message,
         finishedAt: new Date(),
         progress: "Generation failed",
+      });
+    }
+  }
+
+  /**
+   * Start a Kontext generation job in the background
+   * @param {Object} params - Kontext generation parameters
+   * @returns {Promise<string>} - Job ID
+   */
+  async startKontextJob(params) {
+    const jobId = uuidv4();
+
+    // Initialize job status
+    this.jobs.set(jobId, {
+      status: "started",
+      createdAt: new Date(),
+      progress: "Initializing Kontext image editing...",
+    });
+
+    // Start background processing (don't await)
+    this.processKontextJob(jobId, params).catch((error) => {
+      console.error(`Job ${jobId} failed:`, error);
+      this.jobs.set(jobId, {
+        status: "failed",
+        error: error.message,
+        finishedAt: new Date(),
+      });
+    });
+
+    return jobId;
+  }
+
+  /**
+   * Process Kontext generation job in the background
+   * @param {string} jobId - Job ID
+   * @param {Object} params - Kontext generation parameters
+   */
+  async processKontextJob(jobId, params) {
+    try {
+      // Update status to processing
+      this.jobs.set(jobId, {
+        ...this.jobs.get(jobId),
+        status: "processing",
+        progress: "Editing image with Kontext...",
+      });
+
+      // Generate the image using existing Kontext method
+      const result = await this.generateKontext(params);
+
+      // Update status to completed
+      this.jobs.set(jobId, {
+        status: "completed",
+        result: result,
+        finishedAt: new Date(),
+        progress: "Image editing completed successfully!",
+      });
+
+      console.log(`Job ${jobId} completed successfully`);
+    } catch (error) {
+      console.error(`Job ${jobId} processing failed:`, error);
+      this.jobs.set(jobId, {
+        status: "failed",
+        error: error.message,
+        finishedAt: new Date(),
+        progress: "Image editing failed",
       });
     }
   }

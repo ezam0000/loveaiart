@@ -126,6 +126,26 @@ export class ImageGenerator {
           "LayerDiffuse formData:",
           JSON.stringify(formData, null, 2)
         );
+      } else if (currentMode === "kontext") {
+        const kontextImages = this.collectKontextImages();
+
+        if (kontextImages.length === 0) {
+          throw new Error("Please upload a base image to edit with Kontext");
+        }
+
+        // Ensure we're using a Kontext model, auto-switch if needed
+        if (settings.model !== "bfl:3@1" && settings.model !== "bfl:4@1") {
+          const oldModel = settings.model;
+          formData.model = "bfl:3@1"; // Default to Kontext Pro
+          console.log(
+            `Kontext mode: Auto-switched model from ${oldModel} to FLUX.1 Kontext Pro (${formData.model})`
+          );
+        }
+
+        formData.inputImages = kontextImages;
+        endpoint = "/kontext-async"; // Use async endpoint for Heroku timeout handling
+        console.log("Using Kontext async endpoint to handle timeouts");
+        console.log("Kontext formData:", JSON.stringify(formData, null, 2));
       } else {
         // For all other modes (including "image" and "accelerated"), use accelerated by default
         formData.teaCache = true;
@@ -223,6 +243,24 @@ export class ImageGenerator {
       return formData;
     }
 
+    // For Kontext mode, use minimal structure for instruction-based editing
+    if (currentMode === "kontext") {
+      const formData = {
+        positivePrompt: document.getElementById("positivePrompt").value, // This should be edit instruction
+        height: settings.height,
+        width: settings.width,
+        model:
+          settings.model === "bfl:3@1" || settings.model === "bfl:4@1"
+            ? settings.model
+            : "bfl:3@1", // Auto-switch to Kontext Pro if not already Kontext
+      };
+
+      // Note: LoRA support with Kontext is unknown, excluding for safety
+      // LoRA is intentionally excluded from Kontext requests
+
+      return formData;
+    }
+
     // For all other modes, use the full structure
     const isDreamModel = settings.model === "runware:97@1";
 
@@ -262,6 +300,27 @@ export class ImageGenerator {
   collectPulidImages() {
     const images = [];
     const previewContainer = document.getElementById("pulidImagePreview");
+
+    if (previewContainer) {
+      const imageElements = previewContainer.querySelectorAll("img");
+
+      imageElements.forEach((img) => {
+        if (img.src && img.src.startsWith("data:")) {
+          images.push(img.src);
+        }
+      });
+    }
+
+    return images;
+  }
+
+  /**
+   * Collect Kontext reference images from the UI
+   * @returns {Array} - Array of base64 encoded images
+   */
+  collectKontextImages() {
+    const images = [];
+    const previewContainer = document.getElementById("kontextImagePreview");
 
     if (previewContainer) {
       const imageElements = previewContainer.querySelectorAll("img");

@@ -26,6 +26,15 @@ router.post("/generate", async (req, res) => {
       );
       result = await runwareService.generateLayerDiffuse(req.body);
     } else if (
+      req.body.inputImages &&
+      (req.body.model === "bfl:3@1" || req.body.model === "bfl:4@1")
+    ) {
+      // Route to Kontext generation (instruction-based editing)
+      console.log(
+        "Detected Kontext model and inputImages, routing to Kontext generation"
+      );
+      result = await runwareService.generateKontext(req.body);
+    } else if (
       req.body.acceleratorOptions ||
       req.body.teaCache ||
       req.body.deepCache
@@ -323,6 +332,78 @@ router.post("/accelerated", async (req, res) => {
     console.error("Error in /accelerated:", error);
     res.status(500).json({
       error: "An error occurred while generating accelerated image",
+      details: error.message,
+    });
+  }
+});
+
+// Route to generate images using FLUX.1 Kontext for instruction-based editing
+router.post("/kontext", async (req, res) => {
+  try {
+    console.log("Received Kontext request:", req.body);
+
+    // Validate required fields
+    if (!req.body.positivePrompt) {
+      return res.status(400).json({
+        error:
+          "Missing required field: positivePrompt (edit instruction) is required",
+      });
+    }
+
+    // Check for input images
+    if (!req.body.inputImages || req.body.inputImages.length === 0) {
+      return res.status(400).json({
+        error:
+          "Missing required fields: inputImages is required and must contain exactly one image to edit",
+      });
+    }
+
+    const result = await runwareService.generateKontext(req.body);
+    console.log("Kontext generation successful:", result);
+    res.json(result);
+  } catch (error) {
+    console.error("Error in /kontext:", error);
+    res.status(500).json({
+      error: "An error occurred while editing image with Kontext",
+      details: error.message,
+    });
+  }
+});
+
+// Route to start Kontext generation as background job (for Heroku timeout handling)
+router.post("/kontext-async", async (req, res) => {
+  try {
+    console.log("Received async Kontext request");
+
+    // Validate required fields
+    if (!req.body.positivePrompt) {
+      return res.status(400).json({
+        error:
+          "Missing required field: positivePrompt (edit instruction) is required",
+      });
+    }
+
+    // Check for input images
+    if (!req.body.inputImages || req.body.inputImages.length === 0) {
+      return res.status(400).json({
+        error:
+          "Missing required fields: inputImages is required and must contain exactly one image to edit",
+      });
+    }
+
+    // Generate job ID and start background processing
+    const jobId = await runwareService.startKontextJob(req.body);
+
+    console.log("Kontext job started with ID:", jobId);
+    res.json({
+      success: true,
+      jobId: jobId,
+      message: "Kontext image editing started. Use the job ID to check status.",
+    });
+  } catch (error) {
+    console.error("Error starting Kontext job:", error);
+    res.status(500).json({
+      error: "An error occurred while starting Kontext image editing",
       details: error.message,
     });
   }

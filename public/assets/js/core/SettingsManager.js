@@ -26,6 +26,11 @@ export class SettingsManager {
         steps: 30,
         CFGScale: 7.5,
       },
+      "bfl:3@1": {
+        name: "FLUX.1 Kontext Pro",
+        steps: 28,
+        CFGScale: 3.5,
+      },
     };
   }
 
