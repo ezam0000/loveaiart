@@ -10,6 +10,42 @@ export class ImageGenerator {
   }
 
   /**
+   * Validate and fix dimensions to ensure Kontext compatibility
+   * @param {Object} settings - Current settings
+   * @returns {Object} - Corrected settings
+   */
+  validateAndFixDimensions(settings) {
+    const kontextCompatibleDimensions = [
+      "1568x672",
+      "1392x752",
+      "1184x880",
+      "1248x832",
+      "1024x1024",
+      "832x1248",
+      "880x1184",
+      "752x1392",
+      "672x1568",
+    ];
+
+    const currentDimension = `${settings.width}x${settings.height}`;
+    if (!kontextCompatibleDimensions.includes(currentDimension)) {
+      console.log(
+        `⚠️ FIXING: Incompatible dimensions ${currentDimension} -> 1024x1024`
+      );
+      settings.width = 1024;
+      settings.height = 1024;
+
+      // Update hidden inputs immediately
+      const widthInput = document.getElementById("width");
+      const heightInput = document.getElementById("height");
+      if (widthInput) widthInput.value = 1024;
+      if (heightInput) heightInput.value = 1024;
+    }
+
+    return settings;
+  }
+
+  /**
    * Generate an image with the current settings
    * @param {Object} params - Generation parameters
    * @returns {Promise<Object>} - Generation result
@@ -27,6 +63,9 @@ export class ImageGenerator {
   }) {
     if (this.isGenerating)
       return { success: false, reason: "Already generating" };
+
+    // FORCE dimension validation before any generation
+    settings = this.validateAndFixDimensions(settings);
 
     const prompt = document.getElementById("positivePrompt").value.trim();
     if (!prompt) {
@@ -247,8 +286,8 @@ export class ImageGenerator {
     if (currentMode === "kontext") {
       const formData = {
         positivePrompt: document.getElementById("positivePrompt").value, // This should be edit instruction
-        height: settings.height,
-        width: settings.width,
+        height: settings.height, // Now using compatible dimensions from settings
+        width: settings.width, // Now using compatible dimensions from settings
         model:
           settings.model === "bfl:3@1" || settings.model === "bfl:4@1"
             ? settings.model
@@ -299,13 +338,28 @@ export class ImageGenerator {
    */
   collectPulidImages() {
     const images = [];
-    const previewContainer = document.getElementById("pulidImagePreview");
 
+    // Check mini preview container (existing functionality)
+    const previewContainer = document.getElementById("pulidImagePreview");
     if (previewContainer) {
       const imageElements = previewContainer.querySelectorAll("img");
-
       imageElements.forEach((img) => {
         if (img.src && img.src.startsWith("data:")) {
+          images.push(img.src);
+        }
+      });
+    }
+
+    // Also check upload previews container (new functionality)
+    const uploadPreviewsContainer = document.getElementById(
+      "uploadPreviewsContainer"
+    );
+    if (uploadPreviewsContainer && images.length === 0) {
+      const uploadImages = uploadPreviewsContainer.querySelectorAll("img");
+      uploadImages.forEach((img) => {
+        if (img.src) {
+          // For external URLs, we'll need to convert them to base64
+          // For now, we'll pass the URL and handle conversion server-side if needed
           images.push(img.src);
         }
       });
@@ -320,13 +374,28 @@ export class ImageGenerator {
    */
   collectKontextImages() {
     const images = [];
-    const previewContainer = document.getElementById("kontextImagePreview");
 
+    // Check mini preview container (existing functionality)
+    const previewContainer = document.getElementById("kontextImagePreview");
     if (previewContainer) {
       const imageElements = previewContainer.querySelectorAll("img");
-
       imageElements.forEach((img) => {
         if (img.src && img.src.startsWith("data:")) {
+          images.push(img.src);
+        }
+      });
+    }
+
+    // Also check upload previews container (new functionality)
+    const uploadPreviewsContainer = document.getElementById(
+      "uploadPreviewsContainer"
+    );
+    if (uploadPreviewsContainer && images.length === 0) {
+      const uploadImages = uploadPreviewsContainer.querySelectorAll("img");
+      uploadImages.forEach((img) => {
+        if (img.src) {
+          // For external URLs, we'll need to convert them to base64
+          // For now, we'll pass the URL and handle conversion server-side if needed
           images.push(img.src);
         }
       });
@@ -404,13 +473,44 @@ export class ImageGenerator {
    * Download an image from URL
    * @param {string} imageUrl - URL of the image to download
    */
-  downloadImage(imageUrl) {
-    const link = document.createElement("a");
-    link.href = imageUrl;
-    link.download = `realengine-${Date.now()}.jpg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  async downloadImage(imageUrl) {
+    try {
+      // Fetch the image as a blob to ensure proper download
+      const response = await fetch(imageUrl);
+      if (!response.ok) {
+        throw new Error("Failed to fetch image");
+      }
+
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      // Create download link
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `realengine-${Date.now()}.jpg`;
+      link.style.display = "none";
+
+      // Add to document, click, and remove
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up the blob URL
+      URL.revokeObjectURL(blobUrl);
+
+      console.log("Image download initiated");
+    } catch (error) {
+      console.error("Download failed:", error);
+
+      // Fallback to the original method
+      const link = document.createElement("a");
+      link.href = imageUrl;
+      link.download = `realengine-${Date.now()}.jpg`;
+      link.target = "_blank";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   }
 
   /**

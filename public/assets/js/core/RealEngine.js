@@ -61,6 +61,7 @@ export class RealEngine {
     this.updateModelIndicator();
     this.showWelcomeMessage();
     this.updateRecycleButtonState();
+    this.updateAspectRatioButtons();
     this.isInitialized = true;
 
     // Check for existing Kontext authentication
@@ -261,16 +262,35 @@ export class RealEngine {
   handlePulidImageUpload(event) {
     const file = event.target.files[0]; // Only take the first file
     const previewContainer = document.getElementById("pulidImagePreview");
+    const uploadPreviewsContainer = document.getElementById(
+      "uploadPreviewsContainer"
+    );
 
     // Clear existing previews
     previewContainer.innerHTML = "";
+    uploadPreviewsContainer.innerHTML = "";
 
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
+        // Create image for mini preview (existing functionality)
         const img = document.createElement("img");
         img.src = e.target.result;
         previewContainer.appendChild(img);
+
+        // Create image for left-side upload preview (new functionality)
+        const uploadImg = document.createElement("img");
+        uploadImg.src = e.target.result;
+        uploadImg.title = "PuLID Reference Image";
+        uploadImg.addEventListener("click", () => {
+          // Allow users to click to remove
+          if (confirm("Remove this reference image?")) {
+            uploadPreviewsContainer.innerHTML = "";
+            previewContainer.innerHTML = "";
+            document.getElementById("pulidImageUpload").value = "";
+          }
+        });
+        uploadPreviewsContainer.appendChild(uploadImg);
       };
       reader.readAsDataURL(file);
 
@@ -284,16 +304,35 @@ export class RealEngine {
   handleKontextImageUpload(event) {
     const file = event.target.files[0]; // Only take the first file
     const previewContainer = document.getElementById("kontextImagePreview");
+    const uploadPreviewsContainer = document.getElementById(
+      "uploadPreviewsContainer"
+    );
 
     // Clear existing previews
     previewContainer.innerHTML = "";
+    uploadPreviewsContainer.innerHTML = "";
 
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
+        // Create image for mini preview (existing functionality)
         const img = document.createElement("img");
         img.src = e.target.result;
         previewContainer.appendChild(img);
+
+        // Create image for left-side upload preview (new functionality)
+        const uploadImg = document.createElement("img");
+        uploadImg.src = e.target.result;
+        uploadImg.title = "Kontext Base Image";
+        uploadImg.addEventListener("click", () => {
+          // Allow users to click to remove
+          if (confirm("Remove this base image?")) {
+            uploadPreviewsContainer.innerHTML = "";
+            previewContainer.innerHTML = "";
+            document.getElementById("kontextImageUpload").value = "";
+          }
+        });
+        uploadPreviewsContainer.appendChild(uploadImg);
       };
       reader.readAsDataURL(file);
 
@@ -416,6 +455,15 @@ export class RealEngine {
               <line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
             Download
+          </button>
+          <button onclick="realEngine.addToUploads('${imageUrl}')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14,2 14,8 20,8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="12" y1="17" x2="12" y2="9"/>
+            </svg>
+            Add to Uploads
           </button>
           <button onclick="realEngine.createVariation('${imageUrl}')">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -685,6 +733,12 @@ export class RealEngine {
     } else if (mode === "kontext") {
       document.getElementById("kontextModeBtn").classList.add("active");
 
+      // Inform user about seamless workflow
+      this.showStatus(
+        "Kontext edit mode - seamless workflow with all aspect ratios",
+        3000
+      );
+
       // Re-enable LoRA for kontext mode
       const loraSelect = document.getElementById("loraSelect");
       const loraSection = loraSelect?.closest(".setting-section");
@@ -928,14 +982,58 @@ export class RealEngine {
   }
 
   /**
-   * Create image variation
-   * @param {string} imageUrl - URL of source image
+   * Create variation of an image (placeholder)
+   * @param {string} imageUrl - URL of the source image
    */
   createVariation(imageUrl) {
     this.modules.imageGenerator.createVariation(
       imageUrl,
       this.showStatus.bind(this)
     );
+  }
+
+  /**
+   * Add generated image to upload previews for reuse
+   * @param {string} imageUrl - URL of the image to add
+   */
+  addToUploads(imageUrl) {
+    const uploadPreviewsContainer = document.getElementById(
+      "uploadPreviewsContainer"
+    );
+
+    if (!uploadPreviewsContainer) {
+      this.showStatus("Upload container not found", 3000);
+      return;
+    }
+
+    // Check if image already exists to avoid duplicates
+    const existingImages = uploadPreviewsContainer.querySelectorAll("img");
+    for (let img of existingImages) {
+      if (img.src === imageUrl) {
+        this.showStatus("Image already in uploads", 2000);
+        return;
+      }
+    }
+
+    // Clear any existing uploads first (since we support single image mode)
+    uploadPreviewsContainer.innerHTML = "";
+
+    // Create new image element
+    const uploadImg = document.createElement("img");
+    uploadImg.src = imageUrl;
+    uploadImg.title = "Generated Image - Click to remove";
+    uploadImg.addEventListener("click", () => {
+      if (confirm("Remove this image from uploads?")) {
+        uploadPreviewsContainer.innerHTML = "";
+        // Clear the file inputs as well
+        document.getElementById("pulidImageUpload").value = "";
+        document.getElementById("kontextImageUpload").value = "";
+        this.showStatus("Image removed from uploads", 2000);
+      }
+    });
+
+    uploadPreviewsContainer.appendChild(uploadImg);
+    this.showStatus("Image added to uploads - ready for PuLID/editing", 3000);
   }
 
   /**
@@ -983,6 +1081,58 @@ export class RealEngine {
     if (!this.settings.model || this.settings.model === "") {
       this.settings.model = "rundiffusion:110@101"; // Force J-Pro Lighting as default
       console.log("Set default model to J-Pro Lighting");
+    }
+
+    // FORCE Kontext-compatible dimensions - override any cached incompatible dimensions
+    const kontextCompatibleDimensions = [
+      "1568x672",
+      "1392x752",
+      "1184x880",
+      "1248x832",
+      "1024x1024",
+      "832x1248",
+      "880x1184",
+      "752x1392",
+      "672x1568",
+    ];
+
+    const currentDimension = `${this.settings.width}x${this.settings.height}`;
+    if (!kontextCompatibleDimensions.includes(currentDimension)) {
+      console.log(`Incompatible dimensions detected: ${currentDimension}`);
+      console.log("Forcing compatible dimensions: 1024x1024");
+      this.settings.width = 1024;
+      this.settings.height = 1024;
+      this.saveToStorage(); // Save the corrected dimensions
+    }
+
+    // Force update hidden inputs with correct dimensions
+    this.updateHiddenInput("width", this.settings.width);
+    this.updateHiddenInput("height", this.settings.height);
+
+    // Force update aspect ratio button active state
+    this.updateAspectRatioButtons();
+  }
+
+  /**
+   * Update aspect ratio buttons to reflect current dimensions
+   */
+  updateAspectRatioButtons() {
+    const currentDimension = `${this.settings.width}x${this.settings.height}`;
+
+    // Remove active class from all buttons
+    document.querySelectorAll(".aspect-btn").forEach((btn) => {
+      btn.classList.remove("active");
+    });
+
+    // Find and activate the correct button
+    const activeBtn = document.querySelector(
+      `[data-width="${this.settings.width}"][data-height="${this.settings.height}"]`
+    );
+    if (activeBtn) {
+      activeBtn.classList.add("active");
+      console.log(`✅ Aspect ratio button activated: ${currentDimension}`);
+    } else {
+      console.log(`⚠️ No aspect ratio button found for ${currentDimension}`);
     }
   }
 
