@@ -220,10 +220,10 @@ class RunwareService {
       referenceImageUUID
     );
 
-    // PuLID works specifically with FLUX models - use FLUX Dev as default for better quality
-    let pulidModel = "runware:101@1"; // FLUX Dev for better identity preservation
+    // Use appropriate model for PuLID - prefer FLUX models for better identity preservation
+    let pulidModel = "runware:101@1"; // FLUX Dev for PuLID compatibility
     if (model === "runware:100@1" || model === "runware:101@1") {
-      pulidModel = model;
+      pulidModel = model; // Keep if already FLUX
     }
 
     console.log(`Using PuLID with model: ${pulidModel}`);

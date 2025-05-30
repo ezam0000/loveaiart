@@ -234,7 +234,7 @@ export class ImageGenerator {
           settings.model === "runware:100@1" ||
           settings.model === "runware:101@1"
             ? settings.model
-            : "runware:101@1", // Auto-switch to FLUX Dev if not already FLUX
+            : "runware:101@1", // Auto-switch to FLUX Dev for PuLID compatibility
       };
 
       // Note: LoRA cannot be used with PuLID according to Runware API limitations

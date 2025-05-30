@@ -60,6 +60,23 @@
   background-color: var(--accent-color);
 }
 
+/* Kontext button locked/unlocked states */
+.mode-btn[id="kontextModeBtn"] {
+  position: relative;
+}
+
+.mode-btn[id="kontextModeBtn"]:not(.active) {
+  opacity: 0.8;
+}
+
+.mode-btn[id="kontextModeBtn"][title*="Unlocked"] {
+  background: linear-gradient(
+    135deg,
+    var(--bg-tertiary) 0%,
+    rgba(74, 222, 128, 0.1) 100%
+  );
+}
+
 /* Enhancer Toggle */
 .enhancer-toggle-container {
   display: flex;

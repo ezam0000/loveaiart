@@ -13,13 +13,13 @@ export class RealEngine {
     this.settings = {
       width: 1024,
       height: 1024,
-      model: "rundiffusion:130@100", // J-Pro as default instead of Dream
+      model: "rundiffusion:110@101", // J-Pro Lighting as default (faster)
       lora: "",
       lora2: "",
-      steps: 8, // Dream default steps (higher quality)
-      CFGScale: 3.5, // Dream default CFG (higher quality)
+      steps: 4, // J-Pro Lighting optimal steps
+      CFGScale: 1, // J-Pro Lighting optimal CFG
       negativePrompt: "worst quality, low quality, blurry",
-      scheduler: "FlowMatchEulerDiscreteScheduler",
+      scheduler: "Euler Beta",
       seed: "",
       enhancePrompt: false,
       outputFormat: "JPG",
@@ -62,6 +62,26 @@ export class RealEngine {
     this.showWelcomeMessage();
     this.updateRecycleButtonState();
     this.isInitialized = true;
+
+    // Check for existing Kontext authentication
+    this.checkKontextAuthentication();
+  }
+
+  /**
+   * Check and restore Kontext authentication state
+   */
+  checkKontextAuthentication() {
+    const isAuthenticated =
+      sessionStorage.getItem("kontextAuthenticated") === "true";
+
+    if (isAuthenticated) {
+      const kontextBtn = document.getElementById("kontextModeBtn");
+      if (kontextBtn) {
+        kontextBtn.style.borderLeft = "3px solid #4ade80";
+        kontextBtn.title = "Edit Mode (Unlocked - $0.04 per generation)";
+        kontextBtn.innerHTML = "🔓 Edit";
+      }
+    }
   }
 
   /**
@@ -96,7 +116,7 @@ export class RealEngine {
 
     document
       .getElementById("kontextModeBtn")
-      .addEventListener("click", () => this.switchMode("kontext"));
+      .addEventListener("click", () => this.handleKontextModeClick());
 
     document.getElementById("chatModeBtn").addEventListener("click", () => {
       this.switchMode("chat");
@@ -608,23 +628,10 @@ export class RealEngine {
         this.settings.model !== "runware:100@1" &&
         this.settings.model !== "runware:101@1"
       ) {
-        const oldModel = this.settings.model;
-        this.settings.model = "runware:101@1"; // Switch to FLUX Dev for better quality
+        this.settings.model = "runware:101@1"; // Switch to FLUX Dev for PuLID compatibility
         this.updateHiddenInput("model", this.settings.model);
-
-        // Update the settings panel dropdown
-        const modelSelect = document.getElementById("modelSelect");
-        if (modelSelect) {
-          modelSelect.value = this.settings.model;
-        }
-
-        console.log(
-          `PuLID mode: Auto-switched model from ${oldModel} to FLUX Dev`
-        );
-        this.showStatus(
-          "Switched to FLUX Dev model for PuLID compatibility",
-          3000
-        );
+        this.settingsManager.updateModelIndicator();
+        this.showStatus("Switched to FLUX Dev for PuLID generation", 3000);
       }
 
       // PuLID cannot be used with LoRA - disable LoRA selection
@@ -971,6 +978,12 @@ export class RealEngine {
         this.lastPrompt = data.lastPrompt;
       }
     }
+
+    // Ensure J-Pro Lighting is always the default model
+    if (!this.settings.model || this.settings.model === "") {
+      this.settings.model = "rundiffusion:110@101"; // Force J-Pro Lighting as default
+      console.log("Set default model to J-Pro Lighting");
+    }
   }
 
   /**
@@ -1024,6 +1037,51 @@ export class RealEngine {
     if (confirm("Reset all settings to defaults? This will reload the page.")) {
       this.modules.storage.clearStorage(this.storageKey);
       window.location.reload();
+    }
+  }
+
+  /**
+   * Handle Kontext mode click
+   */
+  handleKontextModeClick() {
+    // Check if already authenticated in this session
+    const isAuthenticated =
+      sessionStorage.getItem("kontextAuthenticated") === "true";
+
+    if (isAuthenticated) {
+      this.switchMode("kontext");
+      return;
+    }
+
+    // Show password prompt
+    const password = prompt(
+      "🔒 Kontext Edit Mode - Enter Password:\n\n⚠️ This feature costs $0.04 per generation\nUse responsibly!"
+    );
+
+    if (password === null) {
+      // User cancelled
+      return;
+    }
+
+    // Check password (you can change this password)
+    const correctPassword = "kontext2025"; // Change this to your desired password
+
+    if (password === correctPassword) {
+      // Authentication successful
+      sessionStorage.setItem("kontextAuthenticated", "true");
+      this.switchMode("kontext");
+      this.showStatus("🔓 Kontext Edit Mode Unlocked for this session", 3000);
+
+      // Add visual indicator to the button
+      const kontextBtn = document.getElementById("kontextModeBtn");
+      if (kontextBtn) {
+        kontextBtn.style.borderLeft = "3px solid #4ade80";
+        kontextBtn.title = "Edit Mode (Unlocked - $0.04 per generation)";
+        kontextBtn.innerHTML = "🔓 Edit";
+      }
+    } else {
+      // Wrong password
+      alert("❌ Incorrect password. Access denied.");
     }
   }
 }

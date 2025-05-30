@@ -13,8 +13,15 @@ export class SettingsManager {
       },
       "rundiffusion:130@100": {
         name: "J-Pro",
-        steps: 28,
-        CFGScale: 3.5,
+        steps: 33,
+        CFGScale: 3,
+        scheduler: "Euler Beta",
+      },
+      "rundiffusion:110@101": {
+        name: "J-Pro Lighting",
+        steps: 4,
+        CFGScale: 1,
+        scheduler: "Euler Beta",
       },
       "runware:101@1": {
         name: "RealEngine v1",
@@ -275,9 +282,15 @@ export class SettingsManager {
       settings.steps = this.modelDefaults[model].steps;
       settings.CFGScale = this.modelDefaults[model].CFGScale;
 
+      // Apply scheduler if specified in model defaults
+      if (this.modelDefaults[model].scheduler) {
+        settings.scheduler = this.modelDefaults[model].scheduler;
+      }
+
       // Update UI sliders and displays
       const stepsSlider = document.getElementById("stepsSlider");
       const cfgScaleSlider = document.getElementById("cfgScaleSlider");
+      const schedulerSelect = document.getElementById("schedulerSelect");
       const stepsValue = document.getElementById("stepsValue");
       const cfgScaleValue = document.getElementById("cfgScaleValue");
 
@@ -286,6 +299,9 @@ export class SettingsManager {
       }
       if (cfgScaleSlider) {
         cfgScaleSlider.value = settings.CFGScale;
+      }
+      if (schedulerSelect && this.modelDefaults[model].scheduler) {
+        schedulerSelect.value = settings.scheduler;
       }
       if (stepsValue) {
         stepsValue.textContent = settings.steps.toFixed(0);
@@ -297,9 +313,18 @@ export class SettingsManager {
       // Update hidden inputs
       updateHiddenInput("steps", settings.steps);
       updateHiddenInput("CFGScale", settings.CFGScale);
+      if (this.modelDefaults[model].scheduler) {
+        updateHiddenInput("scheduler", settings.scheduler);
+      }
 
       console.log(
-        `Applied ${this.modelDefaults[model].name} defaults: Steps=${settings.steps}, CFG=${settings.CFGScale}`
+        `Applied ${this.modelDefaults[model].name} defaults: Steps=${
+          settings.steps
+        }, CFG=${settings.CFGScale}${
+          this.modelDefaults[model].scheduler
+            ? `, Scheduler=${settings.scheduler}`
+            : ""
+        }`
       );
     }
   }
