@@ -84,21 +84,22 @@
 /* Aspect Ratio Grid */
 .aspect-ratio-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
   margin-bottom: 16px;
 }
 
 .aspect-btn {
-  padding: 12px;
+  padding: 8px 4px;
   background-color: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
-  font-size: 12px;
+  font-size: 10px;
   cursor: pointer;
   transition: var(--transition);
   text-align: center;
+  line-height: 1.2;
 }
 
 .aspect-btn:hover {

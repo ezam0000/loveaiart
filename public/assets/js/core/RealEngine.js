@@ -10,6 +10,34 @@ export class RealEngine {
     this.currentChat = null;
     this.currentMode = "image"; // "image" or "chat"
     this.lastPrompt = ""; // Store the last used prompt
+
+    // GLOBAL DIMENSION CONSTRAINTS - Kontext-compatible dimensions
+    // These are the exact dimensions required by Kontext editing mode
+    this.allowedDimensions = [
+      "1568x672", // Landscape 7:3
+      "1392x752", // Landscape 16:9
+      "1184x880", // Landscape 4:3
+      "1248x832", // Landscape 3:2
+      "1024x1024", // Square 1:1
+      "832x1248", // Portrait 2:3
+      "880x1184", // Portrait 3:4
+      "752x1392", // Portrait 9:16
+      "672x1568", // Portrait 3:7
+    ];
+
+    // For standard generation that requires multiples of 64, we'll map to nearest valid dimensions
+    this.standardGenerationMap = {
+      "1568x672": "1536x640", // Nearest multiples of 64
+      "1392x752": "1408x768",
+      "1184x880": "1152x896",
+      "1248x832": "1216x832",
+      "1024x1024": "1024x1024", // Already valid
+      "832x1248": "832x1216",
+      "880x1184": "896x1152",
+      "752x1392": "768x1408",
+      "672x1568": "640x1536",
+    };
+
     this.settings = {
       width: 1024,
       height: 1024,
@@ -206,7 +234,8 @@ export class RealEngine {
       this.updateHiddenInput.bind(this),
       this.saveToStorage.bind(this),
       this.handleLoRACompatibility.bind(this),
-      this.showStatus.bind(this)
+      this.showStatus.bind(this),
+      this.setDimensions.bind(this)
     );
 
     // Dismiss sidebar on outside click
@@ -1087,21 +1116,9 @@ export class RealEngine {
       console.log("Set default model to J-Pro Lighting");
     }
 
-    // FORCE Kontext-compatible dimensions - override any cached incompatible dimensions
-    const kontextCompatibleDimensions = [
-      "1568x672",
-      "1392x752",
-      "1184x880",
-      "1248x832",
-      "1024x1024",
-      "832x1248",
-      "880x1184",
-      "752x1392",
-      "672x1568",
-    ];
-
+    // FORCE compatible dimensions - override any cached incompatible dimensions
     const currentDimension = `${this.settings.width}x${this.settings.height}`;
-    if (!kontextCompatibleDimensions.includes(currentDimension)) {
+    if (!this.allowedDimensions.includes(currentDimension)) {
       console.log(`Incompatible dimensions detected: ${currentDimension}`);
       console.log("Forcing compatible dimensions: 1024x1024");
       this.settings.width = 1024;
@@ -1237,6 +1254,63 @@ export class RealEngine {
       // Wrong password
       alert("❌ Incorrect password. Access denied.");
     }
+  }
+
+  /**
+   * Validate and constrain dimensions to allowed values
+   * @param {number} width - Proposed width
+   * @param {number} height - Proposed height
+   * @returns {Object} - Validated {width, height}
+   */
+  validateDimensions(width, height) {
+    const proposedDimension = `${width}x${height}`;
+
+    if (this.allowedDimensions.includes(proposedDimension)) {
+      return { width, height };
+    }
+
+    console.log(
+      `⚠️ Dimension ${proposedDimension} not allowed. Forcing 1024x1024`
+    );
+    this.showStatus(
+      `Dimension ${proposedDimension} not supported. Using 1024x1024`,
+      3000
+    );
+
+    return { width: 1024, height: 1024 };
+  }
+
+  /**
+   * Set dimensions with global validation
+   * @param {number} width - Desired width
+   * @param {number} height - Desired height
+   */
+  setDimensions(width, height) {
+    const validated = this.validateDimensions(width, height);
+
+    this.settings.width = validated.width;
+    this.settings.height = validated.height;
+
+    // Update hidden inputs
+    this.updateHiddenInput("width", validated.width);
+    this.updateHiddenInput("height", validated.height);
+
+    // Update aspect ratio button active states
+    document.querySelectorAll(".aspect-btn").forEach((btn) => {
+      btn.classList.remove("active");
+    });
+
+    const activeBtn = document.querySelector(
+      `[data-width="${validated.width}"][data-height="${validated.height}"]`
+    );
+    if (activeBtn) {
+      activeBtn.classList.add("active");
+    }
+
+    // Save to storage
+    this.saveToStorage();
+
+    console.log(`✅ Dimensions set to: ${validated.width}x${validated.height}`);
   }
 }
 

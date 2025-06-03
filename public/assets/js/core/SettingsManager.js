@@ -48,18 +48,20 @@ export class SettingsManager {
    * @param {Function} saveToStorage - Function to save data
    * @param {Function} handleLoRACompatibility - Function to handle LoRA compatibility
    * @param {Function} showStatus - Status display function
+   * @param {Function} setDimensions - Function to validate and set dimensions
    */
   bindSettingsEvents(
     settings,
     updateHiddenInput,
     saveToStorage,
     handleLoRACompatibility,
-    showStatus
+    showStatus,
+    setDimensions
   ) {
     // Aspect ratio buttons
     document.querySelectorAll(".aspect-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
-        this.setAspectRatio(btn, settings, updateHiddenInput, saveToStorage);
+        this.setAspectRatio(btn, setDimensions);
       });
     });
 
@@ -166,29 +168,15 @@ export class SettingsManager {
   /**
    * Set aspect ratio
    * @param {HTMLElement} selectedBtn - Selected aspect ratio button
-   * @param {Object} settings - Settings object reference
-   * @param {Function} updateHiddenInput - Function to update hidden inputs
-   * @param {Function} saveToStorage - Function to save data
+   * @param {Function} setDimensions - Function to validate and set dimensions
    */
-  setAspectRatio(selectedBtn, settings, updateHiddenInput, saveToStorage) {
-    // Remove active class from all buttons
-    document.querySelectorAll(".aspect-btn").forEach((btn) => {
-      btn.classList.remove("active");
-    });
+  setAspectRatio(selectedBtn, setDimensions) {
+    // Get dimensions from button
+    const width = parseInt(selectedBtn.dataset.width);
+    const height = parseInt(selectedBtn.dataset.height);
 
-    // Add active class to selected button
-    selectedBtn.classList.add("active");
-
-    // Update settings
-    settings.width = parseInt(selectedBtn.dataset.width);
-    settings.height = parseInt(selectedBtn.dataset.height);
-
-    // Update hidden inputs
-    updateHiddenInput("width", settings.width);
-    updateHiddenInput("height", settings.height);
-
-    // Save to storage
-    saveToStorage();
+    // Validate and set dimensions using the global validation
+    setDimensions(width, height);
   }
 
   /**

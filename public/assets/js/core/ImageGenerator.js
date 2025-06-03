@@ -10,42 +10,6 @@ export class ImageGenerator {
   }
 
   /**
-   * Validate and fix dimensions to ensure Kontext compatibility
-   * @param {Object} settings - Current settings
-   * @returns {Object} - Corrected settings
-   */
-  validateAndFixDimensions(settings) {
-    const kontextCompatibleDimensions = [
-      "1568x672",
-      "1392x752",
-      "1184x880",
-      "1248x832",
-      "1024x1024",
-      "832x1248",
-      "880x1184",
-      "752x1392",
-      "672x1568",
-    ];
-
-    const currentDimension = `${settings.width}x${settings.height}`;
-    if (!kontextCompatibleDimensions.includes(currentDimension)) {
-      console.log(
-        `⚠️ FIXING: Incompatible dimensions ${currentDimension} -> 1024x1024`
-      );
-      settings.width = 1024;
-      settings.height = 1024;
-
-      // Update hidden inputs immediately
-      const widthInput = document.getElementById("width");
-      const heightInput = document.getElementById("height");
-      if (widthInput) widthInput.value = 1024;
-      if (heightInput) heightInput.value = 1024;
-    }
-
-    return settings;
-  }
-
-  /**
    * Generate an image with the current settings
    * @param {Object} params - Generation parameters
    * @returns {Promise<Object>} - Generation result
@@ -63,9 +27,6 @@ export class ImageGenerator {
   }) {
     if (this.isGenerating)
       return { success: false, reason: "Already generating" };
-
-    // FORCE dimension validation before any generation
-    settings = this.validateAndFixDimensions(settings);
 
     const prompt = document.getElementById("positivePrompt").value.trim();
     if (!prompt) {
@@ -263,12 +224,15 @@ export class ImageGenerator {
    * @returns {Object} - Form data for API call
    */
   collectFormData(settings, currentMode = "image") {
+    // Get appropriate dimensions for the current mode
+    const dimensions = this.getModeDimensions(settings, currentMode);
+
     // For PuLID mode, use minimal structure matching documentation but exclude LoRA
     if (currentMode === "pulid") {
       const formData = {
         positivePrompt: document.getElementById("positivePrompt").value,
-        height: settings.height,
-        width: settings.width,
+        height: dimensions.height,
+        width: dimensions.width,
         model:
           settings.model === "runware:100@1" ||
           settings.model === "runware:101@1"
@@ -287,8 +251,8 @@ export class ImageGenerator {
     if (currentMode === "kontext") {
       const formData = {
         positivePrompt: document.getElementById("positivePrompt").value, // This should be edit instruction
-        height: settings.height, // Now using compatible dimensions from settings
-        width: settings.width, // Now using compatible dimensions from settings
+        height: dimensions.height, // Use exact Kontext-compatible dimensions
+        width: dimensions.width, // Use exact Kontext-compatible dimensions
         model:
           settings.model === "bfl:3@1" || settings.model === "bfl:4@1"
             ? settings.model
@@ -309,12 +273,13 @@ export class ImageGenerator {
     console.log("collectFormData - Original Model:", settings.model);
     console.log("collectFormData - isDreamModel:", isDreamModel);
     console.log("collectFormData - settings.lora:", settings.lora);
+    console.log("collectFormData - Mapped dimensions:", dimensions);
 
     const formData = {
       positivePrompt: document.getElementById("positivePrompt").value,
       negativePrompt: settings.negativePrompt,
-      width: settings.width,
-      height: settings.height,
+      width: dimensions.width, // Use mapped dimensions for API compatibility
+      height: dimensions.height, // Use mapped dimensions for API compatibility
       model: settings.model,
       lora: isDreamModel ? "" : settings.lora,
       lora2: isDreamModel ? "" : settings.lora2 || "",
@@ -653,5 +618,46 @@ export class ImageGenerator {
     addMessage("Generation timed out. Please try again.", false);
     showStatus("Generation timed out", 3000);
     return { success: false, reason: "Polling timeout" };
+  }
+
+  /**
+   * Get appropriate dimensions for the current mode
+   * @param {Object} settings - Current settings
+   * @param {string} currentMode - Current generation mode
+   * @returns {Object} - Appropriate width and height for the mode
+   */
+  getModeDimensions(settings, currentMode) {
+    const currentDimension = `${settings.width}x${settings.height}`;
+
+    // For Kontext mode, use exact dimensions as required
+    if (currentMode === "kontext") {
+      return { width: settings.width, height: settings.height };
+    }
+
+    // For standard generation, map to nearest multiples of 64 if needed
+    if (
+      currentMode === "image" ||
+      currentMode === "pulid" ||
+      currentMode === "layerdiffuse"
+    ) {
+      // Access the mapping from RealEngine instance (passed via global or settings)
+      const realEngine = window.realEngine;
+      if (
+        realEngine &&
+        realEngine.standardGenerationMap &&
+        realEngine.standardGenerationMap[currentDimension]
+      ) {
+        const mappedDimension =
+          realEngine.standardGenerationMap[currentDimension];
+        const [width, height] = mappedDimension.split("x").map(Number);
+        console.log(
+          `📐 Mapped ${currentDimension} → ${mappedDimension} for standard generation`
+        );
+        return { width, height };
+      }
+    }
+
+    // Fallback to original dimensions
+    return { width: settings.width, height: settings.height };
   }
 }
