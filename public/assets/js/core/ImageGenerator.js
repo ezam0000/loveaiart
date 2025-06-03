@@ -274,6 +274,7 @@ export class ImageGenerator {
           settings.model === "runware:101@1"
             ? settings.model
             : "runware:101@1", // Auto-switch to FLUX Dev for PuLID compatibility
+        outputFormat: "PNG", // Force PNG for better quality
       };
 
       // Note: LoRA cannot be used with PuLID according to Runware API limitations
@@ -292,6 +293,7 @@ export class ImageGenerator {
           settings.model === "bfl:3@1" || settings.model === "bfl:4@1"
             ? settings.model
             : "bfl:3@1", // Auto-switch to Kontext Pro if not already Kontext
+        outputFormat: "PNG", // Force PNG for better quality and transparency support
       };
 
       // Note: LoRA support with Kontext is unknown, excluding for safety
@@ -339,22 +341,11 @@ export class ImageGenerator {
   collectPulidImages() {
     const images = [];
 
-    // Check mini preview container (existing functionality)
-    const previewContainer = document.getElementById("pulidImagePreview");
-    if (previewContainer) {
-      const imageElements = previewContainer.querySelectorAll("img");
-      imageElements.forEach((img) => {
-        if (img.src && img.src.startsWith("data:")) {
-          images.push(img.src);
-        }
-      });
-    }
-
-    // Also check upload previews container (new functionality)
+    // First check upload previews container (prioritize "Send to Upload" images)
     const uploadPreviewsContainer = document.getElementById(
       "uploadPreviewsContainer"
     );
-    if (uploadPreviewsContainer && images.length === 0) {
+    if (uploadPreviewsContainer) {
       const uploadImages = uploadPreviewsContainer.querySelectorAll("img");
       uploadImages.forEach((img) => {
         if (img.src) {
@@ -363,6 +354,19 @@ export class ImageGenerator {
           images.push(img.src);
         }
       });
+    }
+
+    // Only check mini preview container if no upload previews found
+    if (images.length === 0) {
+      const previewContainer = document.getElementById("pulidImagePreview");
+      if (previewContainer) {
+        const imageElements = previewContainer.querySelectorAll("img");
+        imageElements.forEach((img) => {
+          if (img.src && img.src.startsWith("data:")) {
+            images.push(img.src);
+          }
+        });
+      }
     }
 
     return images;
@@ -375,22 +379,11 @@ export class ImageGenerator {
   collectKontextImages() {
     const images = [];
 
-    // Check mini preview container (existing functionality)
-    const previewContainer = document.getElementById("kontextImagePreview");
-    if (previewContainer) {
-      const imageElements = previewContainer.querySelectorAll("img");
-      imageElements.forEach((img) => {
-        if (img.src && img.src.startsWith("data:")) {
-          images.push(img.src);
-        }
-      });
-    }
-
-    // Also check upload previews container (new functionality)
+    // First check upload previews container (prioritize "Send to Upload" images)
     const uploadPreviewsContainer = document.getElementById(
       "uploadPreviewsContainer"
     );
-    if (uploadPreviewsContainer && images.length === 0) {
+    if (uploadPreviewsContainer) {
       const uploadImages = uploadPreviewsContainer.querySelectorAll("img");
       uploadImages.forEach((img) => {
         if (img.src) {
@@ -399,6 +392,19 @@ export class ImageGenerator {
           images.push(img.src);
         }
       });
+    }
+
+    // Only check mini preview container if no upload previews found
+    if (images.length === 0) {
+      const previewContainer = document.getElementById("kontextImagePreview");
+      if (previewContainer) {
+        const imageElements = previewContainer.querySelectorAll("img");
+        imageElements.forEach((img) => {
+          if (img.src && img.src.startsWith("data:")) {
+            images.push(img.src);
+          }
+        });
+      }
     }
 
     return images;
@@ -484,10 +490,35 @@ export class ImageGenerator {
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
 
+      // Determine file extension based on blob type or URL
+      let extension = ".png"; // Default to PNG for better quality
+      const contentType = blob.type;
+
+      if (contentType) {
+        if (contentType.includes("jpeg") || contentType.includes("jpg")) {
+          extension = ".jpg";
+        } else if (contentType.includes("png")) {
+          extension = ".png";
+        } else if (contentType.includes("webp")) {
+          extension = ".webp";
+        }
+        // For any other or unknown content types, keep PNG default
+      } else {
+        // Fallback: check URL extension, but prefer PNG for quality
+        const urlExt = imageUrl.toLowerCase();
+        if (urlExt.includes(".jpg") || urlExt.includes(".jpeg")) {
+          // Only use JPG if explicitly found in URL
+          extension = ".jpg";
+        } else if (urlExt.includes(".webp")) {
+          extension = ".webp";
+        }
+        // Default remains .png for best quality preservation
+      }
+
       // Create download link
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.download = `realengine-${Date.now()}.jpg`;
+      link.download = `realengine-${Date.now()}${extension}`;
       link.style.display = "none";
 
       // Add to document, click, and remove
@@ -498,14 +529,14 @@ export class ImageGenerator {
       // Clean up the blob URL
       URL.revokeObjectURL(blobUrl);
 
-      console.log("Image download initiated");
+      console.log("Image download initiated with format:", extension);
     } catch (error) {
       console.error("Download failed:", error);
 
-      // Fallback to the original method
+      // Fallback to the original method with PNG extension (always PNG for quality)
       const link = document.createElement("a");
       link.href = imageUrl;
-      link.download = `realengine-${Date.now()}.jpg`;
+      link.download = `realengine-${Date.now()}.png`;
       link.target = "_blank";
       document.body.appendChild(link);
       link.click();

@@ -22,7 +22,7 @@ export class RealEngine {
       scheduler: "Euler Beta",
       seed: "",
       enhancePrompt: false,
-      outputFormat: "JPG",
+      outputFormat: "PNG",
       numberResults: 1,
     };
     this.recentPrompts = [];
@@ -1006,17 +1006,19 @@ export class RealEngine {
       return;
     }
 
-    // Check if image already exists to avoid duplicates
-    const existingImages = uploadPreviewsContainer.querySelectorAll("img");
-    for (let img of existingImages) {
-      if (img.src === imageUrl) {
-        this.showStatus("Image already in uploads", 2000);
-        return;
-      }
-    }
-
     // Clear any existing uploads first (since we support single image mode)
     uploadPreviewsContainer.innerHTML = "";
+
+    // Also clear the file upload preview containers to avoid conflicts
+    const pulidPreview = document.getElementById("pulidImagePreview");
+    if (pulidPreview) {
+      pulidPreview.innerHTML = "";
+    }
+
+    const kontextPreview = document.getElementById("kontextImagePreview");
+    if (kontextPreview) {
+      kontextPreview.innerHTML = "";
+    }
 
     // Create new image element
     const uploadImg = document.createElement("img");
@@ -1034,6 +1036,8 @@ export class RealEngine {
 
     uploadPreviewsContainer.appendChild(uploadImg);
     this.showStatus("Image added to uploads - ready for PuLID/editing", 3000);
+
+    console.log("Image successfully added to uploads:", imageUrl);
   }
 
   /**
