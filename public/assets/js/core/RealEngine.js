@@ -1064,7 +1064,7 @@ export class RealEngine {
     });
 
     uploadPreviewsContainer.appendChild(uploadImg);
-    this.showStatus("Image added to uploads - ready for PuLID/editing", 3000);
+    this.showStatus("📐 PNG quality preserved - ready for editing", 3000);
 
     console.log("Image successfully added to uploads:", imageUrl);
   }
@@ -1114,6 +1114,16 @@ export class RealEngine {
     if (!this.settings.model || this.settings.model === "") {
       this.settings.model = "rundiffusion:110@101"; // Force J-Pro Lighting as default
       console.log("Set default model to J-Pro Lighting");
+    }
+
+    // Ensure PNG format is always used for graphic design quality
+    if (
+      !this.settings.outputFormat ||
+      this.settings.outputFormat === "JPEG" ||
+      this.settings.outputFormat === "JPG"
+    ) {
+      this.settings.outputFormat = "PNG";
+      console.log("Set output format to PNG for graphic design quality");
     }
 
     // FORCE compatible dimensions - override any cached incompatible dimensions

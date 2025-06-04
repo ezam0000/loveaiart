@@ -291,7 +291,7 @@ export class ImageGenerator {
       scheduler: settings.scheduler,
       seed: settings.seed,
       enhancePrompt: settings.enhancePrompt,
-      outputFormat: settings.outputFormat,
+      outputFormat: "PNG", // Always use PNG for graphic design quality
       numberResults: settings.numberResults,
     };
 
@@ -455,30 +455,8 @@ export class ImageGenerator {
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
 
-      // Determine file extension based on blob type or URL
-      let extension = ".png"; // Default to PNG for better quality
-      const contentType = blob.type;
-
-      if (contentType) {
-        if (contentType.includes("jpeg") || contentType.includes("jpg")) {
-          extension = ".jpg";
-        } else if (contentType.includes("png")) {
-          extension = ".png";
-        } else if (contentType.includes("webp")) {
-          extension = ".webp";
-        }
-        // For any other or unknown content types, keep PNG default
-      } else {
-        // Fallback: check URL extension, but prefer PNG for quality
-        const urlExt = imageUrl.toLowerCase();
-        if (urlExt.includes(".jpg") || urlExt.includes(".jpeg")) {
-          // Only use JPG if explicitly found in URL
-          extension = ".jpg";
-        } else if (urlExt.includes(".webp")) {
-          extension = ".webp";
-        }
-        // Default remains .png for best quality preservation
-      }
+      // Always use PNG extension for graphic design quality preservation
+      const extension = ".png";
 
       // Create download link
       const link = document.createElement("a");
@@ -494,11 +472,13 @@ export class ImageGenerator {
       // Clean up the blob URL
       URL.revokeObjectURL(blobUrl);
 
-      console.log("Image download initiated with format:", extension);
+      console.log(
+        "Image download initiated with PNG format for quality preservation"
+      );
     } catch (error) {
       console.error("Download failed:", error);
 
-      // Fallback to the original method with PNG extension (always PNG for quality)
+      // Fallback to the original method with PNG extension
       const link = document.createElement("a");
       link.href = imageUrl;
       link.download = `realengine-${Date.now()}.png`;
