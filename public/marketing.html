@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RealEngine - AI Image Generation</title>
+    <meta
+      name="description"
+      content="RealEngine - Professional AI image generation application with advanced features like LayerDiffuse, PuLID face matching, and Kontext editing."
+    />
+    <meta
+      name="keywords"
+      content="AI image generation, FLUX models, LayerDiffuse, PuLID, face matching, vector graphics, image editing"
+    />
+    <link rel="canonical" href="https://realengine.app/marketing.html" />
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="RealEngine - AI Image Generation" />
+    <meta
+      property="og:description"
+      content="Professional AI image generation with advanced features"
+    />
+    <meta
+      property="og:image"
+      content="https://realengine.app/assets/images/og-image.png"
+    />
+    <meta property="og:url" content="https://realengine.app/marketing.html" />
+    <meta property="og:type" content="website" />
+
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: #fff;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 80px 0;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .subtitle {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        margin-bottom: 30px;
+      }
+
+      .hero-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 15px 30px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .btn-primary {
+        background: #fff;
+        color: #667eea;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+      }
+
+      .btn-secondary:hover {
+        background: white;
+        color: #667eea;
+      }
+
+      section {
+        padding: 80px 0;
+      }
+
+      h2 {
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 50px;
+        color: #2c3e50;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 40px;
+        margin-top: 50px;
+      }
+
+      .feature-card {
+        text-align: center;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-10px);
+      }
+
+      .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+      }
+
+      .feature-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        color: #2c3e50;
+      }
+
+      .feature-card p {
+        color: #666;
+        line-height: 1.8;
+      }
+
+      .stats-section {
+        background: #f8f9fa;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px;
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #667eea;
+        display: block;
+      }
+
+      .stat-label {
+        font-size: 1.1rem;
+        color: #666;
+        margin-top: 10px;
+      }
+
+      .cta-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-align: center;
+      }
+
+      .app-store-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 30px;
+        flex-wrap: wrap;
+      }
+
+      .app-store-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 24px;
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+      }
+
+      .app-store-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+
+      footer {
+        background: #2c3e50;
+        color: white;
+        padding: 40px 0;
+        text-align: center;
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 30px;
+        justify-content: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      .footer-links a {
+        color: white;
+        text-decoration: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .footer-links a:hover {
+        opacity: 0.7;
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2.5rem;
+        }
+
+        .subtitle {
+          font-size: 1.1rem;
+        }
+
+        h2 {
+          font-size: 2rem;
+        }
+
+        .hero-buttons {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .feature-card {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1>RealEngine</h1>
+        <p class="subtitle">
+          Professional AI Image Generation with Advanced Features
+        </p>
+        <div class="hero-buttons">
+          <a href="/" class="btn btn-primary">Try RealEngine</a>
+          <a href="#features" class="btn btn-secondary">Learn More</a>
+        </div>
+      </div>
+    </header>
+
+    <section id="features">
+      <div class="container">
+        <h2>Powerful AI Image Generation</h2>
+        <p
+          style="
+            text-align: center;
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto;
+          "
+        >
+          RealEngine combines cutting-edge AI models with an intuitive interface
+          to deliver professional-quality image generation for creators,
+          designers, and businesses.
+        </p>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🎨</div>
+            <h3>Standard Generation</h3>
+            <p>
+              High-quality image generation using FLUX Schnell and FLUX Dev
+              models with accelerated processing for 30-70% cost savings.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">👤</div>
+            <h3>Face Match (PuLID)</h3>
+            <p>
+              Advanced identity consistency technology that maintains facial
+              features across different styles and contexts using reference
+              images.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📐</div>
+            <h3>Vector Graphics (LayerDiffuse)</h3>
+            <p>
+              Generate images with transparent backgrounds perfect for logos,
+              icons, and design elements that seamlessly integrate into any
+              project.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🔧</div>
+            <h3>Advanced Editing (Kontext)</h3>
+            <p>
+              Instruction-based image editing using FLUX.1 Kontext models for
+              precise modifications and creative transformations.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Prompt Enhancement</h3>
+            <p>
+              AI-powered prompt optimization that automatically improves your
+              descriptions for better, more detailed results.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>Custom LoRAs</h3>
+            <p>
+              Support for personal LoRA models to create images in your unique
+              style or brand aesthetic with custom trigger words.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-section">
+      <div class="container">
+        <h2>Trusted by Creators Worldwide</h2>
+        <div class="stats-grid">
+          <div>
+            <span class="stat-number">10K+</span>
+            <div class="stat-label">Images Generated</div>
+          </div>
+          <div>
+            <span class="stat-number">99.9%</span>
+            <div class="stat-label">Uptime</div>
+          </div>
+          <div>
+            <span class="stat-number">4.8★</span>
+            <div class="stat-label">User Rating</div>
+          </div>
+          <div>
+            <span class="stat-number">2s</span>
+            <div class="stat-label">Average Generation</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <h2>Why Choose RealEngine?</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🚀</div>
+            <h3>Lightning Fast</h3>
+            <p>
+              Accelerated processing delivers professional results in seconds,
+              not minutes. Perfect for rapid prototyping and iteration.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">💎</div>
+            <h3>Professional Quality</h3>
+            <p>
+              State-of-the-art FLUX models ensure every generated image meets
+              professional standards for commercial use.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Secure & Private</h3>
+            <p>
+              Your prompts and generated images are processed securely with
+              enterprise-grade privacy protection.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="container">
+        <h2>Ready to Create Amazing Images?</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 30px; opacity: 0.9">
+          Join thousands of creators using RealEngine for their AI image
+          generation needs.
+        </p>
+
+        <div class="app-store-buttons">
+          <a href="#" class="app-store-btn">
+            <span>📱</span>
+            <span>Download for iOS</span>
+          </a>
+          <a href="#" class="app-store-btn">
+            <span>🤖</span>
+            <span>Download for Android</span>
+          </a>
+          <a href="/" class="app-store-btn">
+            <span>🌐</span>
+            <span>Use Web Version</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <div class="footer-links">
+          <a href="/tos.html">Terms of Service</a>
+          <a href="/pp.html">Privacy Policy</a>
+          <a href="mailto:support@realengine.app">Support</a>
+          <a href="https://realengine.app">RealEngine.app</a>
+        </div>
+        <p>&copy; 2024 RealEngine. All rights reserved.</p>
+        <p style="margin-top: 10px; opacity: 0.7; font-size: 0.9rem">
+          Professional AI image generation application
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
