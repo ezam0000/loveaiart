@@ -7,8 +7,8 @@
  * Middleware to redirect www to non-www
  */
 const redirectWWW = (req, res, next) => {
-  if (req.headers.host === "www.loveaiart.com") {
-    return res.redirect(301, `https://loveaiart.com${req.url}`);
+  if (req.headers.host === "www.realengine.app") {
+    return res.redirect(301, `https://realengine.app${req.url}`);
   }
   next();
 };

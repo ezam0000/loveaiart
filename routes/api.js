@@ -1,6 +1,6 @@
 /**
  * API Utility Routes
- * Handles authentication, logout, and utility endpoints
+ * Handles utility endpoints for the RealEngine application
  */
 
 const express = require("express");
@@ -32,41 +32,9 @@ const randomPrompts = [
   "A lavender field in Provence with an old stone farmhouse",
 ];
 
-// Route to handle logout
-router.get("/logout", (req, res) => {
-  req.logout((err) => {
-    if (err) {
-      return next(err);
-    }
-    req.session.destroy(() => {
-      console.log("User logged out, session destroyed");
-      res.clearCookie("connect.sid", { path: "/" });
-      res.redirect("/");
-    });
-  });
-});
-
-// Force logout route for testing
-router.get("/force-logout", (req, res) => {
-  req.logout((err) => {
-    if (err) {
-      return next(err);
-    }
-    req.session.destroy(() => {
-      console.log("Force logout, session destroyed");
-      res.redirect("/");
-    });
-  });
-});
-
 // Home route
 router.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "public", "index.html"));
-});
-
-// Separate login route
-router.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "public", "login.html"));
 });
 
 // Route to get random prompts

@@ -62,7 +62,7 @@
 .input-area {
   border-top: 1px solid var(--border-color);
   background-color: var(--bg-primary);
-  padding: 24px;
+  padding: 16px 24px;
 }
 
 .input-footer {

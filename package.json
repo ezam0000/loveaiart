@@ -1,7 +1,7 @@
 {
-  "name": "jsrunware",
+  "name": "realengine",
   "version": "1.0.0",
-  "description": "",
+  "description": "RealEngine - AI Image Generation Application",
   "main": "index.js",
   "scripts": {
     "start": "PORT=3001 node server.js",
@@ -11,7 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@kinde-oss/kinde-nodejs-sdk": "^1.2.4",
     "@runware/sdk-js": "^1.1.10",
     "axios": "^1.7.9",
     "dotenv": "^16.4.5",

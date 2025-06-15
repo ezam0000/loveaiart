@@ -16,28 +16,28 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .mode-toggle {
   display: flex;
   background-color: var(--bg-tertiary);
   border-radius: var(--radius-sm);
-  padding: 4px;
-  gap: 2px;
+  padding: 2px;
+  gap: 1px;
   flex-wrap: wrap;
 }
 
 .mode-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: 4px;
+  padding: 4px 8px;
   background-color: transparent;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
   transition: var(--transition);
   white-space: nowrap;
@@ -90,13 +90,13 @@
 .enhancer-toggle {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: 4px;
+  padding: 4px 8px;
   background-color: transparent;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
   transition: var(--transition);
 }
@@ -154,11 +154,11 @@
 .prompt-input-container {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: 8px;
   background-color: var(--input-bg);
   border: 1px solid var(--input-border);
   border-radius: var(--radius);
-  padding: 16px;
+  padding: 12px;
   transition: var(--transition);
 }
 
@@ -198,7 +198,7 @@
 .input-content-area {
   display: flex;
   align-items: flex-end;
-  gap: 12px;
+  gap: 8px;
   flex: 1;
 }
 

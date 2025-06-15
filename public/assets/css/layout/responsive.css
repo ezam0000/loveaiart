@@ -3,14 +3,60 @@
  * Media queries and responsive design adjustments
  */
 
+/* Mobile viewport height fix for iOS Safari */
+:root {
+  --viewport-height: 100vh;
+  --safe-area-inset-bottom: 0px;
+}
+
+/* Use CSS Environment Variables for safe areas (iOS Safari) */
+@supports (padding: max(0px)) {
+  :root {
+    --safe-area-inset-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Fix viewport height issues on mobile browsers */
+@supports (-webkit-touch-callout: none) {
+  :root {
+    --viewport-height: 100vh;
+  }
+}
+
 @media (max-width: 768px) {
+  /* Adjust viewport height for mobile browsers */
+  html {
+    height: -webkit-fill-available;
+  }
+
+  body {
+    min-height: -webkit-fill-available;
+  }
+
   .sidebar {
     position: fixed;
     top: 0;
     left: -280px;
-    height: 100vh;
+    /* Use dynamic viewport height minus safe area */
+    height: calc(100vh - var(--safe-area-inset-bottom));
+    height: calc(var(--viewport-height) - var(--safe-area-inset-bottom));
     z-index: 1001;
     transition: left 0.3s ease;
+    /* Add bottom padding to ensure content is accessible above browser UI */
+    padding-bottom: calc(var(--safe-area-inset-bottom) + 20px);
+    box-sizing: border-box;
+  }
+
+  /* Ensure sidebar footer has additional bottom spacing on mobile */
+  .sidebar .sidebar-footer {
+    padding-bottom: calc(20px + var(--safe-area-inset-bottom) + 60px);
+    /* Additional 60px for iOS Safari bottom bar */
+  }
+
+  /* Ensure chat history has proper scrolling with safe areas */
+  .sidebar .chat-history {
+    padding-bottom: calc(16px + 60px);
+    /* Additional space for iOS Safari bottom bar */
   }
 
   .sidebar.open {
@@ -36,6 +82,8 @@
 
   .input-area {
     padding: 16px;
+    /* Add bottom padding for mobile browser UI */
+    padding-bottom: calc(16px + var(--safe-area-inset-bottom) + 20px);
   }
 
   .settings-content {
@@ -44,5 +92,27 @@
 
   .aspect-ratio-grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Specific fixes for iOS Safari */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 768px) {
+    .sidebar {
+      /* iOS Safari specific height calculation */
+      height: calc(100vh - 60px);
+      /* Subtract estimated iOS Safari bottom bar height */
+    }
+
+    /* Additional bottom spacing for iOS */
+    .sidebar .sidebar-footer {
+      padding-bottom: calc(20px + 80px);
+      /* Extra padding for iOS Safari bottom bar */
+    }
+
+    .sidebar .chat-history {
+      padding-bottom: calc(16px + 80px);
+      /* Extra padding for iOS Safari bottom bar */
+    }
   }
 }
